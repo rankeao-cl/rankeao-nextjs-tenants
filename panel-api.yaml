@@ -1,0 +1,3205 @@
+openapi: 3.0.3
+info:
+  title: Rankeao Panel API
+  description: Tenant dashboard API — store configuration, staff management, analytics, expenses, loyalty, subscriptions,
+    product/order/inventory management.
+  version: 1.0.0
+  contact:
+    name: Rankeao
+    url: https://rankeao.cl
+servers:
+- url: https://api.rankeao.cl
+  description: Production
+tags:
+- name: Auth
+- name: Tenants
+- name: Staff
+- name: Analytics
+- name: Expenses
+- name: Loyalty
+- name: Subscriptions
+- name: Products
+- name: Orders
+- name: Inventory
+- name: Coupons
+security: []
+paths:
+  /api/v1/auth/forgot-password:
+    post:
+      tags:
+      - Auth
+      summary: Forgot password (not implemented)
+      description: 'Initiates a password reset flow by sending a reset link to the user''s email.
+
+        Not yet implemented — always returns 501.
+
+        '
+      operationId: forgotPassword
+      responses:
+        '501':
+          description: Not implemented
+  /api/v1/auth/login:
+    post:
+      tags:
+      - Auth
+      summary: Log in with email and password
+      description: 'Authenticates a user with email and password, returning an access token and refresh token.
+
+        Returns 401 with INVALID_CREDENTIALS if the email or password is wrong.
+
+        No authentication required.
+
+        '
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /api/v1/auth/oauth/apple/callback:
+    get:
+      tags:
+      - Auth
+      summary: Apple OAuth callback (not implemented)
+      description: 'Handles the OAuth2 callback from Apple after the user authorizes.
+
+        Creates or links an account and returns auth tokens.
+
+        Not yet implemented — always returns 501.
+
+        '
+      operationId: oauthAppleCallback
+      responses:
+        '501':
+          description: Not implemented
+  /api/v1/auth/oauth/discord/callback:
+    get:
+      tags:
+      - Auth
+      summary: Discord OAuth callback (not implemented)
+      description: 'Handles the OAuth2 callback from Discord after the user authorizes.
+
+        Creates or links an account and returns auth tokens.
+
+        Not yet implemented — always returns 501.
+
+        '
+      operationId: oauthDiscordCallback
+      responses:
+        '501':
+          description: Not implemented
+  /api/v1/auth/oauth/google/callback:
+    get:
+      tags:
+      - Auth
+      summary: Google OAuth callback (not implemented)
+      description: 'Handles the OAuth2 callback from Google after the user authorizes.
+
+        Creates or links an account and returns auth tokens.
+
+        Not yet implemented — always returns 501.
+
+        '
+      operationId: oauthGoogleCallback
+      responses:
+        '501':
+          description: Not implemented
+  /api/v1/auth/refresh:
+    post:
+      tags:
+      - Auth
+      summary: Refresh access token
+      description: 'Exchanges a valid refresh token for a new access/refresh token pair.
+
+        The old refresh token is revoked upon successful exchange. If the refresh token
+
+        is invalid, expired, or already revoked, returns 401. No authentication required.
+
+        '
+      operationId: refreshToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - refresh_token
+              properties:
+                refresh_token:
+                  type: string
+      responses:
+        '200':
+          description: Token refreshed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /api/v1/auth/register:
+    post:
+      tags:
+      - Auth
+      summary: Register a new user
+      description: 'Creates a new user account and returns an access token plus refresh token.
+
+        Username must be 3-30 characters (alphanumeric + underscores), email must be valid,
+
+        and password must be at least 8 characters. Returns 409 if the email or username is already taken.
+
+        No authentication required.
+
+        '
+      operationId: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /api/v1/auth/reset-password:
+    post:
+      tags:
+      - Auth
+      summary: Reset password (not implemented)
+      description: 'Resets the user''s password using a token received via the forgot-password email.
+
+        Not yet implemented — always returns 501.
+
+        '
+      operationId: resetPassword
+      responses:
+        '501':
+          description: Not implemented
+  /api/v1/auth/verify-email:
+    post:
+      tags:
+      - Auth
+      summary: Verify email (not implemented)
+      description: 'Verifies the user''s email address using a verification token.
+
+        Not yet implemented — always returns 501.
+
+        '
+      operationId: verifyEmail
+      responses:
+        '501':
+          description: Not implemented
+  /api/v1/store/panel/coupons:
+    get:
+      tags:
+      - Coupons
+      summary: List coupons
+      description: 'Lists coupons for the tenant store. Supports filtering by status (active, inactive,
+
+        expired). Paginated (max 100 per page). Requires Bearer token + X-Tenant-ID header
+
+        with MANAGE_COUPONS grant.
+
+        '
+      operationId: listCoupons
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      responses:
+        '200':
+          description: Coupons
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  coupons:
+                    type: array
+                    items:
+                      type: object
+    post:
+      tags:
+      - Coupons
+      summary: Create coupon
+      description: 'Creates a new coupon for the tenant store. Code must be 3-30 characters and unique.
+
+        Supports PERCENTAGE or FIXED discount types with optional min_purchase, max_discount,
+
+        usage limits, validity dates, and product/category targeting. Returns DUPLICATE_CODE
+
+        (400) if the code exists. Requires Bearer token + X-Tenant-ID header with MANAGE_COUPONS grant.
+
+        '
+      operationId: createCoupon
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Coupon created
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/store/panel/coupons/{coupon_id}:
+    patch:
+      tags:
+      - Coupons
+      summary: Update coupon
+      description: 'Partially updates a coupon''s settings. Only send the fields to change.
+
+        Requires Bearer token + X-Tenant-ID header with MANAGE_COUPONS grant.
+
+        '
+      operationId: updateCoupon
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: coupon_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+    delete:
+      tags:
+      - Coupons
+      summary: Delete coupon
+      description: 'Deactivates a coupon, making it unavailable for future use. Does not delete
+
+        historical usage records. Requires Bearer token + X-Tenant-ID header with
+
+        MANAGE_COUPONS grant.
+
+        '
+      operationId: deleteCoupon
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: coupon_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          $ref: '#/components/responses/MessageResponse'
+  /api/v1/store/panel/coupons/{coupon_id}/usages:
+    get:
+      tags:
+      - Coupons
+      summary: Get coupon usages
+      description: 'Lists usage records for a specific coupon, showing which users redeemed it,
+
+        the associated orders, and discount amounts. Includes a summary with total_uses
+
+        and total_discount_given. Requires Bearer token + X-Tenant-ID header with
+
+        MANAGE_COUPONS grant.
+
+        '
+      operationId: getCouponUsages
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: coupon_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Usages
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/store/panel/inventory/alerts:
+    get:
+      tags:
+      - Inventory
+      summary: Get inventory alerts
+      description: 'Returns low-stock and out-of-stock alerts for the tenant''s products. Includes
+
+        per-product stock levels and a summary with low_stock_count and out_of_stock_count.
+
+        Requires Bearer token + X-Tenant-ID header with MANAGE_INVENTORY grant.
+
+        '
+      operationId: getInventoryAlerts
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      responses:
+        '200':
+          description: Alerts
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/store/panel/inventory/movements:
+    get:
+      tags:
+      - Inventory
+      summary: List inventory movements
+      description: 'Lists inventory stock change records for the tenant. Supports filtering by product,
+
+        variant, movement type, and date range. Paginated (max 100 per page). Requires
+
+        Bearer token + X-Tenant-ID header with MANAGE_INVENTORY grant.
+
+        '
+      operationId: listInventoryMovements
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      responses:
+        '200':
+          description: Movements
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  movements:
+                    type: array
+                    items:
+                      type: object
+    post:
+      tags:
+      - Inventory
+      summary: Create inventory movement
+      description: 'Creates a manual stock adjustment for a product or variant. Positive quantity adds
+
+        stock, negative removes it. Returns INSUFFICIENT_STOCK (409) if a negative adjustment
+
+        exceeds available stock. Requires Bearer token + X-Tenant-ID header with
+
+        MANAGE_INVENTORY grant.
+
+        '
+      operationId: createInventoryMovement
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Movement created
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/store/panel/inventory/valuation:
+    get:
+      tags:
+      - Inventory
+      summary: Get inventory valuation
+      description: 'Returns overall inventory valuation (total cost, retail value, potential margin)
+
+        and a per-category breakdown. Requires Bearer token + X-Tenant-ID header with
+
+        MANAGE_INVENTORY grant.
+
+        '
+      operationId: getInventoryValuation
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      responses:
+        '200':
+          description: Valuation
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/store/panel/orders:
+    get:
+      tags:
+      - Orders
+      summary: List panel orders
+      description: 'Lists orders for the tenant store. Supports filtering by status, date range,
+
+        delivery method, and search by order number or buyer. Includes order count summary
+
+        by status. Paginated (max 100 per page). Requires Bearer token + X-Tenant-ID
+
+        header with MANAGE_ORDERS grant.
+
+        '
+      operationId: listPanelOrders
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      responses:
+        '200':
+          description: Orders
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orders:
+                    type: array
+                    items:
+                      type: object
+  /api/v1/store/panel/orders/{order_id}:
+    get:
+      tags:
+      - Orders
+      summary: Get panel order detail
+      description: 'Returns full panel order detail including items with cost/margin, shipping info,
+
+        payment data, and status history. Requires Bearer token + X-Tenant-ID header
+
+        with MANAGE_ORDERS grant.
+
+        '
+      operationId: getPanelOrderDetail
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: order_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Order detail
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/store/panel/orders/{order_id}/cancel:
+    post:
+      tags:
+      - Orders
+      summary: Cancel panel order
+      description: 'Cancels an order from the seller panel. Accepts an optional reason and a refund
+
+        flag to automatically process a refund. Requires Bearer token + X-Tenant-ID
+
+        header with MANAGE_ORDERS grant.
+
+        '
+      operationId: cancelPanelOrder
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: order_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Cancelled
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/store/panel/orders/{order_id}/complete:
+    post:
+      tags:
+      - Orders
+      summary: Complete order
+      description: 'Manually marks an order as completed by the seller. Used when automatic
+
+        completion is not triggered. Requires Bearer token + X-Tenant-ID header with
+
+        MANAGE_ORDERS grant.
+
+        '
+      operationId: completeOrder
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: order_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Completed
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/store/panel/orders/{order_id}/notes:
+    patch:
+      tags:
+      - Orders
+      summary: Update order notes
+      description: 'Updates seller-facing and internal notes on an order. Accepts seller_notes
+
+        (visible to buyer) and internal_notes (private). Requires Bearer token +
+
+        X-Tenant-ID header with MANAGE_ORDERS grant.
+
+        '
+      operationId: updateOrderNotes
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: order_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/store/panel/orders/{order_id}/process:
+    post:
+      tags:
+      - Orders
+      summary: Process order
+      description: 'Moves an order from PAID to PROCESSING status, indicating the seller has started
+
+        preparing the order. Requires Bearer token + X-Tenant-ID header with MANAGE_ORDERS grant.
+
+        '
+      operationId: processOrder
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: order_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Processed
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/store/panel/orders/{order_id}/ready:
+    post:
+      tags:
+      - Orders
+      summary: Mark order ready for pickup
+      description: 'Marks an order as ready for in-store pickup by the buyer. Used for orders
+
+        with PICKUP delivery method. Requires Bearer token + X-Tenant-ID header with
+
+        MANAGE_ORDERS grant.
+
+        '
+      operationId: readyOrder
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: order_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Ready
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/store/panel/orders/{order_id}/refund:
+    post:
+      tags:
+      - Orders
+      summary: Refund order
+      description: 'Issues a full or partial refund for an order. Accepts refund amount, reason,
+
+        and optionally specific items with quantities. Requires Bearer token + X-Tenant-ID
+
+        header with MANAGE_ORDERS grant.
+
+        '
+      operationId: refundOrder
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: order_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Refunded
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/store/panel/orders/{order_id}/ship:
+    post:
+      tags:
+      - Orders
+      summary: Ship order
+      description: 'Marks an order as shipped with carrier and tracking information. Requires carrier,
+
+        tracking_number, and optionally estimated_delivery. Requires Bearer token +
+
+        X-Tenant-ID header with MANAGE_ORDERS grant.
+
+        '
+      operationId: shipOrder
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: order_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Shipped
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/store/panel/products:
+    get:
+      tags:
+      - Products
+      summary: List panel products
+      description: 'Lists products in the tenant''s store panel. Supports filtering by status, category,
+
+        game, visibility, stock level, price range, tags, and card condition. Paginated
+
+        (max 100 per page). Requires Bearer token + X-Tenant-ID header with MANAGE_INVENTORY grant.
+
+        '
+      operationId: listPanelProducts
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      responses:
+        '200':
+          description: Products
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  products:
+                    type: array
+                    items:
+                      type: object
+    post:
+      tags:
+      - Products
+      summary: Create product
+      description: 'Creates a new product in the tenant''s store. Name and price are required. Returns
+
+        DUPLICATE_SKU (400) if the SKU already exists, or PLAN_LIMIT_REACHED (403) if the
+
+        tenant has hit their product limit. Requires Bearer token + X-Tenant-ID header
+
+        with MANAGE_INVENTORY grant.
+
+        '
+      operationId: createProduct
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Product created
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/store/panel/products/bulk-action:
+    post:
+      tags:
+      - Products
+      summary: Bulk action on products
+      description: 'Performs a bulk action (archive, activate, delete) on multiple products at once.
+
+        Accepts a list of product_ids and an action string. Returns success and failure
+
+        counts. Requires Bearer token + X-Tenant-ID header with MANAGE_INVENTORY grant.
+
+        '
+      operationId: bulkProductAction
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Bulk result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success_count:
+                    type: integer
+                  failed_count:
+                    type: integer
+  /api/v1/store/panel/products/{product_id}:
+    get:
+      tags:
+      - Products
+      summary: Get panel product
+      description: 'Returns full product detail in the tenant panel view, including variants, images,
+
+        inventory, and cost data. Requires Bearer token + X-Tenant-ID header with
+
+        MANAGE_INVENTORY grant.
+
+        '
+      operationId: getPanelProduct
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Product
+          content:
+            application/json:
+              schema:
+                type: object
+    patch:
+      tags:
+      - Products
+      summary: Update product
+      description: 'Partially updates a product in the tenant''s store. Only send the fields to change.
+
+        Requires Bearer token + X-Tenant-ID header with MANAGE_INVENTORY grant.
+
+        '
+      operationId: updateProduct
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+    delete:
+      tags:
+      - Products
+      summary: Delete product
+      description: 'Deletes a product from the tenant''s store. Returns PRODUCT_HAS_PENDING_ORDERS (409)
+
+        if the product has active orders. Requires Bearer token + X-Tenant-ID header with
+
+        MANAGE_INVENTORY grant.
+
+        '
+      operationId: deleteProduct
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deleted:
+                    type: boolean
+  /api/v1/store/panel/products/{product_id}/images:
+    post:
+      tags:
+      - Products
+      summary: Add product image
+      description: 'Adds an image to a product. Accepts url, alt_text, sort_order, is_primary,
+
+        width, and height. Requires Bearer token + X-Tenant-ID header with
+
+        MANAGE_INVENTORY grant.
+
+        '
+      operationId: addProductImage
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Image added
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/store/panel/products/{product_id}/images/reorder:
+    put:
+      tags:
+      - Products
+      summary: Reorder product images
+      description: 'Sets the display order of product images by providing an ordered list of image_ids.
+
+        Requires Bearer token + X-Tenant-ID header with MANAGE_INVENTORY grant.
+
+        '
+      operationId: reorderProductImages
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Reordered
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/store/panel/products/{product_id}/images/{image_id}:
+    patch:
+      tags:
+      - Products
+      summary: Update product image
+      description: 'Updates metadata for a product image (alt_text, sort_order, is_primary).
+
+        Requires Bearer token + X-Tenant-ID header with MANAGE_INVENTORY grant.
+
+        '
+      operationId: updateProductImage
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: image_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+    delete:
+      tags:
+      - Products
+      summary: Delete product image
+      description: 'Deletes an image from a product. Requires Bearer token + X-Tenant-ID header
+
+        with MANAGE_INVENTORY grant.
+
+        '
+      operationId: deleteProductImage
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: image_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          $ref: '#/components/responses/MessageResponse'
+  /api/v1/store/panel/products/{product_id}/variants:
+    get:
+      tags:
+      - Products
+      summary: List product variants
+      description: 'Lists all variants for a specific product in the tenant panel.
+
+        Requires Bearer token + X-Tenant-ID header with MANAGE_INVENTORY grant.
+
+        '
+      operationId: listVariants
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Variants
+          content:
+            application/json:
+              schema:
+                type: object
+    post:
+      tags:
+      - Products
+      summary: Create variant
+      description: 'Creates a new variant for a product (e.g. different language or edition).
+
+        Includes name, SKU, price_diff, and stock. Requires Bearer token + X-Tenant-ID
+
+        header with MANAGE_INVENTORY grant.
+
+        '
+      operationId: createVariant
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Variant created
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/store/panel/products/{product_id}/variants/{variant_id}:
+    patch:
+      tags:
+      - Products
+      summary: Update variant
+      description: 'Partially updates a product variant. Only send the fields to change.
+
+        Requires Bearer token + X-Tenant-ID header with MANAGE_INVENTORY grant.
+
+        '
+      operationId: updateVariant
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: variant_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+    delete:
+      tags:
+      - Products
+      summary: Delete variant
+      description: 'Deletes a product variant. Requires Bearer token + X-Tenant-ID header with
+
+        MANAGE_INVENTORY grant.
+
+        '
+      operationId: deleteVariant
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: product_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: variant_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          $ref: '#/components/responses/MessageResponse'
+  /api/v1/store/panel/shipments:
+    get:
+      tags:
+      - Orders
+      summary: List shipments
+      description: 'Lists shipments for the tenant store. Supports filtering by status and carrier.
+
+        Paginated (max 100 per page). Requires Bearer token + X-Tenant-ID header with
+
+        MANAGE_ORDERS grant.
+
+        '
+      operationId: listShipments
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      responses:
+        '200':
+          description: Shipments
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  shipments:
+                    type: array
+                    items:
+                      type: object
+  /api/v1/store/panel/shipments/{shipment_id}:
+    patch:
+      tags:
+      - Orders
+      summary: Update shipment
+      description: 'Updates shipment tracking information (tracking_number, tracking_url, status).
+
+        Requires Bearer token + X-Tenant-ID header with MANAGE_ORDERS grant.
+
+        '
+      operationId: updateShipment
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: shipment_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/tenants/me:
+    get:
+      tags:
+      - Tenants
+      summary: Get my tenant
+      description: 'Get the full configuration and details of the current tenant. Requires auth, X-Tenant-ID header,
+
+        and MANAGE_STORE grant. Used by the store management panel to load tenant settings.
+
+        '
+      operationId: getMyTenant
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      responses:
+        '200':
+          description: My tenant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tenant'
+    patch:
+      tags:
+      - Tenants
+      summary: Update my tenant
+      description: 'Partial update of tenant profile fields (name, description, email, city, timezone, etc.).
+
+        Requires auth, X-Tenant-ID header, and MANAGE_SETTINGS grant. Only provided fields are updated.
+
+        '
+      operationId: updateMyTenant
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tenant'
+  /api/v1/tenants/me/analytics/export:
+    get:
+      tags:
+      - Analytics
+      summary: Export analytics (not implemented)
+      description: 'Export analytics data as a downloadable file. Currently returns 501 Not Implemented.
+
+        Reserved for Business+ plan tenants. Requires auth, X-Tenant-ID, and VIEW_ANALYTICS grant.
+
+        '
+      operationId: exportAnalytics
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      responses:
+        '501':
+          description: Not implemented
+  /api/v1/tenants/me/analytics/sales:
+    get:
+      tags:
+      - Analytics
+      summary: Get sales analytics
+      description: 'Retrieve sales analytics with time-series data. Supports period (7d, 30d, 90d, 12m, custom)
+
+        and granularity (day, week, month). For custom periods, provide date_from and date_to.
+
+        Requires auth, X-Tenant-ID header, and VIEW_ANALYTICS grant.
+
+        '
+      operationId: getSalesAnalytics
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: period
+        in: query
+        schema:
+          type: string
+      - name: granularity
+        in: query
+        schema:
+          type: string
+      - name: date_from
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: date_to
+        in: query
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Sales data
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/tenants/me/audit-log:
+    get:
+      tags:
+      - Analytics
+      summary: Get audit log
+      description: 'Retrieve the tenant''s audit log of staff actions. Currently returns an empty list as
+
+        the audit log table has not been created yet. Requires auth, X-Tenant-ID, and VIEW_REPORTS grant.
+
+        '
+      operationId: getAuditLog
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      responses:
+        '200':
+          description: Audit log
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  entries:
+                    type: array
+                    items:
+                      type: object
+  /api/v1/tenants/me/banner:
+    post:
+      tags:
+      - Tenants
+      summary: Set tenant banner
+      description: 'Update the tenant''s banner image URL. Requires auth, X-Tenant-ID header,
+
+        and MANAGE_SETTINGS grant.
+
+        '
+      operationId: setTenantBanner
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      responses:
+        '200':
+          $ref: '#/components/responses/MessageResponse'
+  /api/v1/tenants/me/customers:
+    get:
+      tags:
+      - Tenants
+      summary: List CRM customers
+      description: 'List tenant customers with filters for search query (q), segment (NEW, REGULAR, FREQUENT,
+
+        VIP, INACTIVE, AT_RISK), VIP status, tags, and minimum spend. Paginated.
+
+        Requires auth, X-Tenant-ID header, and MANAGE_CUSTOMERS grant.
+
+        '
+      operationId: listCustomers
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: q
+        in: query
+        schema:
+          type: string
+      - name: segment
+        in: query
+        schema:
+          type: string
+      - name: is_vip
+        in: query
+        schema:
+          type: boolean
+      - name: tags
+        in: query
+        schema:
+          type: string
+      - name: min_spent
+        in: query
+        schema:
+          type: number
+      - name: sort
+        in: query
+        schema:
+          type: string
+      - $ref: '#/components/parameters/Page'
+      - $ref: '#/components/parameters/PerPage'
+      responses:
+        '200':
+          description: Customers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  customers:
+                    type: array
+                    items:
+                      type: object
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+  /api/v1/tenants/me/customers/{customer_id}:
+    get:
+      tags:
+      - Tenants
+      summary: Get customer detail
+      description: 'Get detailed information for a specific customer, including internal notes and recent orders.
+
+        Requires auth, X-Tenant-ID header, and MANAGE_CUSTOMERS grant.
+
+        '
+      operationId: getCustomerDetail
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: customer_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Customer detail
+          content:
+            application/json:
+              schema:
+                type: object
+    patch:
+      tags:
+      - Tenants
+      summary: Update customer
+      description: 'Update customer CRM fields such as tags, VIP status, or internal notes.
+
+        Requires auth, X-Tenant-ID header, and MANAGE_CUSTOMERS grant.
+
+        '
+      operationId: updateCustomer
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: customer_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/tenants/me/customers/{customer_id}/notes:
+    post:
+      tags:
+      - Tenants
+      summary: Add customer note
+      description: 'Add an internal note to a customer record. Notes have a type and can be pinned for visibility.
+
+        Requires auth, X-Tenant-ID header, and MANAGE_CUSTOMERS grant.
+
+        '
+      operationId: addCustomerNote
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: customer_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - content
+              - note_type
+              properties:
+                content:
+                  type: string
+                note_type:
+                  type: string
+                is_pinned:
+                  type: boolean
+      responses:
+        '201':
+          description: Note created
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/tenants/me/dashboard:
+    get:
+      tags:
+      - Analytics
+      summary: Get tenant dashboard
+      description: 'Returns the tenant dashboard overview: today''s sales, this month''s summary, active alerts,
+
+        and subscription info. Requires auth, X-Tenant-ID header, and VIEW_ANALYTICS grant.
+
+        '
+      operationId: getTenantDashboard
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      responses:
+        '200':
+          description: Dashboard data
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/tenants/me/events:
+    post:
+      tags:
+      - Tenants
+      summary: Create tenant event
+      description: 'Create a new event for the tenant store. Requires auth, X-Tenant-ID header,
+
+        and MANAGE_EVENTS grant.
+
+        '
+      operationId: createTenantEvent
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Event created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+    get:
+      tags:
+      - Tenants
+      summary: List my tenant events (panel)
+      description: 'List events for the tenant store in the management panel. Includes both public and draft events.
+
+        Requires auth, X-Tenant-ID header, and MANAGE_EVENTS grant.
+
+        '
+      operationId: listMyTenantEvents
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      responses:
+        '200':
+          description: Events
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  events:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Event'
+  /api/v1/tenants/me/expenses:
+    get:
+      tags:
+      - Expenses
+      summary: List expenses
+      description: 'List tenant expenses with filters for date range, category, is_recurring, and tags.
+
+        Includes a summary of totals. Paginated. Requires auth, X-Tenant-ID, and MANAGE_EXPENSES grant.
+
+        '
+      operationId: listExpenses
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: date_from
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: date_to
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: category
+        in: query
+        schema:
+          type: array
+          items:
+            type: string
+      - name: is_recurring
+        in: query
+        schema:
+          type: boolean
+      - name: tags
+        in: query
+        schema:
+          type: string
+      - name: sort
+        in: query
+        schema:
+          type: string
+      - $ref: '#/components/parameters/Page'
+      - $ref: '#/components/parameters/PerPage'
+      responses:
+        '200':
+          description: Expenses
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  expenses:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Expense'
+                  summary:
+                    type: object
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+    post:
+      tags:
+      - Expenses
+      summary: Create expense
+      description: 'Record a new expense. Categories: RENT, UTILITIES, INVENTORY, MARKETING, STAFF, SUPPLIES,
+
+        EVENTS, TAXES, MAINTENANCE, SOFTWARE, SHIPPING, OTHER. Amount is in the tenant''s currency.
+
+        Requires auth, X-Tenant-ID header, and MANAGE_EXPENSES grant.
+
+        '
+      operationId: createExpense
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateExpenseRequest'
+      responses:
+        '201':
+          description: Expense created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+  /api/v1/tenants/me/expenses/budgets:
+    get:
+      tags:
+      - Expenses
+      summary: Get expense budgets
+      description: 'Retrieve expense budgets by category for a given year/month. Shows budget limits and
+
+        current spending per category. Requires auth, X-Tenant-ID, and MANAGE_EXPENSES grant.
+
+        '
+      operationId: getExpenseBudgets
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: year
+        in: query
+        schema:
+          type: integer
+      - name: month
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Budgets
+          content:
+            application/json:
+              schema:
+                type: object
+    put:
+      tags:
+      - Expenses
+      summary: Set expense budgets
+      description: 'Set or update monthly budget limits per expense category.
+
+        Requires auth, X-Tenant-ID header, and MANAGE_EXPENSES grant.
+
+        '
+      operationId: setExpenseBudgets
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          $ref: '#/components/responses/MessageResponse'
+  /api/v1/tenants/me/expenses/{expense_id}:
+    patch:
+      tags:
+      - Expenses
+      summary: Update expense
+      description: 'Partially update an existing expense. Only provided fields are changed.
+
+        Requires auth, X-Tenant-ID header, and MANAGE_EXPENSES grant.
+
+        '
+      operationId: updateExpense
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: expense_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+    delete:
+      tags:
+      - Expenses
+      summary: Delete expense
+      description: 'Permanently delete an expense record.
+
+        Requires auth, X-Tenant-ID header, and MANAGE_EXPENSES grant.
+
+        '
+      operationId: deleteExpense
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: expense_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          $ref: '#/components/responses/MessageResponse'
+  /api/v1/tenants/me/expenses/{expense_id}/receipt:
+    post:
+      tags:
+      - Expenses
+      summary: Attach receipt to expense
+      description: 'Attach a receipt image URL to an existing expense. Provide the receipt_url in the request body.
+
+        Requires auth, X-Tenant-ID header, and MANAGE_EXPENSES grant.
+
+        '
+      operationId: attachReceipt
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: expense_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - url
+              properties:
+                url:
+                  type: string
+      responses:
+        '200':
+          description: Receipt attached
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+  /api/v1/tenants/me/go-private:
+    post:
+      tags:
+      - Tenants
+      summary: Make tenant private
+      description: 'Hide the tenant from the public store directory. The store profile will no longer appear
+
+        in search results. Requires auth, X-Tenant-ID header, and MANAGE_SETTINGS grant.
+
+        '
+      operationId: tenantGoPrivate
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      responses:
+        '200':
+          $ref: '#/components/responses/MessageResponse'
+  /api/v1/tenants/me/go-public:
+    post:
+      tags:
+      - Tenants
+      summary: Make tenant public
+      description: 'Make the tenant publicly visible in the store directory. The tenant must be verified before
+
+        it can go public. Requires auth, X-Tenant-ID header, and MANAGE_SETTINGS grant.
+
+        '
+      operationId: tenantGoPublic
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      responses:
+        '200':
+          $ref: '#/components/responses/MessageResponse'
+  /api/v1/tenants/me/invoices:
+    get:
+      tags:
+      - Subscriptions
+      summary: List invoices
+      description: 'List subscription invoices with optional status and year filters. Paginated.
+
+        Requires auth, X-Tenant-ID header, and MANAGE_SUBSCRIPTION grant.
+
+        '
+      operationId: listInvoices
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: status
+        in: query
+        schema:
+          type: string
+      - name: year
+        in: query
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/Page'
+      - $ref: '#/components/parameters/PerPage'
+      responses:
+        '200':
+          description: Invoices
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  invoices:
+                    type: array
+                    items:
+                      type: object
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+  /api/v1/tenants/me/logo:
+    post:
+      tags:
+      - Tenants
+      summary: Set tenant logo
+      description: 'Update the tenant''s logo by providing an image URL. Requires auth, X-Tenant-ID header,
+
+        and MANAGE_SETTINGS grant.
+
+        '
+      operationId: setTenantLogo
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - url
+              properties:
+                url:
+                  type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/MessageResponse'
+  /api/v1/tenants/me/loyalty:
+    get:
+      tags:
+      - Loyalty
+      summary: Get loyalty program
+      description: 'Get the tenant''s loyalty program configuration and aggregate stats (total members, points issued).
+
+        Requires auth, X-Tenant-ID header, and MANAGE_LOYALTY grant.
+
+        '
+      operationId: getLoyaltyProgram
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      responses:
+        '200':
+          description: Loyalty program
+          content:
+            application/json:
+              schema:
+                type: object
+    put:
+      tags:
+      - Loyalty
+      summary: Update loyalty program
+      description: 'Create or update the tenant''s loyalty program settings (points per currency unit, reward thresholds,
+        etc.).
+
+        Requires auth, X-Tenant-ID header, and MANAGE_LOYALTY grant.
+
+        '
+      operationId: updateLoyaltyProgram
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/tenants/me/loyalty/adjust:
+    post:
+      tags:
+      - Loyalty
+      summary: Adjust loyalty points
+      description: 'Manually adjust a customer''s loyalty points. Action must be BONUS or ADJUSTMENT.
+
+        Provide customer_id, points amount, and an optional description.
+
+        Requires auth, X-Tenant-ID header, and MANAGE_LOYALTY grant.
+
+        '
+      operationId: adjustLoyaltyPoints
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - customer_id
+              - points
+              - action
+              properties:
+                customer_id:
+                  type: string
+                  format: uuid
+                points:
+                  type: integer
+                action:
+                  type: string
+                  enum:
+                  - BONUS
+                  - ADJUSTMENT
+                description:
+                  type: string
+      responses:
+        '200':
+          description: Adjusted
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/tenants/me/notifications:
+    get:
+      tags:
+      - Tenants
+      summary: Get tenant notifications
+      description: 'List notifications for the tenant panel. Supports filtering by type and is_read status.
+
+        Requires auth, X-Tenant-ID header, and MANAGE_STORE grant.
+
+        '
+      operationId: getTenantNotifications
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      responses:
+        '200':
+          description: Notifications
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  notifications:
+                    type: array
+                    items:
+                      type: object
+  /api/v1/tenants/me/notifications/read-all:
+    post:
+      tags:
+      - Tenants
+      summary: Mark all notifications as read
+      description: 'Mark all unread tenant notifications as read in a single operation.
+
+        Requires auth, X-Tenant-ID header, and MANAGE_STORE grant.
+
+        '
+      operationId: markAllNotificationsRead
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      responses:
+        '200':
+          $ref: '#/components/responses/MessageResponse'
+  /api/v1/tenants/me/notifications/{notification_id}/read:
+    post:
+      tags:
+      - Tenants
+      summary: Mark notification as read
+      description: 'Mark a single tenant notification as read by its ID.
+
+        Requires auth, X-Tenant-ID header, and MANAGE_STORE grant.
+
+        '
+      operationId: markNotificationRead
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: notification_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          $ref: '#/components/responses/MessageResponse'
+  /api/v1/tenants/me/payment-methods:
+    get:
+      tags:
+      - Tenants
+      summary: List payment methods
+      description: 'List all configured payment methods for the tenant (e.g., WEBPAY, MERCADOPAGO, BANK_TRANSFER, CASH, DEBIT).
+
+        Requires auth, X-Tenant-ID header, and MANAGE_SETTINGS grant.
+
+        '
+      operationId: listPaymentMethods
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      responses:
+        '200':
+          description: Payment methods
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  payment_methods:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PaymentMethod'
+    post:
+      tags:
+      - Tenants
+      summary: Add payment method
+      description: 'Add a new payment method to the tenant. Type must be one of: WEBPAY, MERCADOPAGO, BANK_TRANSFER,
+
+        CASH, DEBIT. The config object contains provider-specific settings (e.g., commerce_code for Webpay).
+
+        Requires auth, X-Tenant-ID header, and MANAGE_SETTINGS grant.
+
+        '
+      operationId: addPaymentMethod
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - type
+              properties:
+                type:
+                  type: string
+                  enum:
+                  - WEBPAY
+                  - MERCADOPAGO
+                  - BANK_TRANSFER
+                  - CASH
+                  - DEBIT
+                label:
+                  type: string
+                config:
+                  type: object
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentMethod'
+  /api/v1/tenants/me/payment-methods/{payment_method_id}:
+    patch:
+      tags:
+      - Tenants
+      summary: Update payment method
+      description: 'Update an existing payment method''s label, config, or active status.
+
+        Requires auth, X-Tenant-ID header, and MANAGE_SETTINGS grant.
+
+        '
+      operationId: updatePaymentMethod
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: payment_method_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentMethod'
+    delete:
+      tags:
+      - Tenants
+      summary: Delete payment method
+      description: 'Remove a payment method from the tenant.
+
+        Requires auth, X-Tenant-ID header, and MANAGE_SETTINGS grant.
+
+        '
+      operationId: deletePaymentMethod
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: payment_method_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          $ref: '#/components/responses/MessageResponse'
+  /api/v1/tenants/me/schedules:
+    get:
+      tags:
+      - Tenants
+      summary: Get tenant schedules
+      description: 'Retrieve the weekly schedule (7 days) and any date-specific overrides for the tenant.
+
+        Requires auth, X-Tenant-ID header, and MANAGE_STORE grant.
+
+        '
+      operationId: getTenantSchedules
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      responses:
+        '200':
+          description: Schedules
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  schedules:
+                    type: array
+                    items:
+                      type: object
+                  overrides:
+                    type: array
+                    items:
+                      type: object
+    put:
+      tags:
+      - Tenants
+      summary: Batch update schedules
+      description: 'Replace all 7 days of the weekly schedule at once. Each entry specifies day_of_week,
+
+        opens_at, closes_at, and is_closed. Requires auth, X-Tenant-ID, and MANAGE_SETTINGS grant.
+
+        '
+      operationId: updateTenantSchedules
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          $ref: '#/components/responses/MessageResponse'
+  /api/v1/tenants/me/schedules/overrides:
+    post:
+      tags:
+      - Tenants
+      summary: Create schedule override
+      description: 'Create a one-time schedule override for a specific date (e.g., holidays or special hours).
+
+        Overrides take precedence over the weekly schedule. Requires auth, X-Tenant-ID, and MANAGE_SETTINGS grant.
+
+        '
+      operationId: createScheduleOverride
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Override created
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/tenants/me/schedules/overrides/{override_id}:
+    delete:
+      tags:
+      - Tenants
+      summary: Delete schedule override
+      description: 'Remove a schedule override by ID, reverting that date to the regular weekly schedule.
+
+        Requires auth, X-Tenant-ID header, and MANAGE_SETTINGS grant.
+
+        '
+      operationId: deleteScheduleOverride
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: override_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          $ref: '#/components/responses/MessageResponse'
+  /api/v1/tenants/me/slug:
+    post:
+      tags:
+      - Tenants
+      summary: Set tenant slug
+      description: 'Change the tenant''s URL slug. Slug must be 3-60 chars, lowercase alphanumeric + hyphens.
+
+        Can only be changed once every 30 days. Requires auth, X-Tenant-ID, and MANAGE_SETTINGS grant.
+
+        '
+      operationId: setTenantSlug
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - slug
+              properties:
+                slug:
+                  type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/MessageResponse'
+  /api/v1/tenants/me/social-links:
+    get:
+      tags:
+      - Tenants
+      summary: Get tenant social links
+      description: 'List the tenant''s configured social media links (Instagram, Facebook, etc.).
+
+        Requires auth, X-Tenant-ID header, and MANAGE_STORE grant.
+
+        '
+      operationId: getTenantSocialLinks
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      responses:
+        '200':
+          description: Social links
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  social_links:
+                    type: array
+                    items:
+                      type: object
+    put:
+      tags:
+      - Tenants
+      summary: Update tenant social links
+      description: 'Batch update all social media links. Provide the full list of links; this replaces existing entries.
+
+        Each link has platform, url, is_active, and sort_order. Requires auth, X-Tenant-ID, and MANAGE_SETTINGS grant.
+
+        '
+      operationId: updateTenantSocialLinks
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          $ref: '#/components/responses/MessageResponse'
+  /api/v1/tenants/me/staff:
+    get:
+      tags:
+      - Staff
+      summary: List staff members
+      description: 'List all staff members with their roles, grant overrides, and effective grants.
+
+        Also returns max_staff and current_staff counts based on the tenant plan.
+
+        Requires auth, X-Tenant-ID header, and MANAGE_STAFF grant.
+
+        '
+      operationId: listStaff
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      responses:
+        '200':
+          description: Staff list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  staff:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/StaffMember'
+  /api/v1/tenants/me/staff/invitations:
+    get:
+      tags:
+      - Staff
+      summary: List staff invitations
+      description: 'List all pending staff invitations for the tenant.
+
+        Requires auth, X-Tenant-ID header, and MANAGE_STAFF grant.
+
+        '
+      operationId: listStaffInvitations
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      responses:
+        '200':
+          description: Invitations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  invitations:
+                    type: array
+                    items:
+                      type: object
+  /api/v1/tenants/me/staff/invitations/{invitation_id}:
+    delete:
+      tags:
+      - Staff
+      summary: Cancel staff invitation
+      description: 'Revoke a pending staff invitation by its ID before the invitee accepts.
+
+        Requires auth, X-Tenant-ID header, and MANAGE_STAFF grant.
+
+        '
+      operationId: cancelStaffInvitation
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: invitation_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          $ref: '#/components/responses/MessageResponse'
+  /api/v1/tenants/me/staff/invite:
+    post:
+      tags:
+      - Staff
+      summary: Invite staff member
+      description: 'Send a staff invitation. Provide either user_id or email to identify the invitee.
+
+        Role must be ADMIN, JUDGE, or CASHIER (OWNER cannot be assigned via invite).
+
+        Requires auth, X-Tenant-ID header, and MANAGE_STAFF grant.
+
+        '
+      operationId: inviteStaff
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - role
+              properties:
+                user_id:
+                  type: string
+                  format: uuid
+                email:
+                  type: string
+                  format: email
+                role:
+                  type: string
+                  enum:
+                  - ADMIN
+                  - JUDGE
+                  - CASHIER
+                message:
+                  type: string
+      responses:
+        '201':
+          description: Invitation sent
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/tenants/me/staff/{staff_id}:
+    delete:
+      tags:
+      - Staff
+      summary: Remove staff member
+      description: 'Remove a staff member from the tenant. The OWNER cannot be removed.
+
+        Requires auth, X-Tenant-ID header, and MANAGE_STAFF grant.
+
+        '
+      operationId: removeStaffMember
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: staff_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          $ref: '#/components/responses/MessageResponse'
+  /api/v1/tenants/me/staff/{staff_id}/grants:
+    post:
+      tags:
+      - Staff
+      summary: Set staff grant override
+      description: 'Add or update a grant override for a staff member. Set is_granted to true to grant
+
+        a permission the role does not include, or false to revoke one the role provides.
+
+        Requires auth, X-Tenant-ID header, and MANAGE_STAFF grant.
+
+        '
+      operationId: setStaffGrant
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: staff_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - grant_code
+              - is_granted
+              properties:
+                grant_code:
+                  type: string
+                is_granted:
+                  type: boolean
+                reason:
+                  type: string
+      responses:
+        '200':
+          description: Grant set
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/tenants/me/staff/{staff_id}/grants/{grant_code}:
+    delete:
+      tags:
+      - Staff
+      summary: Remove staff grant override
+      description: 'Remove a grant override for a staff member, reverting the grant to the role''s default.
+
+        Requires auth, X-Tenant-ID header, and MANAGE_STAFF grant.
+
+        '
+      operationId: removeStaffGrant
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: staff_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: grant_code
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/MessageResponse'
+  /api/v1/tenants/me/staff/{staff_id}/role:
+    patch:
+      tags:
+      - Staff
+      summary: Update staff role
+      description: 'Change a staff member''s role to ADMIN, JUDGE, or CASHIER. The OWNER role cannot
+
+        be assigned this way; use the transfer-ownership endpoint instead.
+
+        Requires auth, X-Tenant-ID header, and MANAGE_STAFF grant.
+
+        '
+      operationId: updateStaffRole
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      - name: staff_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - role
+              properties:
+                role:
+                  type: string
+                  enum:
+                  - ADMIN
+                  - JUDGE
+                  - CASHIER
+      responses:
+        '200':
+          $ref: '#/components/responses/MessageResponse'
+  /api/v1/tenants/me/subscription:
+    get:
+      tags:
+      - Subscriptions
+      summary: Get subscription details
+      description: 'Get the tenant''s current subscription plan, usage stats, and available plan options.
+
+        Plans: STARTER, PRO, BUSINESS, ENTERPRISE.
+
+        Requires auth, X-Tenant-ID header, and MANAGE_SUBSCRIPTION grant.
+
+        '
+      operationId: getSubscription
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      responses:
+        '200':
+          description: Subscription
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/tenants/me/subscription/cancel:
+    post:
+      tags:
+      - Subscriptions
+      summary: Cancel subscription
+      description: 'Cancel the tenant''s subscription. The cancellation takes effect at the end of the current
+
+        billing period. An optional reason can be provided. Requires auth, X-Tenant-ID,
+
+        and MANAGE_SUBSCRIPTION grant.
+
+        '
+      operationId: cancelSubscription
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+      responses:
+        '200':
+          description: Cancelled
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/tenants/me/subscription/downgrade:
+    post:
+      tags:
+      - Subscriptions
+      summary: Downgrade subscription
+      description: 'Schedule a subscription downgrade to a lower plan. The downgrade takes effect at the end
+
+        of the current billing period. Requires auth, X-Tenant-ID, and MANAGE_SUBSCRIPTION grant.
+
+        '
+      operationId: downgradeSubscription
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - plan_slug
+              properties:
+                plan_slug:
+                  type: string
+      responses:
+        '200':
+          description: Downgrade scheduled
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/tenants/me/subscription/reactivate:
+    post:
+      tags:
+      - Subscriptions
+      summary: Reactivate subscription
+      description: 'Reactivate a previously cancelled subscription before the billing period ends.
+
+        Requires auth, X-Tenant-ID header, and MANAGE_SUBSCRIPTION grant.
+
+        '
+      operationId: reactivateSubscription
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      responses:
+        '200':
+          description: Reactivated
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/tenants/me/subscription/upgrade:
+    post:
+      tags:
+      - Subscriptions
+      summary: Upgrade subscription
+      description: 'Upgrade the tenant''s subscription to a higher plan. Requires plan_slug, billing_cycle
+
+        (MONTHLY or ANNUAL), and payment_provider (e.g., WEBPAY). Upgrade takes effect immediately.
+
+        Requires auth, X-Tenant-ID header, and MANAGE_SUBSCRIPTION grant.
+
+        '
+      operationId: upgradeSubscription
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - plan_slug
+              - billing_cycle
+              - payment_provider
+              properties:
+                plan_slug:
+                  type: string
+                billing_cycle:
+                  type: string
+                payment_provider:
+                  type: string
+      responses:
+        '200':
+          description: Upgrade initiated
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/tenants/me/transfer-ownership:
+    post:
+      tags:
+      - Staff
+      summary: Transfer tenant ownership
+      description: 'Transfer tenant ownership to another existing staff member. Only the current OWNER can perform this.
+
+        Requires the owner''s current password for confirmation. The previous owner is demoted to ADMIN.
+
+        Requires auth and X-Tenant-ID header.
+
+        '
+      operationId: transferOwnership
+      security:
+      - BearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/XTenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - new_owner_staff_id
+              - password
+              properties:
+                new_owner_staff_id:
+                  type: string
+                  format: uuid
+                password:
+                  type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/MessageResponse'
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    TournamentId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    MatchId:
+      name: match_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    Page:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 1
+    PerPage:
+      name: per_page
+      in: query
+      schema:
+        type: integer
+        default: 20
+    XTenantId:
+      name: X-Tenant-ID
+      in: header
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Tenant scope header
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Conflict:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    MessageResponse:
+      description: Success message
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  schemas:
+    PaginationMeta:
+      type: object
+      properties:
+        page:
+          type: integer
+        per_page:
+          type: integer
+        total:
+          type: integer
+        total_pages:
+          type: integer
+    RegisterRequest:
+      type: object
+      required:
+      - username
+      - email
+      - password
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 30
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+    LoginRequest:
+      type: object
+      required:
+      - email
+      - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+    AuthResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        expires_in:
+          type: integer
+    TokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        expires_in:
+          type: integer
+    Tenant:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        slug:
+          type: string
+        status:
+          type: string
+        city:
+          type: string
+        region:
+          type: string
+        country:
+          type: string
+        logo_url:
+          type: string
+        is_public:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        starts_at:
+          type: string
+          format: date-time
+        ends_at:
+          type: string
+          format: date-time
+    StaffMember:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        role:
+          type: string
+          enum:
+          - OWNER
+          - ADMIN
+          - JUDGE
+          - CASHIER
+        grants:
+          type: array
+          items:
+            type: string
+    Expense:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        amount:
+          type: number
+        category:
+          type: string
+        description:
+          type: string
+        date:
+          type: string
+          format: date
+        is_recurring:
+          type: boolean
+        receipt_url:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    CreateExpenseRequest:
+      type: object
+      required:
+      - amount
+      - category
+      - date
+      properties:
+        amount:
+          type: number
+        category:
+          type: string
+        description:
+          type: string
+        date:
+          type: string
+          format: date
+        is_recurring:
+          type: boolean
+        tags:
+          type: array
+          items:
+            type: string
+    PaymentMethod:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          type: string
+          enum:
+          - WEBPAY
+          - MERCADOPAGO
+          - BANK_TRANSFER
+          - CASH
+          - DEBIT
+        label:
+          type: string
+        is_active:
+          type: boolean
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        avatar_url:
+          type: string
+        created_at:
+          type: string
+          format: date-time
