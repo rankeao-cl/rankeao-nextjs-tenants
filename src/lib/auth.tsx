@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { getToken, getRefreshToken, clearTokens, apiFetch } from "@/lib/api-panel";
+import { getToken, clearTokens } from "@/lib/api-panel";
 
 interface User {
     id: string;
@@ -51,7 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 } else if (!storedUser && mounted) {
                     setUser(null);
                 }
-            } catch (error) {
+            } catch {
                 if (mounted) {
                     setUser(null);
                 }

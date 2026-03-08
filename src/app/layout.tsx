@@ -25,9 +25,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className="dark" suppressHydrationWarning>
+    <html lang="es" suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${rajdhani.variable} font-[var(--font-body)] antialiased bg-[#050507] text-zinc-200`}
+        className={`${inter.variable} ${rajdhani.variable} font-[var(--font-body)] antialiased bg-[var(--background)] text-[var(--foreground)]`}
       >
         <Providers>{children}</Providers>
       </body>

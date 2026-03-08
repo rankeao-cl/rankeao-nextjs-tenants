@@ -1,23 +1,15 @@
 "use client";
-
-import { Toaster } from "sonner";
+import { Toast, toast } from '@heroui/react';
 import { AuthProvider } from "@/lib/auth";
+import { ThemeProvider } from "next-themes";
 
 export function Providers({ children }: { children: React.ReactNode }) {
     return (
-        <AuthProvider>
-            {children}
-            <Toaster
-                theme="dark"
-                position="top-right"
-                toastOptions={{
-                    style: {
-                        background: "#0f1017",
-                        border: "1px solid #2a2f4b",
-                        color: "#e4e4e7",
-                    },
-                }}
-            />
-        </AuthProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <AuthProvider>
+                {children}
+                <Toast.Provider placement="top end" />
+            </AuthProvider>
+        </ThemeProvider>
     );
 }

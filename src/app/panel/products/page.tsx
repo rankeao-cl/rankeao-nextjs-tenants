@@ -3,39 +3,50 @@
 import { useEffect, useState } from "react";
 import {
     Card,
-    CardContent,
     Table,
     Button,
     Input,
+    TextField,
     Form,
     Fieldset,
     Label,
     Spinner,
 } from "@heroui/react";
-import { toast } from "sonner";
+import { toast } from "@heroui/react";
 import { listPanelProducts } from "@/lib/api-panel";
+import { getErrorMessage } from "@/lib/error-message";
+
+interface Product {
+    id: string;
+    sku?: string;
+    name: string;
+    price: number;
+    stock_quantity: number;
+    status: string;
+}
+
 
 export default function ProductsPage() {
     const [loading, setLoading] = useState(true);
-    const [products, setProducts] = useState<any[]>([]);
-    const [page, setPage] = useState(1);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [page] = useState(1);
     const [query, setQuery] = useState("");
 
     const fetchProducts = async () => {
         try {
             setLoading(true);
             const res = await listPanelProducts({ page, query });
-            setProducts(res.products as any[] || []);
-        } catch (error: any) {
-            toast.error(error.message || "Error al cargar productos");
+            setProducts((res.products as Product[]) || []);
+        } catch (error: unknown) {
+            toast.danger(getErrorMessage(error, "Error al cargar productos"));
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchProducts();
     }, [page, query]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
 
     return (
         <div className="space-y-6">
@@ -44,11 +55,11 @@ export default function ProductsPage() {
                     <h1 className="text-2xl font-bold font-[var(--font-heading)] text-gradient-purple-cyan">
                         Productos
                     </h1>
-                    <p className="text-sm text-zinc-500 mt-1">Gestiona el catalogo de productos de tu tienda</p>
+                    <p className="text-sm text-[var(--muted)] mt-1">Gestiona el catalogo de productos de tu tienda</p>
                 </div>
                 <Button
                     type="button"
-                    className="bg-gradient-to-r from-zinc-700 to-black shadow-lg shadow-white/10"
+
                     onPress={() => toast.info("Funcionalidad de crear producto proximamente")}
                 >
                     Nuevo Producto
@@ -57,38 +68,38 @@ export default function ProductsPage() {
 
             <div className="flex flex-col lg:flex-row gap-6 items-start">
                 <div className="w-full lg:w-1/3 shrink-0">
-                    <Card className="bg-[#0f1017] border border-[#2a2f4b]/40">
-                        <CardContent className="p-5">
+                    <Card className="bg-[var(--surface)] border border-[var(--border)]/40">
+                        <Card.Content className="p-5">
                             <Form>
                                 <Fieldset className="space-y-4">
-                                    <Fieldset.Legend className="text-zinc-200 font-semibold">Filtros</Fieldset.Legend>
-                                    <p className="text-xs text-zinc-500 mb-2">Busca productos por SKU o Nombre.</p>
+                                    <Fieldset.Legend className="text-[var(--foreground)] font-semibold">Filtros</Fieldset.Legend>
+                                    <p className="text-xs text-[var(--muted)] mb-2">Busca productos por SKU o Nombre.</p>
 
                                     <div className="grid grid-cols-1 gap-3">
-                                        <div className="space-y-1 flex flex-col">
-                                            <Label className="text-xs text-zinc-400">Buscar</Label>
+                                        <TextField className="space-y-1 flex flex-col">
+                                            <Label className="text-xs text-[var(--muted)]">Buscar</Label>
                                             <Input
                                                 placeholder="ej. TCG-123 o Pikachu"
                                                 value={query}
-                                                onChange={(e) => setQuery(e.target.value)}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setQuery(e.target.value)}
                                             />
-                                        </div>
+                                        </TextField>
                                     </div>
                                 </Fieldset>
                             </Form>
-                        </CardContent>
+                        </Card.Content>
                     </Card>
                 </div>
 
                 <div className="w-full lg:w-2/3">
-                    <Card className="bg-[#0f1017] border border-[#2a2f4b]/40">
-                        <CardContent className="p-5">
+                    <Card className="bg-[var(--surface)] border border-[var(--border)]/40">
+                        <Card.Content className="p-5">
                             {loading ? (
                                 <div className="flex justify-center py-20">
                                     <Spinner size="lg" color="current" />
                                 </div>
                             ) : products.length === 0 ? (
-                                <div className="text-center py-10 text-zinc-500">
+                                <div className="text-center py-10 text-[var(--muted)]">
                                     No se encontraron productos.
                                 </div>
                             ) : (
@@ -101,7 +112,7 @@ export default function ProductsPage() {
                                         <Table.Column>Estado</Table.Column>
                                     </Table.Header>
                                     <Table.Body>
-                                        {products.map((prod) => (
+                                        {products.map((prod: Product) => (
                                             <Table.Row key={prod.id}>
                                                 <Table.Cell>{prod.sku || "-"}</Table.Cell>
                                                 <Table.Cell>{prod.name}</Table.Cell>
@@ -113,10 +124,11 @@ export default function ProductsPage() {
                                     </Table.Body>
                                 </Table>
                             )}
-                        </CardContent>
+                        </Card.Content>
                     </Card>
                 </div>
             </div>
         </div>
     );
 }
+

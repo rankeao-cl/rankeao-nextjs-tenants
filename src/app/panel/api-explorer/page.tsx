@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Button, Card, CardContent, Chip, Input, Spinner, TextArea } from "@heroui/react";
+import { Button, Card, Chip, Input, Spinner, TextArea, TextField, Label } from "@heroui/react";
 import { getApiBaseUrl, getToken } from "@/lib/api-panel";
 import { getErrorMessage } from "@/lib/error-message";
 import { Code2, Play, Search, Terminal } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@heroui/react";
 
 type ExplorerOperation = {
   operationId: string;
@@ -71,7 +71,7 @@ export default function PanelApiExplorerPage() {
           setSelectedOperationId(payload.operations[0].operationId);
         }
       } catch (error: unknown) {
-        toast.error(getErrorMessage(error, "No se pudo cargar panel-api.yaml"));
+        toast.danger(getErrorMessage(error, "No se pudo cargar panel-api.yaml"));
       } finally {
         setLoadingOperations(false);
       }
@@ -130,7 +130,7 @@ export default function PanelApiExplorerPage() {
     for (const param of selectedOperation.pathParams) {
       const value = pathParams[param]?.trim();
       if (!value) {
-        toast.error(`Falta path param: ${param}`);
+        toast.danger(`Falta path param: ${param}`);
         return;
       }
 
@@ -156,7 +156,7 @@ export default function PanelApiExplorerPage() {
     if (sendAuth) {
       const token = getToken();
       if (!token) {
-        toast.error("No hay token panel para enviar Authorization");
+        toast.danger("No hay token panel para enviar Authorization");
         return;
       }
       headers.Authorization = `Bearer ${token}`;
@@ -171,7 +171,7 @@ export default function PanelApiExplorerPage() {
         body = JSON.stringify(parsed);
         headers["Content-Type"] = "application/json";
       } catch {
-        toast.error("Body JSON invalido");
+        toast.danger("Body JSON invalido");
         return;
       }
     }
@@ -212,7 +212,7 @@ export default function PanelApiExplorerPage() {
         body: outputBody || "(sin contenido)",
       });
     } catch (error: unknown) {
-      toast.error(getErrorMessage(error, "Error de red al ejecutar la operacion"));
+      toast.danger(getErrorMessage(error, "Error de red al ejecutar la operacion"));
       setResponse({
         status: 0,
         ok: false,
@@ -232,23 +232,25 @@ export default function PanelApiExplorerPage() {
         <h1 className="text-2xl font-bold font-[var(--font-heading)] text-gradient-purple-cyan">
           Panel API Explorer
         </h1>
-        <p className="text-sm text-zinc-500 mt-1">
+        <p className="text-sm text-[var(--muted)] mt-1">
           Lee `panel-api.yaml` y ejecuta operaciones por `operationId`.
         </p>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-        <Card className="bg-[#0f1017] border border-[#2a2f4b]/40 xl:col-span-1">
-          <CardContent className="p-4 space-y-3">
-            <div className="flex items-center gap-2">
-              <Search className="h-4 w-4 text-zinc-300" />
-              <p className="text-sm text-zinc-200 font-medium">Operaciones</p>
-            </div>
-            <Input
-              placeholder="Buscar operationId, path, method..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+        <Card className="bg-[var(--surface)] border border-[var(--border)]/40 xl:col-span-1">
+          <Card.Content className="p-4 space-y-3">
+            <TextField className="space-y-3 flex flex-col">
+              <Label className="flex items-center gap-2">
+                <Search className="h-4 w-4 text-[var(--foreground)]" />
+                <span className="text-sm text-[var(--foreground)] font-medium">Operaciones</span>
+              </Label>
+              <Input
+                placeholder="Buscar operationId, path, method..."
+                value={search}
+                onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setSearch(e.target.value)}
+              />
+            </TextField>
 
             {loadingOperations ? (
               <div className="flex justify-center py-10">
@@ -263,34 +265,34 @@ export default function PanelApiExplorerPage() {
                     variant="ghost"
                     onPress={() => setSelectedOperationId(operation.operationId)}
                     className={`h-auto w-full justify-start rounded-lg border p-3 text-left transition-colors ${selectedOperationId === operation.operationId
-                        ? "border-white/30 bg-white/10"
-                        : "border-white/10 bg-[#0a0b12] hover:border-white/25"
+                      ? "border-white/30 bg-white/10"
+                      : "border-white/10 bg-[var(--surface)] hover:border-white/25"
                       }`}
                   >
                     <div className="flex items-center justify-between gap-2">
-                      <p className="text-xs font-semibold text-zinc-200">{operation.operationId}</p>
+                      <p className="text-xs font-semibold text-[var(--foreground)]">{operation.operationId}</p>
                       <Chip size="sm" variant="soft" color="default">
                         {operation.method}
                       </Chip>
                     </div>
-                    <p className="text-[11px] text-zinc-500 mt-1 break-all">{operation.path}</p>
-                    {operation.tag ? <p className="text-[11px] text-zinc-600 mt-1">{operation.tag}</p> : null}
+                    <p className="text-[11px] text-[var(--muted)] mt-1 break-all">{operation.path}</p>
+                    {operation.tag ? <p className="text-[11px] text-[var(--field-placeholder)] mt-1">{operation.tag}</p> : null}
                   </Button>
                 ))}
               </div>
             )}
-          </CardContent>
+          </Card.Content>
         </Card>
 
-        <Card className="bg-[#0f1017] border border-[#2a2f4b]/40 xl:col-span-2">
-          <CardContent className="p-4 space-y-4">
+        <Card className="bg-[var(--surface)] border border-[var(--border)]/40 xl:col-span-2">
+          <Card.Content className="p-4 space-y-4">
             {!selectedOperation ? (
-              <p className="text-sm text-zinc-500">Selecciona una operación.</p>
+              <p className="text-sm text-[var(--muted)]">Selecciona una operación.</p>
             ) : (
               <>
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <Code2 className="h-4 w-4 text-zinc-300" />
+                    <Code2 className="h-4 w-4 text-[var(--foreground)]" />
                     <p className="text-sm font-medium text-zinc-100">{selectedOperation.operationId}</p>
                     <Chip size="sm" variant="soft" color="default">
                       {selectedOperation.method}
@@ -301,21 +303,23 @@ export default function PanelApiExplorerPage() {
                       </Chip>
                     ) : null}
                   </div>
-                  <p className="text-xs text-zinc-500 break-all">{selectedOperation.path}</p>
-                  <p className="text-xs text-zinc-400">{selectedOperation.summary}</p>
+                  <p className="text-xs text-[var(--muted)] break-all">{selectedOperation.path}</p>
+                  <p className="text-xs text-[var(--muted)]">{selectedOperation.summary}</p>
                 </div>
 
                 {selectedOperation.pathParams.length > 0 ? (
                   <div className="space-y-2">
-                    <p className="text-xs text-zinc-500 uppercase tracking-wide">Path params</p>
+                    <p className="text-xs text-[var(--muted)] uppercase tracking-wide">Path params</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                       {selectedOperation.pathParams.map((param) => (
-                        <Input
-                          key={param}
-                          placeholder={param}
-                          value={pathParams[param] || ""}
-                          onChange={(e) => setPathParams((prev) => ({ ...prev, [param]: e.target.value }))}
-                        />
+                        <TextField key={param} className="flex flex-col gap-1">
+                          <Label className="text-xs text-[var(--muted)]">{param}</Label>
+                          <Input
+                            placeholder={param}
+                            value={pathParams[param] || ""}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setPathParams((prev) => ({ ...prev, [param]: e.target.value }))}
+                          />
+                        </TextField>
                       ))}
                     </div>
                   </div>
@@ -323,30 +327,32 @@ export default function PanelApiExplorerPage() {
 
                 {selectedOperation.queryParams.length > 0 ? (
                   <div className="space-y-2">
-                    <p className="text-xs text-zinc-500 uppercase tracking-wide">Query params</p>
+                    <p className="text-xs text-[var(--muted)] uppercase tracking-wide">Query params</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                       {selectedOperation.queryParams.map((param) => (
-                        <Input
-                          key={param}
-                          placeholder={param}
-                          value={queryParams[param] || ""}
-                          onChange={(e) => setQueryParams((prev) => ({ ...prev, [param]: e.target.value }))}
-                        />
+                        <TextField key={param} className="flex flex-col gap-1">
+                          <Label className="text-xs text-[var(--muted)]">{param}</Label>
+                          <Input
+                            placeholder={param}
+                            value={queryParams[param] || ""}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setQueryParams((prev) => ({ ...prev, [param]: e.target.value }))}
+                          />
+                        </TextField>
                       ))}
                     </div>
                   </div>
                 ) : null}
 
                 {selectedOperation.hasRequestBody ? (
-                  <div className="space-y-2">
-                    <p className="text-xs text-zinc-500 uppercase tracking-wide">Body JSON</p>
+                  <TextField className="space-y-2 flex flex-col">
+                    <Label className="text-xs text-[var(--muted)] uppercase tracking-wide">Body JSON</Label>
                     <TextArea
                       value={bodyText}
-                      onChange={(e) => setBodyText(e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setBodyText(e.target.value)}
                       rows={8}
                       className="font-mono text-xs"
                     />
-                  </div>
+                  </TextField>
                 ) : null}
 
                 <div className="flex flex-wrap items-center gap-2">
@@ -368,15 +374,15 @@ export default function PanelApiExplorerPage() {
                 </div>
               </>
             )}
-          </CardContent>
+          </Card.Content>
         </Card>
       </div>
 
-      <Card className="bg-[#0f1017] border border-[#2a2f4b]/40">
-        <CardContent className="p-4 space-y-3">
+      <Card className="bg-[var(--surface)] border border-[var(--border)]/40">
+        <Card.Content className="p-4 space-y-3">
           <div className="flex items-center gap-2">
-            <Terminal className="h-4 w-4 text-zinc-300" />
-            <p className="text-sm font-medium text-zinc-200">Respuesta</p>
+            <Terminal className="h-4 w-4 text-[var(--foreground)]" />
+            <p className="text-sm font-medium text-[var(--foreground)]">Respuesta</p>
           </div>
 
           {response ? (
@@ -392,20 +398,21 @@ export default function PanelApiExplorerPage() {
                   {response.durationMs} ms
                 </Chip>
               </div>
-              <p className="text-[11px] text-zinc-500 break-all">{response.url}</p>
-              <details className="rounded-lg border border-white/10 bg-[#0a0b12] p-2">
-                <summary className="cursor-pointer text-xs text-zinc-400">Headers</summary>
-                <pre className="mt-2 text-xs text-zinc-500 overflow-auto">{prettyJson(response.headers)}</pre>
+              <p className="text-[11px] text-[var(--muted)] break-all">{response.url}</p>
+              <details className="rounded-lg border border-white/10 bg-[var(--surface)] p-2">
+                <summary className="cursor-pointer text-xs text-[var(--muted)]">Headers</summary>
+                <pre className="mt-2 text-xs text-[var(--muted)] overflow-auto">{prettyJson(response.headers)}</pre>
               </details>
-              <pre className="rounded-lg border border-white/10 bg-[#0a0b12] p-3 text-xs text-zinc-300 overflow-auto max-h-[28rem] whitespace-pre-wrap">
+              <pre className="rounded-lg border border-white/10 bg-[var(--surface)] p-3 text-xs text-[var(--foreground)] overflow-auto max-h-[28rem] whitespace-pre-wrap">
                 {response.body}
               </pre>
             </>
           ) : (
-            <p className="text-sm text-zinc-500">Aun no se ha ejecutado ninguna operación.</p>
+            <p className="text-sm text-[var(--muted)]">Aun no se ha ejecutado ninguna operación.</p>
           )}
-        </CardContent>
+        </Card.Content>
       </Card>
     </div>
   );
 }
+
