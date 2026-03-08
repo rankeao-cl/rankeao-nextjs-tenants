@@ -10,7 +10,7 @@ import {
 import { toast } from "@heroui/react";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { loginPanel } from "@/lib/api/auth";
-import { fetchMyMemberships } from "@/lib/api/tenant";
+import { fetchMyMemberships, fetchMyPendingInvitations } from "@/lib/api/tenant";
 import { useAuthStore } from "@/lib/stores/auth-store";
 
 export default function LoginPage() {
@@ -36,7 +36,14 @@ export default function LoginPage() {
       // Check if user has any tenant memberships
       const memberships = await fetchMyMemberships();
       if (!memberships || memberships.length === 0) {
-        // No tenant associated — block access
+        // No memberships — check for pending invitations
+        const invitations = await fetchMyPendingInvitations();
+        if (invitations && invitations.length > 0) {
+          // Has pending invitations — redirect to accept them
+          router.push("/panel/invitations");
+          return;
+        }
+        // No memberships and no invitations — block access
         useAuthStore.getState().logout();
         toast.danger("No tienes tiendas asociadas. Solicita una tienda primero.");
         return;
@@ -52,7 +59,7 @@ export default function LoginPage() {
         },
       });
 
-      toast.success(`¡Bienvenido al panel de ${membership.tenant_name}!`);
+      toast.success(`Bienvenido al panel de ${membership.tenant_name}!`);
       const redirect =
         new URLSearchParams(window.location.search).get("redirect") ||
         "/panel/dashboard";

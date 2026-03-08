@@ -2,9 +2,33 @@ import { apiFetch, extractList, extractRecord } from "./client";
 import type { ScheduleDay, SocialLink, PaymentMethod } from "@/lib/types/tenant";
 import type { Membership } from "@/lib/types/auth";
 
+export interface PendingInvitation {
+  id: number;
+  tenant_name: string;
+  tenant_logo_url?: string;
+  role: string;
+  message?: string;
+  invited_by_username?: string;
+  expires_at: string;
+  created_at: string;
+}
+
 export async function fetchMyMemberships(): Promise<Membership[]> {
   const payload = await apiFetch<unknown>("/tenants/staff/mine");
   return extractList<Membership>(payload, ["memberships", "items", "data"]);
+}
+
+export async function fetchMyPendingInvitations(): Promise<PendingInvitation[]> {
+  const payload = await apiFetch<unknown>("/tenants/staff/invitations/mine");
+  return extractList<PendingInvitation>(payload, ["invitations", "items", "data"]);
+}
+
+export async function acceptInvitation(id: number) {
+  return apiFetch(`/tenants/staff/invitations/${id}/accept`, { method: "POST" });
+}
+
+export async function declineInvitation(id: number) {
+  return apiFetch(`/tenants/staff/invitations/${id}/decline`, { method: "POST" });
 }
 
 export async function getMyTenant(): Promise<Record<string, unknown>> {
