@@ -55,7 +55,7 @@ export function SocialLinksConfig() {
   const handleSave = async () => {
     try {
       setSaving(true);
-      await updateTenantSocialLinks({ social_links: links });
+      await updateTenantSocialLinks({ links });
       toast.success("Redes sociales actualizadas");
     } catch (error: unknown) {
       toast.danger(getErrorMessage(error, "Error al guardar redes sociales"));

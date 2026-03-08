@@ -74,7 +74,7 @@ export async function getTenantSocialLinks(): Promise<SocialLink[]> {
   return extractList<SocialLink>(payload, ["social_links", "items", "data"]);
 }
 
-export async function updateTenantSocialLinks(data: { social_links: SocialLink[] }) {
+export async function updateTenantSocialLinks(data: { links: SocialLink[] }) {
   return apiFetch("/tenants/me/social-links", { method: "PUT", body: data });
 }
 
