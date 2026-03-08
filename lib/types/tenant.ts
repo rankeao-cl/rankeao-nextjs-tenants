@@ -1,5 +1,7 @@
+export type DayOfWeek = "MONDAY" | "TUESDAY" | "WEDNESDAY" | "THURSDAY" | "FRIDAY" | "SATURDAY" | "SUNDAY";
+
 export interface ScheduleDay {
-  day_of_week: number;
+  day_of_week: DayOfWeek;
   opens_at: string;
   closes_at: string;
   is_closed: boolean;

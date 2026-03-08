@@ -4,23 +4,25 @@ import { useEffect, useState } from "react";
 import { Card, Button, Switch, Label, Skeleton, toast } from "@heroui/react";
 import { getTenantSchedules, updateTenantSchedules } from "@/lib/api/tenant";
 import { getErrorMessage } from "@/lib/utils/error-message";
-import type { ScheduleDay } from "@/lib/types/tenant";
+import type { ScheduleDay, DayOfWeek } from "@/lib/types/tenant";
 
-const DAYS: Record<number, string> = {
-  1: "Lunes",
-  2: "Martes",
-  3: "Miércoles",
-  4: "Jueves",
-  5: "Viernes",
-  6: "Sábado",
-  7: "Domingo",
+const DAY_ORDER: DayOfWeek[] = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
+
+const DAY_LABELS: Record<DayOfWeek, string> = {
+  MONDAY: "Lunes",
+  TUESDAY: "Martes",
+  WEDNESDAY: "Miércoles",
+  THURSDAY: "Jueves",
+  FRIDAY: "Viernes",
+  SATURDAY: "Sábado",
+  SUNDAY: "Domingo",
 };
 
-const DEFAULT_SCHEDULES: ScheduleDay[] = [1, 2, 3, 4, 5, 6, 7].map((d) => ({
-  day_of_week: d,
+const DEFAULT_SCHEDULES: ScheduleDay[] = DAY_ORDER.map((day, i) => ({
+  day_of_week: day,
   opens_at: "09:00",
   closes_at: "18:00",
-  is_closed: d > 5,
+  is_closed: i >= 5,
 }));
 
 export function SchedulesConfig() {
@@ -35,7 +37,7 @@ export function SchedulesConfig() {
           const match = fetched.find((s) => s.day_of_week === def.day_of_week);
           return match || def;
         });
-        setSchedules(merged.sort((a, b) => a.day_of_week - b.day_of_week));
+        setSchedules(merged);
         setLoading(false);
       })
       .catch(() => {
@@ -44,7 +46,7 @@ export function SchedulesConfig() {
       });
   }, []);
 
-  const handleChange = (day: number, field: keyof ScheduleDay, value: string | boolean) => {
+  const handleChange = (day: DayOfWeek, field: keyof ScheduleDay, value: string | boolean) => {
     setSchedules((prev) =>
       prev.map((s) => (s.day_of_week === day ? { ...s, [field]: value } : s))
     );
@@ -97,7 +99,7 @@ export function SchedulesConfig() {
         {schedules.map((schedule) => (
           <div key={schedule.day_of_week} className="flex flex-col sm:flex-row gap-4 items-start sm:items-center p-3 rounded-lg bg-[var(--surface-sunken)] border border-[var(--border)] transition-colors hover:bg-white/[0.02]">
             <div className="w-[100px] flex-shrink-0">
-              <Label className="text-sm font-medium text-[var(--foreground)]">{DAYS[schedule.day_of_week]}</Label>
+              <Label className="text-sm font-medium text-[var(--foreground)]">{DAY_LABELS[schedule.day_of_week]}</Label>
             </div>
             <div className="flex items-center gap-4 flex-1">
               {schedule.is_closed ? (
