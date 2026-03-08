@@ -37,11 +37,11 @@ export async function getMyTenant(): Promise<Record<string, unknown>> {
 }
 
 export async function updateMyTenant(data: Record<string, unknown>) {
-  return apiFetch("/tenants/me", { method: "PUT", body: data });
+  return apiFetch("/tenants/me", { method: "PATCH", body: data });
 }
 
 export async function setTenantSlug(slug: string) {
-  return apiFetch("/tenants/me/slug", { method: "PUT", body: { slug } });
+  return apiFetch("/tenants/me/slug", { method: "POST", body: { slug } });
 }
 
 export async function tenantGoPublic() {
@@ -53,11 +53,11 @@ export async function tenantGoPrivate() {
 }
 
 export async function setTenantLogo(url: string) {
-  return apiFetch("/tenants/me/logo", { method: "PUT", body: { url } });
+  return apiFetch("/tenants/me/logo", { method: "POST", body: { url } });
 }
 
 export async function setTenantBanner(url: string) {
-  return apiFetch("/tenants/me/banner", { method: "PUT", body: { url } });
+  return apiFetch("/tenants/me/banner", { method: "POST", body: { url } });
 }
 
 export async function getTenantSchedules(): Promise<ScheduleDay[]> {
@@ -88,5 +88,5 @@ export async function addPaymentMethod(data: Record<string, unknown>) {
 }
 
 export async function updatePaymentMethod(id: string, data: Record<string, unknown>) {
-  return apiFetch(`/tenants/me/payment-methods/${id}`, { method: "PUT", body: data });
+  return apiFetch(`/tenants/me/payment-methods/${id}`, { method: "PATCH", body: data });
 }
