@@ -1,9 +1,12 @@
 "use client";
 
 import { Card, Skeleton } from "@heroui/react";
-import { PackageSearch, ShoppingBag, ShoppingCart, Ticket } from "lucide-react";
-import { useInventoryValuation } from "@/lib/hooks/use-inventory";
+import { DollarSign, ShoppingCart, ShoppingBag, Users, PackageSearch, Ticket } from "lucide-react";
+import { useDashboardSummary } from "@/lib/hooks/use-dashboard";
 import Link from "next/link";
+
+const formatCurrency = (value: number | undefined) =>
+  new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP" }).format(value || 0);
 
 const quickLinks = [
   { label: "Productos", href: "/panel/products", icon: ShoppingBag },
@@ -13,7 +16,21 @@ const quickLinks = [
 ];
 
 export default function DashboardPage() {
-  const { data: stats, isLoading } = useInventoryValuation();
+  const { data: stats, isLoading } = useDashboardSummary();
+
+  const kpis = [
+    { label: "Ingresos Totales", value: formatCurrency(stats?.total_revenue), icon: DollarSign, color: "emerald" },
+    { label: "Órdenes", value: stats?.total_orders ?? 0, icon: ShoppingCart, color: "blue" },
+    { label: "Productos", value: stats?.total_products ?? 0, icon: ShoppingBag, color: "purple" },
+    { label: "Clientes", value: stats?.total_customers ?? 0, icon: Users, color: "amber" },
+  ];
+
+  const colorMap: Record<string, { bg: string; text: string }> = {
+    emerald: { bg: "bg-emerald-500/10", text: "text-emerald-400" },
+    blue: { bg: "bg-blue-500/10", text: "text-blue-400" },
+    purple: { bg: "bg-purple-500/10", text: "text-purple-400" },
+    amber: { bg: "bg-amber-500/10", text: "text-amber-400" },
+  };
 
   return (
     <div className="space-y-6">
@@ -25,25 +42,29 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-[var(--surface)] border border-[var(--border)]">
-          <Card.Content className="p-5">
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-xl bg-[var(--accent)]/10 text-[var(--accent)]">
-                <PackageSearch className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-xs text-[var(--muted)]">Total Inventario (Retail)</p>
-                {isLoading ? (
-                  <Skeleton className="h-7 w-24 rounded mt-1" />
-                ) : (
-                  <p className="text-xl font-bold text-[var(--foreground)]">
-                    ${stats?.total_retail_value ?? 0}
-                  </p>
-                )}
-              </div>
-            </div>
-          </Card.Content>
-        </Card>
+        {kpis.map((kpi) => {
+          const Icon = kpi.icon;
+          const colors = colorMap[kpi.color];
+          return (
+            <Card key={kpi.label} className="bg-[var(--surface)] border border-[var(--border)]">
+              <Card.Content className="p-5">
+                <div className="flex items-center gap-4">
+                  <div className={`p-3 rounded-xl ${colors.bg} ${colors.text}`}>
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-[var(--muted)]">{kpi.label}</p>
+                    {isLoading ? (
+                      <Skeleton className="h-7 w-24 rounded mt-1" />
+                    ) : (
+                      <p className={`text-xl font-bold ${colors.text}`}>{kpi.value}</p>
+                    )}
+                  </div>
+                </div>
+              </Card.Content>
+            </Card>
+          );
+        })}
       </div>
 
       <div>

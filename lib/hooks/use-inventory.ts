@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getInventoryValuation, listInventoryMovements } from "@/lib/api/inventory";
+import { getInventoryValuation, listInventoryMovements, getInventoryAlerts } from "@/lib/api/inventory";
 
 export function useInventoryValuation() {
   return useQuery({
@@ -12,5 +12,13 @@ export function useInventoryMovements(params?: Record<string, string | number | 
   return useQuery({
     queryKey: ["inventory-movements", params],
     queryFn: () => listInventoryMovements(params),
+  });
+}
+
+export function useInventoryAlerts(enabled = true) {
+  return useQuery({
+    queryKey: ["inventory-alerts"],
+    queryFn: getInventoryAlerts,
+    enabled,
   });
 }

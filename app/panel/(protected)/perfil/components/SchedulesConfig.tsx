@@ -1,0 +1,127 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { Card, Button, Switch, Label, Spinner, toast } from "@heroui/react";
+import { getTenantSchedules, updateTenantSchedules } from "@/lib/api/tenant";
+import { getErrorMessage } from "@/lib/utils/error-message";
+import type { ScheduleDay } from "@/lib/types/tenant";
+
+const DAYS: Record<number, string> = {
+  1: "Lunes",
+  2: "Martes",
+  3: "Miércoles",
+  4: "Jueves",
+  5: "Viernes",
+  6: "Sábado",
+  7: "Domingo",
+};
+
+const DEFAULT_SCHEDULES: ScheduleDay[] = [1, 2, 3, 4, 5, 6, 7].map((d) => ({
+  day_of_week: d,
+  opens_at: "09:00",
+  closes_at: "18:00",
+  is_closed: d > 5,
+}));
+
+export function SchedulesConfig() {
+  const [schedules, setSchedules] = useState<ScheduleDay[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    getTenantSchedules()
+      .then((fetched) => {
+        const merged = DEFAULT_SCHEDULES.map((def) => {
+          const match = fetched.find((s) => s.day_of_week === def.day_of_week);
+          return match || def;
+        });
+        setSchedules(merged.sort((a, b) => a.day_of_week - b.day_of_week));
+        setLoading(false);
+      })
+      .catch(() => {
+        setSchedules(DEFAULT_SCHEDULES);
+        setLoading(false);
+      });
+  }, []);
+
+  const handleChange = (day: number, field: keyof ScheduleDay, value: string | boolean) => {
+    setSchedules((prev) =>
+      prev.map((s) => (s.day_of_week === day ? { ...s, [field]: value } : s))
+    );
+  };
+
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+      await updateTenantSchedules({ schedules });
+      toast.success("Horarios actualizados correctamente");
+    } catch (error: unknown) {
+      toast.danger(getErrorMessage(error, "Error al guardar horarios"));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) return <div className="py-10 text-center"><Spinner size="lg" /></div>;
+
+  const inputClass = "w-full bg-transparent focus:outline-none text-[var(--foreground)] border border-[var(--border)] bg-[var(--surface)] rounded-xl px-3 py-2";
+
+  return (
+    <Card className="bg-[var(--surface)] border border-[var(--border)] p-6">
+      <h3 className="text-lg font-semibold text-[var(--foreground)] mb-1">Horarios de Atención</h3>
+      <p className="text-[var(--muted)] text-sm mb-6">Configura los días y horarios en los que tu tienda está abierta al público.</p>
+
+      <div className="space-y-4">
+        {schedules.map((schedule) => (
+          <div key={schedule.day_of_week} className="flex flex-col sm:flex-row gap-4 items-start sm:items-center p-3 rounded-lg bg-[var(--surface-sunken)] border border-[var(--border)] transition-colors hover:bg-white/[0.02]">
+            <div className="w-[100px] flex-shrink-0">
+              <Label className="text-sm font-medium text-[var(--foreground)]">{DAYS[schedule.day_of_week]}</Label>
+            </div>
+            <div className="flex items-center gap-4 flex-1">
+              {schedule.is_closed ? (
+                <div className="text-sm text-[var(--muted)] italic flex-1">Cerrado</div>
+              ) : (
+                <>
+                  <div className="flex-1 max-w-[150px]">
+                    <input
+                      type="time"
+                      value={schedule.opens_at.slice(0, 5)}
+                      onChange={(e) => handleChange(schedule.day_of_week, "opens_at", e.target.value)}
+                      className={inputClass}
+                    />
+                  </div>
+                  <span className="text-[var(--muted)]">-</span>
+                  <div className="flex-1 max-w-[150px]">
+                    <input
+                      type="time"
+                      value={schedule.closes_at.slice(0, 5)}
+                      onChange={(e) => handleChange(schedule.day_of_week, "closes_at", e.target.value)}
+                      className={inputClass}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+            <div className="flex items-center gap-2 pt-2 sm:pt-0">
+              <Switch
+                isSelected={!schedule.is_closed}
+                onChange={(isOpen: boolean) => handleChange(schedule.day_of_week, "is_closed", !isOpen)}
+              >
+                <Switch.Control>
+                  <Switch.Thumb />
+                </Switch.Control>
+              </Switch>
+              <span className="text-xs w-[60px] text-[var(--muted)]">{!schedule.is_closed ? "Abierto" : "Cerrado"}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-8 flex justify-end">
+        <Button onPress={handleSave} isDisabled={saving} className="bg-[var(--primary)] text-[var(--primary-foreground)]">
+          {saving ? "Guardando..." : "Guardar Horarios"}
+        </Button>
+      </div>
+    </Card>
+  );
+}

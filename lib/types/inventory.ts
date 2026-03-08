@@ -12,3 +12,10 @@ export interface InventoryValuation {
   total_cost_value?: number;
   total_items?: number;
 }
+
+export interface InventoryAlert {
+  product_id: string;
+  product_name?: string;
+  current_stock: number;
+  alert_threshold?: number;
+}

@@ -1,5 +1,5 @@
 import { apiFetch, extractList, extractListMeta, extractRecord } from "./client";
-import type { Order } from "@/lib/types/orders";
+import type { Order, OrderDetail } from "@/lib/types/orders";
 import type { ListMeta } from "@/lib/types/api";
 
 export async function listOrders(
@@ -11,7 +11,35 @@ export async function listOrders(
   return { items, meta };
 }
 
-export async function getOrderDetail(orderId: string): Promise<Record<string, unknown>> {
+export async function getOrderDetail(orderId: string): Promise<OrderDetail> {
   const payload = await apiFetch<unknown>(`/store/panel/orders/${orderId}`);
-  return extractRecord(payload);
+  return extractRecord(payload) as unknown as OrderDetail;
+}
+
+export async function processOrder(orderId: string) {
+  return apiFetch(`/store/panel/orders/${orderId}/process`, { method: "POST" });
+}
+
+export async function readyOrder(orderId: string) {
+  return apiFetch(`/store/panel/orders/${orderId}/ready`, { method: "POST" });
+}
+
+export async function shipOrder(orderId: string, data: { carrier: string; tracking_number: string }) {
+  return apiFetch(`/store/panel/orders/${orderId}/ship`, { method: "POST", body: data });
+}
+
+export async function completeOrder(orderId: string) {
+  return apiFetch(`/store/panel/orders/${orderId}/complete`, { method: "POST" });
+}
+
+export async function cancelOrder(orderId: string, data: { reason: string }) {
+  return apiFetch(`/store/panel/orders/${orderId}/cancel`, { method: "POST", body: data });
+}
+
+export async function refundOrder(orderId: string, data: { amount: number; reason: string }) {
+  return apiFetch(`/store/panel/orders/${orderId}/refund`, { method: "POST", body: data });
+}
+
+export async function updateOrderNotes(orderId: string, data: { internal_notes: string }) {
+  return apiFetch(`/store/panel/orders/${orderId}/notes`, { method: "PUT", body: data });
 }

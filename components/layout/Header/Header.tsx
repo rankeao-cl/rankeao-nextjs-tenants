@@ -23,6 +23,10 @@ const labelMap: Record<string, string> = {
   orders: "Órdenes",
   coupons: "Cupones",
   inventory: "Inventario",
+  staff: "Equipo",
+  loyalty: "Fidelidad",
+  expenses: "Gastos",
+  analytics: "Analítica",
   "api-explorer": "API Explorer",
 };
 

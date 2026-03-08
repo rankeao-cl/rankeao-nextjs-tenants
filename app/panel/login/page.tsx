@@ -10,6 +10,7 @@ import {
 import { toast } from "@heroui/react";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { loginPanel } from "@/lib/api/auth";
+import { fetchMyMemberships } from "@/lib/api/tenant";
 import { useAuthStore } from "@/lib/stores/auth-store";
 
 export default function LoginPage() {
@@ -29,8 +30,29 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       const resp = await loginPanel(email, password);
+      // Store auth first so the API client can use the token
       setAuth(resp);
-      toast.success("¡Bienvenido al panel!");
+
+      // Check if user has any tenant memberships
+      const memberships = await fetchMyMemberships();
+      if (!memberships || memberships.length === 0) {
+        // No tenant associated — block access
+        useAuthStore.getState().logout();
+        toast.danger("No tienes tiendas asociadas. Solicita una tienda primero.");
+        return;
+      }
+
+      // Store the first membership's tenant_id on the user
+      const membership = memberships[0];
+      useAuthStore.getState().setAuth({
+        ...resp,
+        user: {
+          ...resp.user,
+          tenant_id: String(membership.tenant_id),
+        },
+      });
+
+      toast.success(`¡Bienvenido al panel de ${membership.tenant_name}!`);
       const redirect =
         new URLSearchParams(window.location.search).get("redirect") ||
         "/panel/dashboard";

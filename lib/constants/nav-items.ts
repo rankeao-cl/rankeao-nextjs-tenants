@@ -6,6 +6,10 @@ import {
   Ticket,
   Code2,
   User,
+  Users,
+  Heart,
+  Receipt,
+  BarChart3,
   type LucideIcon,
 } from "lucide-react";
 
@@ -31,6 +35,12 @@ export const NAV_ITEMS: NavEntry[] = [
   { label: "Inventario", href: "/panel/inventory", icon: PackageSearch },
   { type: "divider", label: "Marketing" },
   { label: "Cupones", href: "/panel/coupons", icon: Ticket },
+  { label: "Fidelidad", href: "/panel/loyalty", icon: Heart },
+  { type: "divider", label: "Finanzas" },
+  { label: "Gastos", href: "/panel/expenses", icon: Receipt },
+  { label: "Analítica", href: "/panel/analytics", icon: BarChart3 },
+  { type: "divider", label: "Equipo" },
+  { label: "Staff", href: "/panel/staff", icon: Users },
   { type: "divider", label: "Desarrollo" },
   { label: "API Explorer", href: "/panel/api-explorer", icon: Code2 },
 ];

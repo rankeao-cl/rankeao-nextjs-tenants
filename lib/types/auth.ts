@@ -13,3 +13,12 @@ export interface AuthResponse {
   refresh_token: string;
   expires_in: number;
 }
+
+export interface Membership {
+  tenant_id: number;
+  tenant_name: string;
+  tenant_slug: string;
+  tenant_logo_url?: string;
+  role: string;
+  effective_grants: string[];
+}

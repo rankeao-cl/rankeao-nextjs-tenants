@@ -8,19 +8,20 @@ import s from "./styles/AuthGuard.module.css";
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const user = useAuthStore((state) => state.user);
   const hasHydrated = useAuthStore((state) => state._hasHydrated);
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
     if (!hasHydrated) return;
 
-    if (!isAuthenticated()) {
+    if (!isAuthenticated() || !user?.tenant_id) {
       router.replace("/panel/login");
       return;
     }
 
     setChecked(true);
-  }, [hasHydrated, isAuthenticated, router]);
+  }, [hasHydrated, isAuthenticated, user, router]);
 
   if (!checked) {
     return (
