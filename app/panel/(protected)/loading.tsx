@@ -1,0 +1,14 @@
+"use client";
+
+import { Spinner } from "@heroui/react";
+
+export default function ProtectedRouteLoading() {
+  return (
+    <div className="flex h-[calc(100vh-3.5rem)] items-center justify-center">
+      <div className="flex flex-col items-center gap-3">
+        <Spinner size="lg" color="current" />
+        <p className="text-sm text-[var(--muted)]">Cargando vista...</p>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,51 @@
+.header {
+  display: flex;
+  height: 3.5rem;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  background: oklch(from var(--surface) l c h / 0.8);
+  backdrop-filter: blur(12px) saturate(1.4);
+  padding: 0 1rem;
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .header {
+    padding: 0 1.5rem;
+  }
+}
+
+.breadcrumbs {
+  display: none;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .breadcrumbs {
+    display: flex;
+  }
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.userTrigger {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  border-radius: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  transition: background 0.15s ease;
+  outline: none;
+  cursor: pointer;
+}
+
+.userTrigger:hover {
+  background: oklch(from var(--accent) l c h / 0.06);
+}
