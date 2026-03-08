@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Button, Card, Chip, Input, Spinner, TextArea, TextField, Label } from "@heroui/react";
+import { Button, Card, Chip, Input, Skeleton, TextArea, TextField, Label } from "@heroui/react";
 import { toast } from "@heroui/react";
 import { getApiBaseUrl } from "@/lib/api/client";
 import { useAuthStore } from "@/lib/stores/auth-store";
@@ -216,8 +216,13 @@ export default function PanelApiExplorerPage() {
             </TextField>
 
             {loadingOperations ? (
-              <div className="flex justify-center py-10">
-                <Spinner size="lg" color="current" />
+              <div className="space-y-3 py-2">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="h-[76px] w-full rounded-lg border border-[var(--border)] bg-[var(--surface-sunken)] p-3 flex flex-col gap-2">
+                    <div className="flex justify-between items-center"><Skeleton className="h-4 w-32 rounded" /><Skeleton className="h-5 w-12 rounded" /></div>
+                    <Skeleton className="h-3 w-48 rounded" />
+                  </div>
+                ))}
               </div>
             ) : (
               <div className="max-h-[34rem] overflow-auto space-y-2 pr-1">
@@ -225,13 +230,12 @@ export default function PanelApiExplorerPage() {
                   <Button
                     key={op.operationId}
                     type="button"
-                    variant="ghost"
+                    variant="tertiary"
                     onPress={() => setSelectedOperationId(op.operationId)}
-                    className={`h-auto w-full justify-start rounded-lg border p-3 text-left transition-colors ${
-                      selectedOperationId === op.operationId
-                        ? "border-[var(--accent)]/30 bg-[var(--accent)]/10"
-                        : "border-[var(--border)] bg-[var(--surface)] hover:border-[var(--accent)]/20"
-                    }`}
+                    className={`h-auto w-full justify-start rounded-lg border p-3 text-left transition-colors ${selectedOperationId === op.operationId
+                      ? "border-[var(--accent)]/30 bg-[var(--accent)]/10"
+                      : "border-[var(--border)] bg-[var(--surface)] hover:border-[var(--accent)]/20"
+                      }`}
                   >
                     <div className="flex items-center justify-between gap-2">
                       <p className="text-xs font-semibold text-[var(--foreground)]">{op.operationId}</p>
@@ -316,12 +320,12 @@ export default function PanelApiExplorerPage() {
                 <div className="flex flex-wrap items-center gap-2">
                   <Button
                     size="sm"
-                    variant={sendAuth ? "primary" : "ghost"}
+                    variant={sendAuth ? "primary" : "tertiary"}
                     onPress={() => setSendAuth((prev) => !prev)}
                   >
                     Authorization: {sendAuth ? "ON" : "OFF"}
                   </Button>
-                  <Button size="sm" onPress={executeOperation} isPending={running}>
+                  <Button size="sm" variant="primary" onPress={executeOperation} isPending={running}>
                     <Play className="h-3.5 w-3.5" /> Ejecutar
                   </Button>
                 </div>

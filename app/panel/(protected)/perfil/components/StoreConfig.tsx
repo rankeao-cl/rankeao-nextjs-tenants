@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, Input, Button, Switch, TextField, Label, InputGroup, toast } from "@heroui/react";
+import { Card, Input, Button, Switch, TextField, Label, InputGroup, toast, Skeleton } from "@heroui/react";
 import { getMyTenant, updateMyTenant, setTenantSlug, tenantGoPublic, tenantGoPrivate, setTenantLogo, setTenantBanner } from "@/lib/api/tenant";
 
 export function StoreConfig() {
@@ -66,7 +66,37 @@ export function StoreConfig() {
     }
   };
 
-  if (loading) return <p className="animate-pulse text-[var(--muted)] text-sm">Cargando datos de la tienda...</p>;
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <Card className="bg-[var(--surface)] border border-[var(--border)]">
+          <Card.Content className="p-6">
+            <Skeleton className="h-6 w-48 rounded-lg mb-4" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="flex flex-col space-y-1.5">
+                  <Skeleton className="h-4 w-24 rounded" />
+                  <Skeleton className="h-10 w-full rounded-xl" />
+                </div>
+              ))}
+            </div>
+            <Skeleton className="h-6 w-48 rounded-lg mt-8 mb-4" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {Array.from({ length: 2 }).map((_, i) => (
+                <div key={i} className="flex flex-col space-y-1.5">
+                  <Skeleton className="h-4 w-24 rounded" />
+                  <Skeleton className="h-10 w-full rounded-xl" />
+                </div>
+              ))}
+            </div>
+            <div className="mt-8 flex justify-end">
+              <Skeleton className="h-10 w-32 rounded-lg" />
+            </div>
+          </Card.Content>
+        </Card>
+      </div>
+    );
+  }
   if (!tenant) return <p className="text-red-400">No se pudo cargar la información de la tienda.</p>;
 
   const inputWrapperClass = "flex flex-col space-y-1.5";
@@ -129,7 +159,7 @@ export function StoreConfig() {
           </div>
 
           <div className="mt-8 flex justify-end">
-            <Button onPress={handleSave} className="bg-[var(--primary)] text-[var(--primary-foreground)]">
+            <Button variant="primary" onPress={handleSave}>
               Guardar Cambios
             </Button>
           </div>

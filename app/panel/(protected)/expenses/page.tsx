@@ -77,7 +77,7 @@ export default function ExpensesPage() {
             <Table.ScrollContainer>
               <Table.Content aria-label="Historial de gastos" className="min-w-full">
                 <Table.Header className="bg-[var(--surface-sunken)] border-b border-[var(--border)]">
-                  <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Fecha</Table.Column>
+                  <Table.Column isRowHeader className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Fecha</Table.Column>
                   <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Concepto</Table.Column>
                   <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Categoría</Table.Column>
                   <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider text-right">Monto</Table.Column>

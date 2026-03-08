@@ -9,6 +9,7 @@ import {
   TextArea,
   Tabs,
   Spinner,
+  Skeleton,
   toast,
 } from "@heroui/react";
 import {
@@ -185,8 +186,23 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
             </Modal.Header>
             <Modal.Body className="py-4">
               {loading ? (
-                <div className="flex justify-center py-10">
-                  <Spinner size="lg" />
+                <div className="space-y-4 py-4">
+                  <div className="flex gap-4 border-b border-[var(--border)] pb-2">
+                    <Skeleton className="h-8 w-24 rounded-lg" />
+                    <Skeleton className="h-8 w-32 rounded-lg" />
+                    <Skeleton className="h-8 w-32 rounded-lg" />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+                    <div className="space-y-1.5"><Skeleton className="h-4 w-20 rounded" /><Skeleton className="h-10 w-full rounded-xl" /></div>
+                    <div className="space-y-1.5"><Skeleton className="h-4 w-20 rounded" /><Skeleton className="h-10 w-full rounded-xl" /></div>
+                    <div className="space-y-1.5"><Skeleton className="h-4 w-24 rounded" /><Skeleton className="h-10 w-full rounded-xl" /></div>
+                    <div className="space-y-1.5"><Skeleton className="h-4 w-20 rounded" /><Skeleton className="h-10 w-full rounded-xl" /></div>
+                    <div className="md:col-span-2 space-y-1.5"><Skeleton className="h-4 w-24 rounded" /><Skeleton className="h-24 w-full rounded-xl" /></div>
+                  </div>
+                  <div className="flex justify-end gap-2 pt-4">
+                    <Skeleton className="h-10 w-24 rounded-lg" />
+                    <Skeleton className="h-10 w-32 rounded-lg" />
+                  </div>
                 </div>
               ) : (
                 <Tabs className="w-full">
@@ -223,7 +239,7 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
                     </div>
                     <div className="flex justify-end gap-2">
                       <SecondaryCloseButton onClose={onClose} />
-                      <Button className="bg-[var(--primary)] text-[var(--primary-foreground)]" isDisabled={saving} onPress={handleSaveDetails}>
+                      <Button variant="primary" isDisabled={saving} onPress={handleSaveDetails}>
                         {saving ? "Guardando..." : "Guardar Detalles"}
                       </Button>
                     </div>
@@ -232,7 +248,7 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
                   <Tabs.Panel id="images" className="pt-4 space-y-4">
                     <div className="flex gap-2">
                       <Input placeholder="URL de la imagen" value={newImageUrl} onChange={(e) => setNewImageUrl(e.target.value)} className="bg-transparent border border-[var(--border)] flex-1" />
-                      <Button onPress={handleAddImage} className="bg-[var(--primary)] text-[var(--primary-foreground)]">Agregar</Button>
+                      <Button variant="primary" onPress={handleAddImage}>Agregar</Button>
                     </div>
                     {images.length === 0 ? (
                       <p className="text-sm text-[var(--muted)] text-center py-6">No hay imágenes.</p>
@@ -243,8 +259,7 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={img.url} alt={img.alt_text || ""} className="w-full h-32 object-cover" />
                             <Button
-                              size="sm"
-                              className="absolute top-1 right-1 bg-red-500/80 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                              variant="danger"
                               onPress={() => handleDeleteImage(img.id)}
                             >
                               X
@@ -265,7 +280,7 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
                       <Input placeholder="Dif. Precio" type="number" value={newVariant.price_diff} onChange={(e) => setNewVariant({ ...newVariant, price_diff: e.target.value })} className="bg-transparent border border-[var(--border)]" />
                       <Input placeholder="Stock" type="number" value={newVariant.stock} onChange={(e) => setNewVariant({ ...newVariant, stock: e.target.value })} className="bg-transparent border border-[var(--border)]" />
                     </div>
-                    <Button onPress={handleAddVariant} className="bg-[var(--primary)] text-[var(--primary-foreground)]">Agregar Variante</Button>
+                    <Button variant="primary" onPress={handleAddVariant}>Agregar Variante</Button>
 
                     {variants.length === 0 ? (
                       <p className="text-sm text-[var(--muted)] text-center py-6">No hay variantes.</p>
@@ -280,7 +295,7 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
                             <Button size="sm" variant="secondary" onPress={() => handleUpdateVariant(v.id, { name: v.name })}>
                               Guardar
                             </Button>
-                            <Button size="sm" className="bg-red-500/10 text-red-500" onPress={() => handleDeleteVariant(v.id)}>
+                            <Button size="sm" variant="danger" onPress={() => handleDeleteVariant(v.id)}>
                               X
                             </Button>
                           </div>

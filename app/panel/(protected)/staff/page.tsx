@@ -112,7 +112,7 @@ export default function StaffPage() {
             <Table.ScrollContainer>
               <Table.Content aria-label="Lista de Staff" className="min-w-full">
                 <Table.Header className="bg-[var(--surface-sunken)] border-b border-[var(--border)]">
-                  <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Miembro</Table.Column>
+                  <Table.Column isRowHeader className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Miembro</Table.Column>
                   <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Email</Table.Column>
                   <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Rol</Table.Column>
                   <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Estado</Table.Column>

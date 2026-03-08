@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuthStore } from "@/lib/stores/auth-store";
-import { Card, Avatar, Tabs } from "@heroui/react";
+import { Card, Avatar, Tabs, Skeleton } from "@heroui/react";
 import { Mail, User, Shield, Info, Store, Clock, Share2, CreditCard } from "lucide-react";
 import { StoreConfig } from "./components/StoreConfig";
 import { SchedulesConfig } from "./components/SchedulesConfig";
@@ -14,8 +14,54 @@ export default function PerfilPage() {
 
   if (!hasHydrated || !user) {
     return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <p className="text-[var(--muted)] text-sm animate-pulse">Cargando perfil...</p>
+      <div className="space-y-6 max-w-5xl mx-auto w-full pb-12">
+        <div>
+          <Skeleton className="h-8 w-48 rounded-lg mb-2" />
+          <Skeleton className="h-4 w-3/4 max-w-md rounded-lg" />
+        </div>
+
+        <div className="flex gap-6 border-b border-divider h-12 items-center">
+          <Skeleton className="h-5 w-24 rounded-lg" />
+          <Skeleton className="h-5 w-32 rounded-lg" />
+          <Skeleton className="h-5 w-24 rounded-lg" />
+          <Skeleton className="h-5 w-24 rounded-lg" />
+          <Skeleton className="h-5 w-32 rounded-lg" />
+        </div>
+
+        <div className="pt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="md:col-span-1 space-y-6">
+            <Card className="bg-[var(--surface)] border border-[var(--border)] overflow-hidden">
+              <Card.Content className="p-6 flex flex-col items-center pt-10">
+                <Skeleton className="w-24 h-24 rounded-full mb-4" />
+                <Skeleton className="h-6 w-32 rounded-lg mb-2" />
+                <Skeleton className="h-4 w-20 rounded-lg mb-4" />
+                <Skeleton className="h-6 w-32 rounded-full" />
+              </Card.Content>
+            </Card>
+          </div>
+
+          <div className="md:col-span-2 space-y-6">
+            <Card className="bg-[var(--surface)] border border-[var(--border)]">
+              <Card.Content className="p-6">
+                <Skeleton className="h-5 w-48 rounded-lg mb-6" />
+                <div className="space-y-4">
+                  <div className="py-2 border-b border-[var(--border)]">
+                    <Skeleton className="h-5 w-full rounded-lg" />
+                  </div>
+                  <div className="py-2 border-b border-[var(--border)]">
+                    <Skeleton className="h-5 w-full rounded-lg" />
+                  </div>
+                  <div className="py-2 border-b border-[var(--border)]">
+                    <Skeleton className="h-5 w-full rounded-lg" />
+                  </div>
+                  <div className="py-2">
+                    <Skeleton className="h-5 w-full rounded-lg" />
+                  </div>
+                </div>
+              </Card.Content>
+            </Card>
+          </div>
+        </div>
       </div>
     );
   }

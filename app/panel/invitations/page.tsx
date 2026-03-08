@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Card, toast } from "@heroui/react";
+import { Button, Card, Skeleton, toast } from "@heroui/react";
 import { Check, X, Store, ArrowLeft } from "lucide-react";
 import { useAuthStore } from "@/lib/stores/auth-store";
 import {
@@ -100,8 +100,29 @@ export default function InvitationsPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[var(--background)]">
-        <div className="animate-pulse text-[var(--muted)]">Cargando invitaciones...</div>
+      <div className="flex min-h-screen items-center justify-center px-4 bg-[var(--background)]">
+        <div className="w-full max-w-lg space-y-6">
+          <div className="text-center space-y-2 flex flex-col items-center">
+            <Skeleton className="h-8 w-64 rounded-lg" />
+            <Skeleton className="h-4 w-80 rounded-lg" />
+          </div>
+          <Card className="bg-[var(--surface)]/90 border border-white/20">
+            <Card.Content className="p-6">
+              <div className="flex items-start gap-4">
+                <Skeleton className="h-12 w-12 rounded-xl" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-6 w-48 rounded" />
+                  <Skeleton className="h-4 w-32 rounded" />
+                  <Skeleton className="h-3 w-40 rounded" />
+                </div>
+              </div>
+              <div className="flex gap-3 mt-5">
+                <Skeleton className="h-10 flex-1 rounded-lg" />
+                <Skeleton className="h-10 flex-1 rounded-lg" />
+              </div>
+            </Card.Content>
+          </Card>
+        </div>
       </div>
     );
   }
@@ -127,7 +148,7 @@ export default function InvitationsPage() {
           <Card className="bg-[var(--surface)]/90 border border-white/20 backdrop-blur-xl">
             <Card.Content className="p-8 text-center space-y-4">
               <p className="text-[var(--muted)]">No tienes invitaciones pendientes.</p>
-              <Button variant="outline" onPress={handleLogout}>
+              <Button variant="tertiary" onPress={handleLogout}>
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Volver al login
               </Button>
@@ -169,7 +190,8 @@ export default function InvitationsPage() {
 
                   <div className="flex gap-3 mt-5">
                     <Button
-                      className="flex-1 bg-gradient-to-r from-zinc-200 to-white text-black font-semibold hover:from-zinc-100 hover:to-zinc-50"
+                      variant="primary"
+                      className="flex-1"
                       isPending={processing === inv.id}
                       onPress={() => handleAccept(inv.id)}
                     >
@@ -177,8 +199,8 @@ export default function InvitationsPage() {
                       Aceptar
                     </Button>
                     <Button
-                      variant="outline"
-                      className="flex-1 border-red-500/30 text-red-400 hover:bg-red-500/10"
+                      variant="danger"
+                      className="flex-1"
                       isPending={processing === inv.id}
                       onPress={() => handleDecline(inv.id)}
                     >
@@ -191,9 +213,9 @@ export default function InvitationsPage() {
             ))}
 
             <div className="text-center">
-              <Button variant="ghost" className="text-[var(--muted)]" onPress={handleLogout}>
+              <Button variant="tertiary" className="text-[var(--muted)]" onPress={handleLogout}>
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Cerrar sesion
+                Cerrar sesión
               </Button>
             </div>
           </>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, Button, Switch, Label, Spinner, toast } from "@heroui/react";
+import { Card, Button, Switch, Label, Skeleton, toast } from "@heroui/react";
 import { getTenantSchedules, updateTenantSchedules } from "@/lib/api/tenant";
 import { getErrorMessage } from "@/lib/utils/error-message";
 import type { ScheduleDay } from "@/lib/types/tenant";
@@ -62,7 +62,29 @@ export function SchedulesConfig() {
     }
   };
 
-  if (loading) return <div className="py-10 text-center"><Spinner size="lg" /></div>;
+  if (loading) {
+    return (
+      <Card className="bg-[var(--surface)] border border-[var(--border)] p-6">
+        <Skeleton className="h-6 w-48 rounded-lg mb-1" />
+        <Skeleton className="h-4 w-3/4 max-w-md rounded-lg mb-6" />
+        <div className="space-y-4">
+          {Array.from({ length: 7 }).map((_, i) => (
+            <div key={i} className="flex flex-col sm:flex-row gap-4 items-start sm:items-center p-3 rounded-lg bg-[var(--surface-sunken)] border border-[var(--border)]">
+              <div className="w-[100px] flex-shrink-0">
+                <Skeleton className="h-5 w-20 rounded" />
+              </div>
+              <div className="flex items-center gap-4 flex-1">
+                <Skeleton className="h-10 w-full max-w-[150px] rounded-xl" />
+                <Skeleton className="h-4 w-4 rounded" />
+                <Skeleton className="h-10 w-full max-w-[150px] rounded-xl" />
+              </div>
+              <Skeleton className="h-6 w-12 rounded-full" />
+            </div>
+          ))}
+        </div>
+      </Card>
+    );
+  }
 
   const inputClass = "w-full bg-transparent focus:outline-none text-[var(--foreground)] border border-[var(--border)] bg-[var(--surface)] rounded-xl px-3 py-2";
 
@@ -118,7 +140,7 @@ export function SchedulesConfig() {
       </div>
 
       <div className="mt-8 flex justify-end">
-        <Button onPress={handleSave} isDisabled={saving} className="bg-[var(--primary)] text-[var(--primary-foreground)]">
+        <Button variant="primary" onPress={handleSave} isDisabled={saving}>
           {saving ? "Guardando..." : "Guardar Horarios"}
         </Button>
       </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, Input, Button, Switch, TextField, Label, InputGroup, toast, Spinner } from "@heroui/react";
+import { Card, Input, Button, Switch, TextField, Label, InputGroup, toast, Skeleton } from "@heroui/react";
 import { getTenantSocialLinks, updateTenantSocialLinks } from "@/lib/api/tenant";
 import { getErrorMessage } from "@/lib/utils/error-message";
 import type { SocialLink } from "@/lib/types/tenant";
@@ -64,7 +64,28 @@ export function SocialLinksConfig() {
     }
   };
 
-  if (loading) return <div className="py-10 text-center"><Spinner size="lg" /></div>;
+  if (loading) {
+    return (
+      <Card className="bg-[var(--surface)] border border-[var(--border)] p-6">
+        <Skeleton className="h-6 w-48 rounded-lg mb-1" />
+        <Skeleton className="h-4 w-3/4 max-w-md rounded-lg mb-6" />
+        <div className="space-y-4">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+              <div className="w-[120px] flex-shrink-0">
+                <Skeleton className="h-5 w-24 rounded" />
+              </div>
+              <Skeleton className="h-10 w-full rounded-xl flex-1" />
+              <div className="flex items-center gap-2 pl-1 pt-2 sm:pt-0">
+                <Skeleton className="h-6 w-10 rounded-full" />
+                <Skeleton className="h-4 w-12 rounded" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+    );
+  }
 
   const inputWrapperClass = "flex flex-col space-y-1.5 flex-1";
   const labelClass = "text-[var(--muted)] text-sm font-medium";
@@ -113,7 +134,7 @@ export function SocialLinksConfig() {
       </div>
 
       <div className="mt-8 flex justify-end">
-        <Button onPress={handleSave} isDisabled={saving} className="bg-[var(--primary)] text-[var(--primary-foreground)]">
+        <Button variant="primary" onPress={handleSave} isDisabled={saving}>
           {saving ? "Guardando..." : "Guardar Redes Sociales"}
         </Button>
       </div>

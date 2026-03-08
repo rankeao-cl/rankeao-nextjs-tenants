@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, Input, Button, Switch, Label, Spinner, toast, TextArea } from "@heroui/react";
+import { Card, Input, Button, Switch, Label, Skeleton, toast, TextArea } from "@heroui/react";
 import { listPaymentMethods, addPaymentMethod, updatePaymentMethod } from "@/lib/api/tenant";
 import { getErrorMessage } from "@/lib/utils/error-message";
 import type { PaymentConfig, PaymentMethod } from "@/lib/types/tenant";
@@ -79,7 +79,30 @@ export function PaymentMethodsConfig() {
     }
   };
 
-  if (loading) return <div className="py-10 text-center"><Spinner size="lg" /></div>;
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        {Array.from({ length: 2 }).map((_, i) => (
+          <Card key={i} className="bg-[var(--surface)] border border-[var(--border)] p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div className="space-y-2 w-full">
+                <Skeleton className="h-6 w-48 rounded-lg" />
+                <Skeleton className="h-4 w-3/4 max-w-md rounded-lg" />
+              </div>
+              <Skeleton className="h-6 w-12 rounded-full shrink-0" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1.5"><Skeleton className="h-4 w-20 rounded" /><Skeleton className="h-10 w-full rounded-xl" /></div>
+              <div className="space-y-1.5"><Skeleton className="h-4 w-24 rounded" /><Skeleton className="h-10 w-full rounded-xl" /></div>
+            </div>
+            <div className="mt-6 flex justify-end">
+              <Skeleton className="h-10 w-32 rounded-lg" />
+            </div>
+          </Card>
+        ))}
+      </div>
+    );
+  }
 
   const transferMethod = methods.find((m) => m.type === "BANK_TRANSFER");
   const cashMethod = methods.find((m) => m.type === "CASH");
@@ -132,9 +155,9 @@ export function PaymentMethodsConfig() {
         <div className="mt-6 flex justify-end">
           <Button
             size="sm"
+            variant="primary"
             onPress={() => handleSaveConfig("BANK_TRANSFER", transferConfig, transferMethod?.id)}
             isDisabled={saving !== null}
-            className="bg-[var(--primary)] text-[var(--primary-foreground)]"
           >
             Guardar Datos Bancarios
           </Button>
@@ -175,9 +198,9 @@ export function PaymentMethodsConfig() {
         <div className="mt-6 flex justify-end">
           <Button
             size="sm"
+            variant="primary"
             onPress={() => handleSaveConfig("CASH", cashConfig, cashMethod?.id)}
             isDisabled={saving !== null}
-            className="bg-[var(--primary)] text-[var(--primary-foreground)]"
           >
             Guardar Instrucciones
           </Button>

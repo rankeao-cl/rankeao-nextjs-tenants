@@ -72,7 +72,7 @@ export default function OrdersPage() {
               <Table.ScrollContainer>
                 <Table.Content aria-label="Tabla de Órdenes" className="min-w-full">
                   <Table.Header className="bg-[var(--surface-sunken)] border-b border-[var(--border)]">
-                    <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">ID Orden</Table.Column>
+                    <Table.Column isRowHeader className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">ID Orden</Table.Column>
                     <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Cliente</Table.Column>
                     <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Fecha</Table.Column>
                     <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Monto Total</Table.Column>

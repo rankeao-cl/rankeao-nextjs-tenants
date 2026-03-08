@@ -201,7 +201,7 @@ export default function ProductsPage() {
               <Table.ScrollContainer>
                 <Table.Content aria-label="Tabla de Productos" className="min-w-full">
                   <Table.Header className="bg-[var(--surface-sunken)] border-b border-[var(--border)]">
-                    <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Producto</Table.Column>
+                    <Table.Column isRowHeader className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Producto</Table.Column>
                     <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Inventario</Table.Column>
                     <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Precio</Table.Column>
                     <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Estado</Table.Column>
@@ -253,13 +253,12 @@ export default function ProductsPage() {
                           </Table.Cell>
                           <Table.Cell className="py-4 px-4">
                             <div className="flex items-center">
-                              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${
-                                prod.status === "ACTIVE" || prod.status === "PUBLISHED"
+                              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${prod.status === "ACTIVE" || prod.status === "PUBLISHED"
                                   ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                                   : prod.status === "DRAFT"
-                                  ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                                  : "bg-zinc-500/10 text-zinc-400 border-zinc-500/20"
-                              }`}>
+                                    ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                                    : "bg-zinc-500/10 text-zinc-400 border-zinc-500/20"
+                                }`}>
                                 {prod.status}
                               </span>
                             </div>
@@ -300,7 +299,7 @@ export default function ProductsPage() {
         isOpen={isEditModalOpen}
         onClose={() => setEditModalOpen(false)}
         productId={selectedProductId}
-        onProductUpdated={() => {}}
+        onProductUpdated={() => { }}
       />
     </div>
   );

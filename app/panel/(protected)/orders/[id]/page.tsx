@@ -1,7 +1,7 @@
 "use client";
 
 import { use, useState } from "react";
-import { Card, Table, Button, Input, Label, TextArea, Spinner, toast } from "@heroui/react";
+import { Card, Table, Button, Input, Label, TextArea, Skeleton, toast } from "@heroui/react";
 import Link from "next/link";
 import { useOrderDetail } from "@/lib/hooks/use-orders";
 import {
@@ -61,7 +61,65 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
   const [notesInitialized, setNotesInitialized] = useState(false);
 
   if (isLoading) {
-    return <div className="flex justify-center py-20"><Spinner size="lg" /></div>;
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <Skeleton className="h-8 w-20 rounded-lg" />
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-64 rounded-lg" />
+            <Skeleton className="h-6 w-24 rounded-full" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+            <Card className="bg-[var(--surface)] border border-[var(--border)] overflow-hidden">
+              <div className="p-4 border-b border-[var(--border)]">
+                <Skeleton className="h-6 w-48 rounded-lg" />
+              </div>
+              <div className="p-4 space-y-4">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="flex justify-between border-b border-[var(--border)] pb-4">
+                    <Skeleton className="h-5 w-48 rounded" />
+                    <Skeleton className="h-5 w-12 rounded" />
+                    <Skeleton className="h-5 w-24 rounded" />
+                    <Skeleton className="h-5 w-24 rounded" />
+                  </div>
+                ))}
+                <div className="flex justify-end pt-2">
+                  <Skeleton className="h-6 w-48 rounded-lg" />
+                </div>
+              </div>
+            </Card>
+            <Card className="bg-[var(--surface)] border border-[var(--border)] p-6">
+              <Skeleton className="h-6 w-32 rounded-lg mb-4" />
+              <div className="flex gap-2">
+                <Skeleton className="h-10 w-24 rounded-lg" />
+                <Skeleton className="h-10 w-32 rounded-lg" />
+                <Skeleton className="h-10 w-24 rounded-lg" />
+              </div>
+            </Card>
+          </div>
+          <div className="space-y-6">
+            <Card className="bg-[var(--surface)] border border-[var(--border)] p-6">
+              <Skeleton className="h-6 w-32 rounded-lg mb-4" />
+              <div className="space-y-3">
+                <Skeleton className="h-4 w-full rounded" />
+                <Skeleton className="h-4 w-3/4 rounded" />
+                <Skeleton className="h-4 w-4/5 rounded" />
+              </div>
+            </Card>
+            <Card className="bg-[var(--surface)] border border-[var(--border)] p-6">
+              <Skeleton className="h-6 w-32 rounded-lg mb-4" />
+              <div className="space-y-3">
+                <Skeleton className="h-4 w-1/2 rounded" />
+                <Skeleton className="h-4 w-3/4 rounded" />
+                <Skeleton className="h-4 w-1/3 rounded" />
+              </div>
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (!order) {
@@ -139,7 +197,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                 <Table.ScrollContainer>
                   <Table.Content aria-label="Items de la orden" className="min-w-full">
                     <Table.Header>
-                      <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase">Producto</Table.Column>
+                      <Table.Column isRowHeader className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase">Producto</Table.Column>
                       <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase text-center">Cant.</Table.Column>
                       <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase text-right">Precio Unit.</Table.Column>
                       <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase text-right">Subtotal</Table.Column>
@@ -175,32 +233,32 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
               <h3 className="font-semibold text-[var(--foreground)]">Acciones</h3>
               <div className="flex flex-wrap gap-2">
                 {status === "PENDING" && (
-                  <Button className="bg-blue-500/10 text-blue-400" isDisabled={actionLoading} onPress={() => handleAction(() => processOrder(id), "Orden en proceso")}>
+                  <Button variant="primary" isDisabled={actionLoading} onPress={() => handleAction(() => processOrder(id), "Orden en proceso")}>
                     Procesar
                   </Button>
                 )}
                 {status === "PROCESSING" && (
-                  <Button className="bg-blue-500/10 text-blue-400" isDisabled={actionLoading} onPress={() => handleAction(() => readyOrder(id), "Orden lista")}>
+                  <Button variant="primary" isDisabled={actionLoading} onPress={() => handleAction(() => readyOrder(id), "Orden lista")}>
                     Lista para Envío
                   </Button>
                 )}
                 {(status === "READY" || status === "PROCESSING") && (
-                  <Button className="bg-emerald-500/10 text-emerald-400" isDisabled={actionLoading} onPress={() => setShowShipForm(!showShipForm)}>
+                  <Button variant="primary" isDisabled={actionLoading} onPress={() => setShowShipForm(!showShipForm)}>
                     Enviar
                   </Button>
                 )}
                 {status === "SHIPPED" && (
-                  <Button className="bg-emerald-500/10 text-emerald-400" isDisabled={actionLoading} onPress={() => handleAction(() => completeOrder(id), "Orden completada")}>
+                  <Button variant="primary" isDisabled={actionLoading} onPress={() => handleAction(() => completeOrder(id), "Orden completada")}>
                     Completar
                   </Button>
                 )}
                 {!["CANCELLED", "REFUNDED", "COMPLETED"].includes(status) && (
-                  <Button className="bg-red-500/10 text-red-500" isDisabled={actionLoading} onPress={() => setShowCancelForm(!showCancelForm)}>
+                  <Button variant="danger" isDisabled={actionLoading} onPress={() => setShowCancelForm(!showCancelForm)}>
                     Cancelar
                   </Button>
                 )}
                 {["COMPLETED", "SHIPPED"].includes(status) && (
-                  <Button className="bg-amber-500/10 text-amber-400" isDisabled={actionLoading} onPress={() => setShowRefundForm(!showRefundForm)}>
+                  <Button variant="danger" isDisabled={actionLoading} onPress={() => setShowRefundForm(!showRefundForm)}>
                     Reembolsar
                   </Button>
                 )}
@@ -216,7 +274,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                     <Label className="text-sm text-[var(--muted)]">N° Seguimiento</Label>
                     <Input value={shipData.tracking_number} onChange={(e) => setShipData({ ...shipData, tracking_number: e.target.value })} placeholder="Ej: CL123456789" className="bg-transparent border border-[var(--border)]" />
                   </div>
-                  <Button className="bg-emerald-500/10 text-emerald-400" isDisabled={actionLoading} onPress={handleShip}>Confirmar Envío</Button>
+                  <Button variant="primary" isDisabled={actionLoading} onPress={handleShip}>Confirmar Envío</Button>
                 </div>
               )}
 
@@ -226,7 +284,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                     <Label className="text-sm text-[var(--muted)]">Motivo de Cancelación</Label>
                     <Input value={cancelReason} onChange={(e) => setCancelReason(e.target.value)} placeholder="Ej: Solicitud del cliente" className="bg-transparent border border-[var(--border)]" />
                   </div>
-                  <Button className="bg-red-500/10 text-red-500" isDisabled={actionLoading} onPress={handleCancel}>Confirmar Cancelación</Button>
+                  <Button variant="danger" isDisabled={actionLoading} onPress={handleCancel}>Confirmar Cancelación</Button>
                 </div>
               )}
 
@@ -240,7 +298,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                     <Label className="text-sm text-[var(--muted)]">Motivo del Reembolso</Label>
                     <Input value={refundData.reason} onChange={(e) => setRefundData({ ...refundData, reason: e.target.value })} placeholder="Ej: Producto defectuoso" className="bg-transparent border border-[var(--border)]" />
                   </div>
-                  <Button className="bg-amber-500/10 text-amber-400" isDisabled={actionLoading} onPress={handleRefund}>Confirmar Reembolso</Button>
+                  <Button variant="danger" isDisabled={actionLoading} onPress={handleRefund}>Confirmar Reembolso</Button>
                 </div>
               )}
             </Card.Content>
@@ -257,7 +315,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                 className="bg-transparent border border-[var(--border)] w-full resize-y"
               />
               <div className="flex justify-end">
-                <Button className="bg-[var(--primary)] text-[var(--primary-foreground)]" isDisabled={actionLoading} onPress={handleSaveNotes}>
+                <Button variant="primary" isDisabled={actionLoading} onPress={handleSaveNotes}>
                   Guardar Notas
                 </Button>
               </div>

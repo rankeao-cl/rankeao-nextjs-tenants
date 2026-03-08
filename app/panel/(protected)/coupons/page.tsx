@@ -12,7 +12,6 @@ import {
   Modal,
   Select,
   ListBox,
-  Spinner,
 } from "@heroui/react";
 import { useCoupons, useCreateCoupon, useUpdateCoupon, useDeleteCoupon } from "@/lib/hooks/use-coupons";
 import { getCouponUsages } from "@/lib/api/coupons";
@@ -132,7 +131,7 @@ export default function CouponsPage() {
                 className="bg-transparent border border-[var(--border)]"
               />
             </div>
-            <Button className="bg-[var(--primary)] text-[var(--primary-foreground)]" onPress={() => handleOpenForm()}>
+            <Button variant="primary" onPress={() => handleOpenForm()}>
               Nuevo Cupón
             </Button>
           </div>
@@ -144,7 +143,7 @@ export default function CouponsPage() {
               <Table.ScrollContainer>
                 <Table.Content aria-label="Tabla de Cupones" className="min-w-full">
                   <Table.Header className="bg-[var(--surface-sunken)] border-b border-[var(--border)]">
-                    <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Código</Table.Column>
+                    <Table.Column isRowHeader className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Código</Table.Column>
                     <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Descuento</Table.Column>
                     <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Compra Mínima</Table.Column>
                     <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Estado</Table.Column>
@@ -194,7 +193,7 @@ export default function CouponsPage() {
                               <Button size="sm" variant="secondary" onPress={() => handleOpenForm(coupon)}>
                                 Editar
                               </Button>
-                              <Button size="sm" variant="outline" className="border-red-500/50 text-red-500 hover:bg-red-500/10" onPress={() => handleDelete(coupon.id)}>
+                              <Button size="sm" variant="danger" onPress={() => handleDelete(coupon.id)}>
                                 Eliminar
                               </Button>
                             </div>
@@ -281,7 +280,7 @@ export default function CouponsPage() {
               <Button variant="outline" onPress={() => setShowFormModal(false)}>
                 Cancelar
               </Button>
-              <Button className="bg-[var(--primary)] text-[var(--primary-foreground)]" isDisabled={saving} onPress={handleSaveCoupon}>
+              <Button variant="primary" isDisabled={saving} onPress={handleSaveCoupon}>
                 {saving ? "Guardando..." : "Guardar Cupón"}
               </Button>
             </Modal.Footer>
@@ -302,7 +301,15 @@ export default function CouponsPage() {
             </Modal.Header>
             <Modal.Body className="p-0">
               {loadingUsages ? (
-                <div className="p-10 flex justify-center"><Spinner /></div>
+                <div className="flex flex-col gap-4 p-6">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="flex justify-between border-b border-[var(--border)] pb-2 last:border-0">
+                      <Skeleton className="h-5 w-32 rounded" />
+                      <Skeleton className="h-5 w-32 rounded" />
+                      <Skeleton className="h-5 w-24 rounded" />
+                    </div>
+                  ))}
+                </div>
               ) : usages.length === 0 ? (
                 <div className="p-10 text-center text-[var(--muted)]">
                   Este cupón aún no ha sido utilizado.
@@ -313,7 +320,7 @@ export default function CouponsPage() {
                     <Table.ScrollContainer>
                       <Table.Content aria-label="Tabla de usos del cupón">
                         <Table.Header className="bg-[var(--surface-sunken)] border-b border-[var(--border)]">
-                          <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Orden ID</Table.Column>
+                          <Table.Column isRowHeader className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Orden ID</Table.Column>
                           <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Usuario ID</Table.Column>
                           <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider text-right">Fecha</Table.Column>
                         </Table.Header>

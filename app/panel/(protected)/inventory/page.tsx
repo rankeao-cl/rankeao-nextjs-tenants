@@ -91,7 +91,7 @@ export default function InventoryPage() {
                 <Table.ScrollContainer>
                   <Table.Content aria-label="Movimientos de Inventario" className="min-w-full">
                     <Table.Header className="bg-[var(--surface-sunken)] border-b border-[var(--border)]">
-                      <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Fecha</Table.Column>
+                      <Table.Column isRowHeader className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Fecha</Table.Column>
                       <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Producto ID</Table.Column>
                       <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Tipo</Table.Column>
                       <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider text-center">Cantidad</Table.Column>
@@ -157,7 +157,7 @@ export default function InventoryPage() {
               <Table.ScrollContainer>
                 <Table.Content aria-label="Alertas de Inventario" className="min-w-full">
                   <Table.Header className="bg-[var(--surface-sunken)] border-b border-[var(--border)]">
-                    <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Producto ID</Table.Column>
+                    <Table.Column isRowHeader className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Producto ID</Table.Column>
                     <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Nombre</Table.Column>
                     <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider text-center">Stock Actual</Table.Column>
                     <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider text-center">Umbral</Table.Column>

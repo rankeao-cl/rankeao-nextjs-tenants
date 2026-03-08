@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, Input, Button, Label, Spinner, toast, Switch } from "@heroui/react";
+import { Card, Input, Button, Label, Skeleton, toast, Switch } from "@heroui/react";
 import { useLoyaltyProgram, useUpdateLoyaltyProgram, useAdjustLoyaltyPoints } from "@/lib/hooks/use-loyalty";
 import { getErrorMessage } from "@/lib/utils/error-message";
 
@@ -61,7 +61,43 @@ export default function LoyaltyPage() {
   };
 
   if (isLoading) {
-    return <div className="flex justify-center py-20"><Spinner size="lg" /></div>;
+    return (
+      <div className="space-y-6 max-w-5xl mx-auto">
+        <div>
+          <Skeleton className="h-8 w-64 rounded-lg mb-2" />
+          <Skeleton className="h-4 w-3/4 max-w-md rounded-lg" />
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <Card className="bg-[var(--surface)] border border-[var(--border)] overflow-hidden">
+              <div className="p-6 border-b border-[var(--border)] flex items-center justify-between">
+                <div className="space-y-2">
+                  <Skeleton className="h-6 w-48 rounded-lg" />
+                  <Skeleton className="h-4 w-64 rounded-lg" />
+                </div>
+                <Skeleton className="h-6 w-16 rounded-full" />
+              </div>
+              <div className="p-6 space-y-6">
+                <Skeleton className="h-5 w-48 rounded-lg mb-4" />
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="space-y-1.5"><Skeleton className="h-4 w-32 rounded" /><Skeleton className="h-10 w-full rounded-xl" /></div>
+                  <div className="space-y-1.5"><Skeleton className="h-4 w-24 rounded" /><Skeleton className="h-10 w-full rounded-xl" /></div>
+                </div>
+              </div>
+            </Card>
+          </div>
+          <div className="space-y-6">
+            <Card className="bg-[var(--surface)] border border-[var(--border)] p-6 space-y-4">
+              <Skeleton className="h-6 w-40 rounded-lg" />
+              <Skeleton className="h-4 w-full rounded-lg" />
+              <div className="space-y-1.5"><Skeleton className="h-4 w-24 rounded" /><Skeleton className="h-10 w-full rounded-xl" /></div>
+              <div className="space-y-1.5"><Skeleton className="h-4 w-32 rounded" /><Skeleton className="h-10 w-full rounded-xl" /></div>
+              <Skeleton className="h-10 w-full rounded-lg mt-2" />
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -152,7 +188,7 @@ export default function LoyaltyPage() {
                 </div>
 
                 <div className="p-4 border-t border-[var(--border)] bg-[var(--surface-sunken)] flex justify-end">
-                  <Button type="submit" className="bg-[var(--primary)] text-[var(--primary-foreground)]" isDisabled={updateMutation.isPending}>
+                  <Button type="submit" variant="primary" isDisabled={updateMutation.isPending}>
                     {updateMutation.isPending ? "Guardando..." : "Guardar Cambios"}
                   </Button>
                 </div>
@@ -198,7 +234,7 @@ export default function LoyaltyPage() {
                     className="bg-transparent border border-[var(--border)]"
                   />
                 </div>
-                <Button type="submit" className="w-full bg-[var(--primary)] text-[var(--primary-foreground)] mt-2" isDisabled={adjustMutation.isPending}>
+                <Button type="submit" variant="primary" className="w-full mt-2" isDisabled={adjustMutation.isPending}>
                   {adjustMutation.isPending ? "Aplicando..." : "Aplicar Ajuste"}
                 </Button>
               </form>
