@@ -23,18 +23,19 @@ import {
 import { getErrorMessage } from "@/lib/utils/error-message";
 import type { StaffMember } from "@/lib/types/staff";
 
+const ROLE_LABELS: Record<string, string> = {
+  OWNER: "Propietario",
+  ADMIN: "Administrador",
+  JUDGE: "Juez",
+  CASHIER: "Cajero",
+};
+
 const getRoleColor = (role: string) => {
   switch (role?.toUpperCase()) {
     case "OWNER": return "bg-amber-500/10 text-amber-400 border-amber-500/20";
     case "ADMIN": return "bg-purple-500/10 text-purple-400 border-purple-500/20";
-    default: return "bg-blue-500/10 text-blue-400 border-blue-500/20";
-  }
-};
-
-const getStatusColor = (status: string) => {
-  switch (status?.toUpperCase()) {
-    case "PENDING": return "bg-amber-500/10 text-amber-400 border-amber-500/20";
-    case "ACTIVE": return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+    case "JUDGE": return "bg-sky-500/10 text-sky-400 border-sky-500/20";
+    case "CASHIER": return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
     default: return "bg-zinc-500/10 text-zinc-400 border-zinc-500/20";
   }
 };
@@ -48,7 +49,7 @@ export default function StaffPage() {
 
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteRole, setInviteRole] = useState("STAFF");
+  const [inviteRole, setInviteRole] = useState("CASHIER");
 
   const [selectedMember, setSelectedMember] = useState<StaffMember | null>(null);
   const [showRoleModal, setShowRoleModal] = useState(false);
@@ -58,43 +59,34 @@ export default function StaffPage() {
     if (!inviteEmail) return;
     try {
       await inviteMutation.mutateAsync({ email: inviteEmail, role: inviteRole });
-      toast.success("Invitación enviada");
+      toast.success("Invitacion enviada");
       setShowInviteModal(false);
       setInviteEmail("");
+      setInviteRole("CASHIER");
     } catch (error: unknown) {
       toast.danger(getErrorMessage(error, "No se pudo invitar al usuario"));
     }
   };
 
-  const handleRevoke = async (id: string) => {
-    if (!window.confirm("¿Seguro que deseas revocar esta invitación o remover este miembro?")) return;
+  const handleRevoke = async (id: number) => {
+    if (!window.confirm("Seguro que deseas remover este miembro?")) return;
     try {
-      await revokeMutation.mutateAsync(id);
-      toast.success("Revocación exitosa");
+      await revokeMutation.mutateAsync(String(id));
+      toast.success("Miembro removido");
     } catch (error: unknown) {
-      toast.danger(getErrorMessage(error, "No se pudo revocar la invitación"));
+      toast.danger(getErrorMessage(error, "No se pudo remover al miembro"));
     }
   };
 
   const handleUpdateRole = async () => {
     if (!selectedMember || !newRole) return;
     try {
-      await updateRoleMutation.mutateAsync({ id: selectedMember.id, role: newRole });
+      await updateRoleMutation.mutateAsync({ id: String(selectedMember.id), role: newRole });
       toast.success("Rol actualizado");
       setShowRoleModal(false);
       setSelectedMember(null);
     } catch (error: unknown) {
       toast.danger(getErrorMessage(error, "Error al cambiar el rol"));
-    }
-  };
-
-  const handleTransferOwnership = async (id: string) => {
-    if (!window.confirm("ATENCIÓN: Estás a punto de transferir la propiedad entera de esta tienda. Esto es irreversible. ¿Deseas continuar?")) return;
-    try {
-      await transferMutation.mutateAsync({ new_owner_id: id });
-      toast.success("Propiedad transferida exitosamente");
-    } catch (error: unknown) {
-      toast.danger(getErrorMessage(error, "Error al transferir la propiedad"));
     }
   };
 
@@ -140,54 +132,72 @@ export default function StaffPage() {
                   ) : staff.length === 0 ? (
                     <Table.Row>
                       <Table.Cell colSpan={5} className="py-12 text-center text-[var(--muted)]">
-                        Aún no hay más miembros en tu tienda.
+                        Aun no hay mas miembros en tu tienda.
                       </Table.Cell>
                     </Table.Row>
                   ) : (
-                    staff.map((member) => (
-                      <Table.Row key={member.id} className="border-b border-[var(--border)] last:border-0 hover:bg-white/[0.02] transition-colors">
-                        <Table.Cell className="py-4 px-4 font-medium text-[var(--foreground)]">
-                          {member.name || member.username || "Sin nombre"}
-                        </Table.Cell>
-                        <Table.Cell className="py-4 px-4 text-sm text-[var(--muted)]">
-                          {member.email}
-                        </Table.Cell>
-                        <Table.Cell className="py-4 px-4">
-                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getRoleColor(member.role)}`}>
-                            {member.role || "STAFF"}
-                          </span>
-                        </Table.Cell>
-                        <Table.Cell className="py-4 px-4">
-                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(member.status)}`}>
-                            {member.status === "PENDING" ? "Pendiente" : "Activo"}
-                          </span>
-                        </Table.Cell>
-                        <Table.Cell className="py-4 px-4 text-right">
-                          <div className="flex gap-2 justify-end">
-                            <Button
-                              size="sm" variant="outline"
-                              onPress={() => { setSelectedMember(member); setNewRole(member.role || "STAFF"); setShowRoleModal(true); }}
-                            >
-                              Cambiar Rol
-                            </Button>
-                            <Button
-                              size="sm" variant="outline"
-                              className="border-amber-500/50 text-amber-400 hover:bg-amber-500/10"
-                              onPress={() => handleTransferOwnership(member.id)}
-                            >
-                              Transferir
-                            </Button>
-                            <Button
-                              size="sm" variant="outline"
-                              className="border-red-500/50 text-red-500 hover:bg-red-500/10"
-                              onPress={() => handleRevoke(member.id)}
-                            >
-                              Revocar
-                            </Button>
-                          </div>
-                        </Table.Cell>
-                      </Table.Row>
-                    ))
+                    staff.map((member) => {
+                      const isOwner = member.role === "OWNER";
+                      return (
+                        <Table.Row key={member.id} className="border-b border-[var(--border)] last:border-0 hover:bg-white/[0.02] transition-colors">
+                          <Table.Cell className="py-4 px-4">
+                            <div className="flex items-center gap-3">
+                              {member.avatar_url ? (
+                                <img src={member.avatar_url} alt="" className="w-8 h-8 rounded-full object-cover" />
+                              ) : (
+                                <div className="w-8 h-8 rounded-full bg-[var(--primary)]/20 flex items-center justify-center text-xs font-bold text-[var(--primary)]">
+                                  {(member.display_name || member.username || "?")[0].toUpperCase()}
+                                </div>
+                              )}
+                              <div>
+                                <p className="font-medium text-[var(--foreground)]">
+                                  {member.display_name || member.username || "Sin nombre"}
+                                </p>
+                                <p className="text-xs text-[var(--muted)]">@{member.username}</p>
+                              </div>
+                            </div>
+                          </Table.Cell>
+                          <Table.Cell className="py-4 px-4 text-sm text-[var(--muted)]">
+                            {member.email}
+                          </Table.Cell>
+                          <Table.Cell className="py-4 px-4">
+                            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getRoleColor(member.role)}`}>
+                              {ROLE_LABELS[member.role] || member.role}
+                            </span>
+                          </Table.Cell>
+                          <Table.Cell className="py-4 px-4">
+                            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${
+                              member.is_active
+                                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                                : "bg-red-500/10 text-red-400 border-red-500/20"
+                            }`}>
+                              {member.is_active ? "Activo" : "Inactivo"}
+                            </span>
+                          </Table.Cell>
+                          <Table.Cell className="py-4 px-4 text-right">
+                            {isOwner ? (
+                              <span className="text-xs text-[var(--muted)] italic">Propietario</span>
+                            ) : (
+                              <div className="flex gap-2 justify-end">
+                                <Button
+                                  size="sm" variant="outline"
+                                  onPress={() => { setSelectedMember(member); setNewRole(member.role); setShowRoleModal(true); }}
+                                >
+                                  Cambiar Rol
+                                </Button>
+                                <Button
+                                  size="sm" variant="outline"
+                                  className="border-red-500/50 text-red-500 hover:bg-red-500/10"
+                                  onPress={() => handleRevoke(member.id)}
+                                >
+                                  Remover
+                                </Button>
+                              </div>
+                            )}
+                          </Table.Cell>
+                        </Table.Row>
+                      );
+                    })
                   )}
                 </Table.Body>
               </Table.Content>
@@ -200,22 +210,23 @@ export default function StaffPage() {
       <Modal isOpen={showInviteModal} onOpenChange={setShowInviteModal}>
         <Modal.Backdrop />
         <Modal.Container>
-          <Modal.Dialog className="bg-[var(--surface)] border border-[var(--border)]">
+          <Modal.Dialog className="bg-[var(--surface)] border border-[var(--border)] max-w-md w-full mx-4">
             <Modal.CloseTrigger className="text-[var(--muted)] hover:text-[var(--foreground)]" />
-            <Modal.Header>
+            <Modal.Header className="p-6 pb-0">
               <Modal.Heading className="text-xl font-bold text-[var(--foreground)]">
                 Invitar al Equipo
               </Modal.Heading>
+              <p className="text-sm text-[var(--muted)] mt-1">Envia una invitacion por correo electronico</p>
             </Modal.Header>
-            <Modal.Body className="py-4 space-y-4">
+            <Modal.Body className="p-6 space-y-4">
               <div className="space-y-1.5 flex flex-col">
-                <Label className="text-sm font-medium text-[var(--muted)]">Correo Electrónico</Label>
+                <Label className="text-sm font-medium text-[var(--muted)]">Correo Electronico</Label>
                 <Input
                   placeholder="ejemplo@email.com"
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
                   type="email"
-                  className="bg-transparent border border-[var(--border)]"
+                  className="bg-transparent border border-[var(--border)] focus:border-[var(--primary)]"
                 />
               </div>
               <div className="space-y-1.5 flex flex-col">
@@ -231,12 +242,25 @@ export default function StaffPage() {
                   </Select.Trigger>
                   <Select.Popover className="bg-[var(--surface)] border border-[var(--border)]">
                     <ListBox className="text-[var(--foreground)]">
-                      <ListBox.Item id="STAFF" textValue="Staff">
-                        Staff (Permisos limitados)
+                      <ListBox.Item id="ADMIN" textValue="Administrador">
+                        <div>
+                          <p className="font-medium">Administrador</p>
+                          <p className="text-xs text-[var(--muted)]">Control total salvo suscripcion</p>
+                        </div>
                         <ListBox.ItemIndicator />
                       </ListBox.Item>
-                      <ListBox.Item id="ADMIN" textValue="Administrador">
-                        Administrador (Control total)
+                      <ListBox.Item id="JUDGE" textValue="Juez">
+                        <div>
+                          <p className="font-medium">Juez</p>
+                          <p className="text-xs text-[var(--muted)]">Torneos y eventos</p>
+                        </div>
+                        <ListBox.ItemIndicator />
+                      </ListBox.Item>
+                      <ListBox.Item id="CASHIER" textValue="Cajero">
+                        <div>
+                          <p className="font-medium">Cajero</p>
+                          <p className="text-xs text-[var(--muted)]">Ordenes, inventario y pagos</p>
+                        </div>
                         <ListBox.ItemIndicator />
                       </ListBox.Item>
                     </ListBox>
@@ -244,10 +268,14 @@ export default function StaffPage() {
                 </Select>
               </div>
             </Modal.Body>
-            <Modal.Footer className="border-t border-[var(--border)]/40 p-4">
+            <Modal.Footer className="border-t border-[var(--border)]/40 p-4 flex justify-end gap-3">
               <Button variant="outline" onPress={() => setShowInviteModal(false)}>Cancelar</Button>
-              <Button className="bg-[var(--primary)] text-[var(--primary-foreground)]" isDisabled={actionLoading} onPress={handleInvite}>
-                {inviteMutation.isPending ? "Enviando..." : "Enviar Invitación"}
+              <Button
+                className="bg-[var(--primary)] text-[var(--primary-foreground)]"
+                isDisabled={actionLoading || !inviteEmail}
+                onPress={handleInvite}
+              >
+                {inviteMutation.isPending ? "Enviando..." : "Enviar Invitacion"}
               </Button>
             </Modal.Footer>
           </Modal.Dialog>
@@ -258,16 +286,16 @@ export default function StaffPage() {
       <Modal isOpen={showRoleModal} onOpenChange={setShowRoleModal}>
         <Modal.Backdrop />
         <Modal.Container>
-          <Modal.Dialog className="bg-[var(--surface)] border border-[var(--border)]">
+          <Modal.Dialog className="bg-[var(--surface)] border border-[var(--border)] max-w-md w-full mx-4">
             <Modal.CloseTrigger className="text-[var(--muted)] hover:text-[var(--foreground)]" />
-            <Modal.Header>
+            <Modal.Header className="p-6 pb-0">
               <Modal.Heading className="text-xl font-bold text-[var(--foreground)]">
                 Modificar Rol
               </Modal.Heading>
             </Modal.Header>
-            <Modal.Body className="py-4 space-y-4">
+            <Modal.Body className="p-6 space-y-4">
               <p className="text-sm text-[var(--muted)]">
-                Modificando el rol de <strong className="text-[var(--foreground)]">{selectedMember?.email}</strong>.
+                Modificando el rol de <strong className="text-[var(--foreground)]">{selectedMember?.display_name || selectedMember?.username}</strong>.
               </p>
               <div className="space-y-1.5 flex flex-col">
                 <Label className="text-sm font-medium text-[var(--muted)]">Nuevo Rol</Label>
@@ -282,12 +310,25 @@ export default function StaffPage() {
                   </Select.Trigger>
                   <Select.Popover className="bg-[var(--surface)] border border-[var(--border)]">
                     <ListBox className="text-[var(--foreground)]">
-                      <ListBox.Item id="STAFF" textValue="Staff">
-                        Staff (Permisos limitados)
+                      <ListBox.Item id="ADMIN" textValue="Administrador">
+                        <div>
+                          <p className="font-medium">Administrador</p>
+                          <p className="text-xs text-[var(--muted)]">Control total salvo suscripcion</p>
+                        </div>
                         <ListBox.ItemIndicator />
                       </ListBox.Item>
-                      <ListBox.Item id="ADMIN" textValue="Administrador">
-                        Administrador (Control total salvo propiedad)
+                      <ListBox.Item id="JUDGE" textValue="Juez">
+                        <div>
+                          <p className="font-medium">Juez</p>
+                          <p className="text-xs text-[var(--muted)]">Torneos y eventos</p>
+                        </div>
+                        <ListBox.ItemIndicator />
+                      </ListBox.Item>
+                      <ListBox.Item id="CASHIER" textValue="Cajero">
+                        <div>
+                          <p className="font-medium">Cajero</p>
+                          <p className="text-xs text-[var(--muted)]">Ordenes, inventario y pagos</p>
+                        </div>
                         <ListBox.ItemIndicator />
                       </ListBox.Item>
                     </ListBox>
@@ -295,9 +336,13 @@ export default function StaffPage() {
                 </Select>
               </div>
             </Modal.Body>
-            <Modal.Footer className="border-t border-[var(--border)]/40 p-4">
+            <Modal.Footer className="border-t border-[var(--border)]/40 p-4 flex justify-end gap-3">
               <Button variant="outline" onPress={() => setShowRoleModal(false)}>Cancelar</Button>
-              <Button className="bg-[var(--primary)] text-[var(--primary-foreground)]" isDisabled={actionLoading} onPress={handleUpdateRole}>
+              <Button
+                className="bg-[var(--primary)] text-[var(--primary-foreground)]"
+                isDisabled={actionLoading}
+                onPress={handleUpdateRole}
+              >
                 {updateRoleMutation.isPending ? "Guardando..." : "Guardar Rol"}
               </Button>
             </Modal.Footer>
