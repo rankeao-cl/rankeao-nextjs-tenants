@@ -166,11 +166,10 @@ export default function StaffPage() {
                             </span>
                           </Table.Cell>
                           <Table.Cell className="py-4 px-4">
-                            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${
-                              member.is_active
-                                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                                : "bg-red-500/10 text-red-400 border-red-500/20"
-                            }`}>
+                            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${member.is_active
+                              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                              : "bg-red-500/10 text-red-400 border-red-500/20"
+                              }`}>
                               {member.is_active ? "Activo" : "Inactivo"}
                             </span>
                           </Table.Cell>
@@ -208,146 +207,148 @@ export default function StaffPage() {
 
       {/* Invite Modal */}
       <Modal isOpen={showInviteModal} onOpenChange={setShowInviteModal}>
-        <Modal.Backdrop />
-        <Modal.Container>
-          <Modal.Dialog className="bg-[var(--surface)] border border-[var(--border)] max-w-md w-full mx-4">
-            <Modal.CloseTrigger className="text-[var(--muted)] hover:text-[var(--foreground)]" />
-            <Modal.Header className="p-6 pb-0">
-              <Modal.Heading className="text-xl font-bold text-[var(--foreground)]">
-                Invitar al Equipo
-              </Modal.Heading>
-              <p className="text-sm text-[var(--muted)] mt-1">Envia una invitacion por correo electronico</p>
-            </Modal.Header>
-            <Modal.Body className="p-6 space-y-4">
-              <div className="space-y-1.5 flex flex-col">
-                <Label className="text-sm font-medium text-[var(--muted)]">Correo Electronico</Label>
-                <Input
-                  placeholder="ejemplo@email.com"
-                  value={inviteEmail}
-                  onChange={(e) => setInviteEmail(e.target.value)}
-                  type="email"
-                  className="bg-transparent border border-[var(--border)] focus:border-[var(--primary)]"
-                />
-              </div>
-              <div className="space-y-1.5 flex flex-col">
-                <Label className="text-sm font-medium text-[var(--muted)]">Rol a Asignar</Label>
-                <Select
-                  className="w-full"
-                  selectedKey={inviteRole}
-                  onSelectionChange={(key: unknown) => { if (key) setInviteRole(key as string); }}
+        <Modal.Backdrop>
+          <Modal.Container>
+            <Modal.Dialog className="bg-[var(--surface)] border border-[var(--border)] max-w-md w-full mx-4">
+              <Modal.CloseTrigger className="text-[var(--muted)] hover:text-[var(--foreground)]" />
+              <Modal.Header className="p-6 pb-0">
+                <Modal.Heading className="text-xl font-bold text-[var(--foreground)]">
+                  Invitar al Equipo
+                </Modal.Heading>
+                <p className="text-sm text-[var(--muted)] mt-1">Envia una invitacion por correo electronico</p>
+              </Modal.Header>
+              <Modal.Body className="p-6 space-y-4">
+                <div className="space-y-1.5 flex flex-col">
+                  <Label className="text-sm font-medium text-[var(--muted)]">Correo Electronico</Label>
+                  <Input
+                    placeholder="ejemplo@email.com"
+                    value={inviteEmail}
+                    onChange={(e) => setInviteEmail(e.target.value)}
+                    type="email"
+                    className="bg-transparent border border-[var(--border)] focus:border-[var(--primary)]"
+                  />
+                </div>
+                <div className="space-y-1.5 flex flex-col">
+                  <Label className="text-sm font-medium text-[var(--muted)]">Rol a Asignar</Label>
+                  <Select
+                    className="w-full"
+                    selectedKey={inviteRole}
+                    onSelectionChange={(key: unknown) => { if (key) setInviteRole(key as string); }}
+                  >
+                    <Select.Trigger className="bg-transparent border border-[var(--border)]">
+                      <Select.Value />
+                      <Select.Indicator />
+                    </Select.Trigger>
+                    <Select.Popover className="bg-[var(--surface)] border border-[var(--border)]">
+                      <ListBox className="text-[var(--foreground)]">
+                        <ListBox.Item id="ADMIN" textValue="Administrador">
+                          <div>
+                            <p className="font-medium">Administrador</p>
+                            <p className="text-xs text-[var(--muted)]">Control total salvo suscripcion</p>
+                          </div>
+                          <ListBox.ItemIndicator />
+                        </ListBox.Item>
+                        <ListBox.Item id="JUDGE" textValue="Juez">
+                          <div>
+                            <p className="font-medium">Juez</p>
+                            <p className="text-xs text-[var(--muted)]">Torneos y eventos</p>
+                          </div>
+                          <ListBox.ItemIndicator />
+                        </ListBox.Item>
+                        <ListBox.Item id="CASHIER" textValue="Cajero">
+                          <div>
+                            <p className="font-medium">Cajero</p>
+                            <p className="text-xs text-[var(--muted)]">Ordenes, inventario y pagos</p>
+                          </div>
+                          <ListBox.ItemIndicator />
+                        </ListBox.Item>
+                      </ListBox>
+                    </Select.Popover>
+                  </Select>
+                </div>
+              </Modal.Body>
+              <Modal.Footer className="border-t border-[var(--border)]/40 p-4 flex justify-end gap-3">
+                <Button variant="outline" onPress={() => setShowInviteModal(false)}>Cancelar</Button>
+                <Button
+                  className="bg-[var(--primary)] text-[var(--primary-foreground)]"
+                  isDisabled={actionLoading || !inviteEmail}
+                  onPress={handleInvite}
                 >
-                  <Select.Trigger className="bg-transparent border border-[var(--border)]">
-                    <Select.Value />
-                    <Select.Indicator />
-                  </Select.Trigger>
-                  <Select.Popover className="bg-[var(--surface)] border border-[var(--border)]">
-                    <ListBox className="text-[var(--foreground)]">
-                      <ListBox.Item id="ADMIN" textValue="Administrador">
-                        <div>
-                          <p className="font-medium">Administrador</p>
-                          <p className="text-xs text-[var(--muted)]">Control total salvo suscripcion</p>
-                        </div>
-                        <ListBox.ItemIndicator />
-                      </ListBox.Item>
-                      <ListBox.Item id="JUDGE" textValue="Juez">
-                        <div>
-                          <p className="font-medium">Juez</p>
-                          <p className="text-xs text-[var(--muted)]">Torneos y eventos</p>
-                        </div>
-                        <ListBox.ItemIndicator />
-                      </ListBox.Item>
-                      <ListBox.Item id="CASHIER" textValue="Cajero">
-                        <div>
-                          <p className="font-medium">Cajero</p>
-                          <p className="text-xs text-[var(--muted)]">Ordenes, inventario y pagos</p>
-                        </div>
-                        <ListBox.ItemIndicator />
-                      </ListBox.Item>
-                    </ListBox>
-                  </Select.Popover>
-                </Select>
-              </div>
-            </Modal.Body>
-            <Modal.Footer className="border-t border-[var(--border)]/40 p-4 flex justify-end gap-3">
-              <Button variant="outline" onPress={() => setShowInviteModal(false)}>Cancelar</Button>
-              <Button
-                className="bg-[var(--primary)] text-[var(--primary-foreground)]"
-                isDisabled={actionLoading || !inviteEmail}
-                onPress={handleInvite}
-              >
-                {inviteMutation.isPending ? "Enviando..." : "Enviar Invitacion"}
-              </Button>
-            </Modal.Footer>
-          </Modal.Dialog>
-        </Modal.Container>
+                  {inviteMutation.isPending ? "Enviando..." : "Enviar Invitacion"}
+                </Button>
+              </Modal.Footer>
+            </Modal.Dialog>
+          </Modal.Container>
+        </Modal.Backdrop>
       </Modal>
 
       {/* Role Modal */}
       <Modal isOpen={showRoleModal} onOpenChange={setShowRoleModal}>
-        <Modal.Backdrop />
-        <Modal.Container>
-          <Modal.Dialog className="bg-[var(--surface)] border border-[var(--border)] max-w-md w-full mx-4">
-            <Modal.CloseTrigger className="text-[var(--muted)] hover:text-[var(--foreground)]" />
-            <Modal.Header className="p-6 pb-0">
-              <Modal.Heading className="text-xl font-bold text-[var(--foreground)]">
-                Modificar Rol
-              </Modal.Heading>
-            </Modal.Header>
-            <Modal.Body className="p-6 space-y-4">
-              <p className="text-sm text-[var(--muted)]">
-                Modificando el rol de <strong className="text-[var(--foreground)]">{selectedMember?.display_name || selectedMember?.username}</strong>.
-              </p>
-              <div className="space-y-1.5 flex flex-col">
-                <Label className="text-sm font-medium text-[var(--muted)]">Nuevo Rol</Label>
-                <Select
-                  className="w-full"
-                  selectedKey={newRole}
-                  onSelectionChange={(key: unknown) => { if (key) setNewRole(key as string); }}
+        <Modal.Backdrop>
+          <Modal.Container>
+            <Modal.Dialog className="bg-[var(--surface)] border border-[var(--border)] max-w-md w-full mx-4">
+              <Modal.CloseTrigger className="text-[var(--muted)] hover:text-[var(--foreground)]" />
+              <Modal.Header className="p-6 pb-0">
+                <Modal.Heading className="text-xl font-bold text-[var(--foreground)]">
+                  Modificar Rol
+                </Modal.Heading>
+              </Modal.Header>
+              <Modal.Body className="p-6 space-y-4">
+                <p className="text-sm text-[var(--muted)]">
+                  Modificando el rol de <strong className="text-[var(--foreground)]">{selectedMember?.display_name || selectedMember?.username}</strong>.
+                </p>
+                <div className="space-y-1.5 flex flex-col">
+                  <Label className="text-sm font-medium text-[var(--muted)]">Nuevo Rol</Label>
+                  <Select
+                    className="w-full"
+                    selectedKey={newRole}
+                    onSelectionChange={(key: unknown) => { if (key) setNewRole(key as string); }}
+                  >
+                    <Select.Trigger className="bg-transparent border border-[var(--border)]">
+                      <Select.Value />
+                      <Select.Indicator />
+                    </Select.Trigger>
+                    <Select.Popover className="bg-[var(--surface)] border border-[var(--border)]">
+                      <ListBox className="text-[var(--foreground)]">
+                        <ListBox.Item id="ADMIN" textValue="Administrador">
+                          <div>
+                            <p className="font-medium">Administrador</p>
+                            <p className="text-xs text-[var(--muted)]">Control total salvo suscripcion</p>
+                          </div>
+                          <ListBox.ItemIndicator />
+                        </ListBox.Item>
+                        <ListBox.Item id="JUDGE" textValue="Juez">
+                          <div>
+                            <p className="font-medium">Juez</p>
+                            <p className="text-xs text-[var(--muted)]">Torneos y eventos</p>
+                          </div>
+                          <ListBox.ItemIndicator />
+                        </ListBox.Item>
+                        <ListBox.Item id="CASHIER" textValue="Cajero">
+                          <div>
+                            <p className="font-medium">Cajero</p>
+                            <p className="text-xs text-[var(--muted)]">Ordenes, inventario y pagos</p>
+                          </div>
+                          <ListBox.ItemIndicator />
+                        </ListBox.Item>
+                      </ListBox>
+                    </Select.Popover>
+                  </Select>
+                </div>
+              </Modal.Body>
+              <Modal.Footer className="border-t border-[var(--border)]/40 p-4 flex justify-end gap-3">
+                <Button variant="outline" onPress={() => setShowRoleModal(false)}>Cancelar</Button>
+                <Button
+                  className="bg-[var(--primary)] text-[var(--primary-foreground)]"
+                  isDisabled={actionLoading}
+                  onPress={handleUpdateRole}
                 >
-                  <Select.Trigger className="bg-transparent border border-[var(--border)]">
-                    <Select.Value />
-                    <Select.Indicator />
-                  </Select.Trigger>
-                  <Select.Popover className="bg-[var(--surface)] border border-[var(--border)]">
-                    <ListBox className="text-[var(--foreground)]">
-                      <ListBox.Item id="ADMIN" textValue="Administrador">
-                        <div>
-                          <p className="font-medium">Administrador</p>
-                          <p className="text-xs text-[var(--muted)]">Control total salvo suscripcion</p>
-                        </div>
-                        <ListBox.ItemIndicator />
-                      </ListBox.Item>
-                      <ListBox.Item id="JUDGE" textValue="Juez">
-                        <div>
-                          <p className="font-medium">Juez</p>
-                          <p className="text-xs text-[var(--muted)]">Torneos y eventos</p>
-                        </div>
-                        <ListBox.ItemIndicator />
-                      </ListBox.Item>
-                      <ListBox.Item id="CASHIER" textValue="Cajero">
-                        <div>
-                          <p className="font-medium">Cajero</p>
-                          <p className="text-xs text-[var(--muted)]">Ordenes, inventario y pagos</p>
-                        </div>
-                        <ListBox.ItemIndicator />
-                      </ListBox.Item>
-                    </ListBox>
-                  </Select.Popover>
-                </Select>
-              </div>
-            </Modal.Body>
-            <Modal.Footer className="border-t border-[var(--border)]/40 p-4 flex justify-end gap-3">
-              <Button variant="outline" onPress={() => setShowRoleModal(false)}>Cancelar</Button>
-              <Button
-                className="bg-[var(--primary)] text-[var(--primary-foreground)]"
-                isDisabled={actionLoading}
-                onPress={handleUpdateRole}
-              >
-                {updateRoleMutation.isPending ? "Guardando..." : "Guardar Rol"}
-              </Button>
-            </Modal.Footer>
-          </Modal.Dialog>
-        </Modal.Container>
+                  {updateRoleMutation.isPending ? "Guardando..." : "Guardar Rol"}
+                </Button>
+              </Modal.Footer>
+            </Modal.Dialog>
+          </Modal.Container>
+        </Modal.Backdrop>
       </Modal>
     </div>
   );
