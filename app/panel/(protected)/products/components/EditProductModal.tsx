@@ -12,6 +12,7 @@ import {
   Skeleton,
   toast,
 } from "@heroui/react";
+import { Info, Image as ImageIcon, Layers } from "lucide-react";
 import {
   getProduct,
   updateProduct,
@@ -184,9 +185,9 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
                 Editar Producto
               </Modal.Heading>
             </Modal.Header>
-            <Modal.Body className="py-4">
+            <Modal.Body className="py-4 min-h-[460px] flex flex-col">
               {loading ? (
-                <div className="space-y-4 py-4">
+                <div className="space-y-4 py-4 flex-1">
                   <div className="flex gap-4 border-b border-[var(--border)] pb-2">
                     <Skeleton className="h-8 w-24 rounded-lg" />
                     <Skeleton className="h-8 w-32 rounded-lg" />
@@ -205,12 +206,27 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
                   </div>
                 </div>
               ) : (
-                <Tabs className="w-full">
-                  <Tabs.ListContainer>
-                    <Tabs.List aria-label="Secciones del producto" className="gap-4 w-full relative rounded-none p-0 border-b border-divider flex">
-                      <Tabs.Tab id="details" className="max-w-fit px-0 h-10">Detalles</Tabs.Tab>
-                      <Tabs.Tab id="images" className="max-w-fit px-0 h-10">Imágenes ({images.length})</Tabs.Tab>
-                      <Tabs.Tab id="variants" className="max-w-fit px-0 h-10">Variantes ({variants.length})</Tabs.Tab>
+                <Tabs className="w-full flex-1 flex flex-col">
+                  <Tabs.ListContainer className="flex-shrink-0">
+                    <Tabs.List
+                      aria-label="Secciones del producto"
+                      className="gap-2 w-full flex bg-[var(--surface-sunken)] border border-[var(--border)] p-1.5 rounded-full overflow-x-auto scrollbar-hide flex-nowrap"
+                    >
+                      <Tabs.Tab id="details" className="relative flex-1 px-4 h-10 flex items-center justify-center gap-2 text-sm font-medium text-[var(--muted)] data-[selected=true]:text-[var(--foreground)] transition-colors z-10 whitespace-nowrap">
+                        <Info className="w-4 h-4 shrink-0" />
+                        <span>Detalles</span>
+                        <Tabs.Indicator className="absolute inset-0 w-full h-full border border-[var(--primary)] rounded-full pointer-events-none" />
+                      </Tabs.Tab>
+                      <Tabs.Tab id="images" className="relative flex-1 px-4 h-10 flex items-center justify-center gap-2 text-sm font-medium text-[var(--muted)] data-[selected=true]:text-[var(--foreground)] transition-colors z-10 whitespace-nowrap">
+                        <ImageIcon className="w-4 h-4 shrink-0" />
+                        <span>Imágenes <span className="hidden sm:inline">({images.length})</span></span>
+                        <Tabs.Indicator className="absolute inset-0 w-full h-full border border-[var(--primary)] rounded-full pointer-events-none" />
+                      </Tabs.Tab>
+                      <Tabs.Tab id="variants" className="relative flex-1 px-4 h-10 flex items-center justify-center gap-2 text-sm font-medium text-[var(--muted)] data-[selected=true]:text-[var(--foreground)] transition-colors z-10 whitespace-nowrap">
+                        <Layers className="w-4 h-4 shrink-0" />
+                        <span>Variantes <span className="hidden sm:inline">({variants.length})</span></span>
+                        <Tabs.Indicator className="absolute inset-0 w-full h-full border border-[var(--primary)] rounded-full pointer-events-none" />
+                      </Tabs.Tab>
                     </Tabs.List>
                   </Tabs.ListContainer>
 
