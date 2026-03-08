@@ -90,7 +90,7 @@ export default function ProductsPage() {
         <Button
           type="button"
           onPress={() => setCreateModalOpen(true)}
-          className="bg-[var(--primary)] text-[var(--primary-foreground)]"
+          variant="primary"
         >
           Nuevo Producto
         </Button>
@@ -170,7 +170,7 @@ export default function ProductsPage() {
                   type="submit"
                   form="create-product-form"
                   isDisabled={createMutation.isPending}
-                  className="bg-[var(--primary)] text-[var(--primary-foreground)]"
+                  variant="primary"
                 >
                   {createMutation.isPending ? "Guardando..." : "Crear Producto"}
                 </Button>
@@ -254,10 +254,10 @@ export default function ProductsPage() {
                           <Table.Cell className="py-4 px-4">
                             <div className="flex items-center">
                               <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${prod.status === "ACTIVE" || prod.status === "PUBLISHED"
-                                  ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                                  : prod.status === "DRAFT"
-                                    ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                                    : "bg-zinc-500/10 text-zinc-400 border-zinc-500/20"
+                                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                                : prod.status === "DRAFT"
+                                  ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                                  : "bg-zinc-500/10 text-zinc-400 border-zinc-500/20"
                                 }`}>
                                 {prod.status}
                               </span>

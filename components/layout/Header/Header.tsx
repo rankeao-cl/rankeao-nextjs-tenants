@@ -4,7 +4,6 @@ import { useAuthStore } from "@/lib/stores/auth-store";
 import { useTheme } from "@/lib/hooks/use-theme";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  Breadcrumbs,
   Dropdown,
   DropdownTrigger,
   DropdownPopover,
@@ -51,50 +50,19 @@ export function Header({ onMenuToggle }: HeaderProps) {
 
   return (
     <header className={s.header}>
-      <Button
-        isIconOnly
-        variant="secondary"
-        className="md:hidden text-[var(--muted)]"
-        onPress={onMenuToggle}
-        aria-label="Toggle menu"
-      >
-        <Menu className="h-5 w-5" />
-      </Button>
-
-      <div className={s.breadcrumbs}>
-        <Breadcrumbs
-          className="gap-2 text-xs text-[var(--muted)]"
-          separator={<span className="text-[var(--muted)]">/</span>}
+      <div className="flex items-center gap-3">
+        <Button
+          isIconOnly
+          variant="secondary"
+          className="md:hidden text-[var(--muted)]"
+          onPress={onMenuToggle}
+          aria-label="Toggle menu"
         >
-          <Breadcrumbs.Item
-            href="/panel/dashboard"
-            className="text-[var(--muted)] hover:text-[var(--foreground)]"
-          >
-            Tienda
-          </Breadcrumbs.Item>
-          {panelSegments.length === 0 ? (
-            <Breadcrumbs.Item className="text-[var(--foreground)]">Panel</Breadcrumbs.Item>
-          ) : (
-            panelSegments.map((segment, index) => {
-              const href = `/panel/${panelSegments.slice(0, index + 1).join("/")}`;
-              const isLast = index === panelSegments.length - 1;
-              const label = labelMap[segment] || segment.replace(/-/g, " ");
-              return (
-                <Breadcrumbs.Item
-                  key={`${segment}-${index}`}
-                  href={isLast ? undefined : href}
-                  className={
-                    isLast
-                      ? "text-[var(--foreground)]"
-                      : "text-[var(--muted)] hover:text-[var(--foreground)]"
-                  }
-                >
-                  {label}
-                </Breadcrumbs.Item>
-              );
-            })
-          )}
-        </Breadcrumbs>
+          <Menu className="h-5 w-5" />
+        </Button>
+        <h1 className="text-lg font-semibold font-[var(--font-heading)] hidden md:block text-[var(--foreground)] capitalize tracking-tight">
+          {panelSegments.length > 0 ? (labelMap[panelSegments[0]] || panelSegments[0]) : "Panel"}
+        </h1>
       </div>
 
       <div className={s.actions}>

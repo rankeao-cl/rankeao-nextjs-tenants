@@ -101,7 +101,7 @@ export default function StaffPage() {
           </h1>
           <p className="text-sm text-[var(--muted)] mt-1">Gestiona los miembros de tu tienda y sus permisos</p>
         </div>
-        <Button className="bg-[var(--primary)] text-[var(--primary-foreground)]" onPress={() => setShowInviteModal(true)}>
+        <Button variant="primary" onPress={() => setShowInviteModal(true)}>
           Invitar Miembro
         </Button>
       </div>
@@ -205,7 +205,6 @@ export default function StaffPage() {
         </div>
       </Card>
 
-      {/* Invite Modal */}
       <Modal isOpen={showInviteModal} onOpenChange={setShowInviteModal}>
         <Modal.Backdrop>
           <Modal.Container>
@@ -270,7 +269,7 @@ export default function StaffPage() {
               <Modal.Footer className="border-t border-[var(--border)]/40 p-4 flex justify-end gap-3">
                 <Button variant="outline" onPress={() => setShowInviteModal(false)}>Cancelar</Button>
                 <Button
-                  className="bg-[var(--primary)] text-[var(--primary-foreground)]"
+                  variant="primary"
                   isDisabled={actionLoading || !inviteEmail}
                   onPress={handleInvite}
                 >
@@ -282,7 +281,6 @@ export default function StaffPage() {
         </Modal.Backdrop>
       </Modal>
 
-      {/* Role Modal */}
       <Modal isOpen={showRoleModal} onOpenChange={setShowRoleModal}>
         <Modal.Backdrop>
           <Modal.Container>
@@ -339,7 +337,7 @@ export default function StaffPage() {
               <Modal.Footer className="border-t border-[var(--border)]/40 p-4 flex justify-end gap-3">
                 <Button variant="outline" onPress={() => setShowRoleModal(false)}>Cancelar</Button>
                 <Button
-                  className="bg-[var(--primary)] text-[var(--primary-foreground)]"
+                  variant="primary"
                   isDisabled={actionLoading}
                   onPress={handleUpdateRole}
                 >

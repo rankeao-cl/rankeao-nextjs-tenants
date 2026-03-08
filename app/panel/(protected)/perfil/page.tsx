@@ -81,32 +81,32 @@ export default function PerfilPage() {
         <Tabs.ListContainer>
           <Tabs.List
             aria-label="Opciones de configuración"
-            className="gap-6 w-full relative rounded-none p-0 border-b border-divider flex"
+            className="gap-2 w-full flex bg-[var(--surface-sunken)] border border-[var(--border)] p-1.5 rounded-full overflow-x-auto scrollbar-hide"
           >
-            <Tabs.Tab id="account" className="max-w-fit px-0 h-12 flex items-center gap-2">
+            <Tabs.Tab id="account" className="relative max-w-fit px-4 h-10 flex items-center gap-2 text-sm font-medium text-[var(--muted)] data-[selected=true]:text-[var(--foreground)] transition-colors z-10">
               <User className="w-4 h-4" />
               <span>Mi Cuenta</span>
-              <Tabs.Indicator className="w-full bg-[var(--primary)] rounded-full h-[2px] absolute bottom-0 left-0" />
+              <Tabs.Indicator className="absolute inset-0 w-full h-full border border-[var(--primary)] rounded-full pointer-events-none" />
             </Tabs.Tab>
-            <Tabs.Tab id="store" className="max-w-fit px-0 h-12 flex items-center gap-2">
+            <Tabs.Tab id="store" className="relative max-w-fit px-4 h-10 flex items-center gap-2 text-sm font-medium text-[var(--muted)] data-[selected=true]:text-[var(--foreground)] transition-colors z-10">
               <Store className="w-4 h-4" />
               <span>Datos de Tienda</span>
-              <Tabs.Indicator className="w-full bg-[var(--primary)] rounded-full h-[2px] absolute bottom-0 left-0" />
+              <Tabs.Indicator className="absolute inset-0 w-full h-full border border-[var(--primary)] rounded-full pointer-events-none" />
             </Tabs.Tab>
-            <Tabs.Tab id="schedules" className="max-w-fit px-0 h-12 flex items-center gap-2">
+            <Tabs.Tab id="schedules" className="relative max-w-fit px-4 h-10 flex items-center gap-2 text-sm font-medium text-[var(--muted)] data-[selected=true]:text-[var(--foreground)] transition-colors z-10">
               <Clock className="w-4 h-4" />
               <span>Horarios</span>
-              <Tabs.Indicator className="w-full bg-[var(--primary)] rounded-full h-[2px] absolute bottom-0 left-0" />
+              <Tabs.Indicator className="absolute inset-0 w-full h-full border border-[var(--primary)] rounded-full pointer-events-none" />
             </Tabs.Tab>
-            <Tabs.Tab id="social" className="max-w-fit px-0 h-12 flex items-center gap-2">
+            <Tabs.Tab id="social" className="relative max-w-fit px-4 h-10 flex items-center gap-2 text-sm font-medium text-[var(--muted)] data-[selected=true]:text-[var(--foreground)] transition-colors z-10">
               <Share2 className="w-4 h-4" />
               <span>Redes</span>
-              <Tabs.Indicator className="w-full bg-[var(--primary)] rounded-full h-[2px] absolute bottom-0 left-0" />
+              <Tabs.Indicator className="absolute inset-0 w-full h-full border border-[var(--primary)] rounded-full pointer-events-none" />
             </Tabs.Tab>
-            <Tabs.Tab id="payments" className="max-w-fit px-0 h-12 flex items-center gap-2">
+            <Tabs.Tab id="payments" className="relative max-w-fit px-4 h-10 flex items-center gap-2 text-sm font-medium text-[var(--muted)] data-[selected=true]:text-[var(--foreground)] transition-colors z-10">
               <CreditCard className="w-4 h-4" />
               <span>Métodos de Pago</span>
-              <Tabs.Indicator className="w-full bg-[var(--primary)] rounded-full h-[2px] absolute bottom-0 left-0" />
+              <Tabs.Indicator className="absolute inset-0 w-full h-full border border-[var(--primary)] rounded-full pointer-events-none" />
             </Tabs.Tab>
           </Tabs.List>
         </Tabs.ListContainer>

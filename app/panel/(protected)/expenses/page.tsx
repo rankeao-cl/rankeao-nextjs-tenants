@@ -50,7 +50,7 @@ export default function ExpensesPage() {
           </h1>
           <p className="text-sm text-[var(--muted)] mt-1">Registra y rastrea los gastos operativos de tu tienda</p>
         </div>
-        <Button className="bg-[var(--primary)] text-[var(--primary-foreground)]" onPress={() => setShowModal(true)}>
+        <Button variant="primary" onPress={() => setShowModal(true)}>
           Registrar Gasto
         </Button>
       </div>
@@ -126,67 +126,68 @@ export default function ExpensesPage() {
       </Card>
 
       <Modal isOpen={showModal} onOpenChange={setShowModal}>
-        <Modal.Backdrop />
-        <Modal.Container>
-          <Modal.Dialog className="bg-[var(--surface)] border border-[var(--border)]">
-            <Modal.CloseTrigger className="text-[var(--muted)] hover:text-[var(--foreground)]" />
-            <Modal.Header>
-              <Modal.Heading className="text-xl font-bold text-[var(--foreground)]">
-                Registrar Gasto
-              </Modal.Heading>
-            </Modal.Header>
-            <Modal.Body className="py-4 space-y-4">
-              <div className="space-y-1.5 flex flex-col">
-                <Label className="text-sm font-medium text-[var(--muted)]">Concepto</Label>
-                <Input
-                  placeholder="Ej. Publicidad Instagram"
-                  value={newExpense.title}
-                  onChange={(e) => setNewExpense({ ...newExpense, title: e.target.value })}
-                  className="bg-transparent border border-[var(--border)]"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
+        <Modal.Backdrop>
+          <Modal.Container>
+            <Modal.Dialog className="bg-[var(--surface)] border border-[var(--border)]">
+              <Modal.CloseTrigger className="text-[var(--muted)] hover:text-[var(--foreground)]" />
+              <Modal.Header>
+                <Modal.Heading className="text-xl font-bold text-[var(--foreground)]">
+                  Registrar Gasto
+                </Modal.Heading>
+              </Modal.Header>
+              <Modal.Body className="py-4 space-y-4">
                 <div className="space-y-1.5 flex flex-col">
-                  <Label className="text-sm font-medium text-[var(--muted)]">Monto</Label>
+                  <Label className="text-sm font-medium text-[var(--muted)]">Concepto</Label>
                   <Input
-                    type="number"
-                    min="0"
-                    placeholder="Ej. 15000"
-                    value={newExpense.amount}
-                    onChange={(e) => setNewExpense({ ...newExpense, amount: e.target.value })}
+                    placeholder="Ej. Publicidad Instagram"
+                    value={newExpense.title}
+                    onChange={(e) => setNewExpense({ ...newExpense, title: e.target.value })}
                     className="bg-transparent border border-[var(--border)]"
                   />
                 </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5 flex flex-col">
+                    <Label className="text-sm font-medium text-[var(--muted)]">Monto</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      placeholder="Ej. 15000"
+                      value={newExpense.amount}
+                      onChange={(e) => setNewExpense({ ...newExpense, amount: e.target.value })}
+                      className="bg-transparent border border-[var(--border)]"
+                    />
+                  </div>
+                  <div className="space-y-1.5 flex flex-col">
+                    <Label className="text-sm font-medium text-[var(--muted)]">Categoría</Label>
+                    <Input
+                      placeholder="Ej. Marketing"
+                      value={newExpense.category}
+                      onChange={(e) => setNewExpense({ ...newExpense, category: e.target.value })}
+                      className="bg-transparent border border-[var(--border)]"
+                    />
+                  </div>
+                </div>
                 <div className="space-y-1.5 flex flex-col">
-                  <Label className="text-sm font-medium text-[var(--muted)]">Categoría</Label>
+                  <Label className="text-sm font-medium text-[var(--muted)]">Fecha</Label>
                   <Input
-                    placeholder="Ej. Marketing"
-                    value={newExpense.category}
-                    onChange={(e) => setNewExpense({ ...newExpense, category: e.target.value })}
+                    type="date"
+                    value={newExpense.date}
+                    onChange={(e) => setNewExpense({ ...newExpense, date: e.target.value })}
                     className="bg-transparent border border-[var(--border)]"
                   />
                 </div>
-              </div>
-              <div className="space-y-1.5 flex flex-col">
-                <Label className="text-sm font-medium text-[var(--muted)]">Fecha</Label>
-                <Input
-                  type="date"
-                  value={newExpense.date}
-                  onChange={(e) => setNewExpense({ ...newExpense, date: e.target.value })}
-                  className="bg-transparent border border-[var(--border)]"
-                />
-              </div>
-            </Modal.Body>
-            <Modal.Footer className="border-t border-[var(--border)]/40 p-4">
-              <Button variant="outline" onPress={() => setShowModal(false)}>
-                Cancelar
-              </Button>
-              <Button className="bg-[var(--primary)] text-[var(--primary-foreground)]" isDisabled={createMutation.isPending} onPress={handleCreateExpense}>
-                {createMutation.isPending ? "Guardando..." : "Guardar Gasto"}
-              </Button>
-            </Modal.Footer>
-          </Modal.Dialog>
-        </Modal.Container>
+              </Modal.Body>
+              <Modal.Footer className="border-t border-[var(--border)]/40 p-4">
+                <Button variant="outline" onPress={() => setShowModal(false)}>
+                  Cancelar
+                </Button>
+                <Button variant="primary" isDisabled={createMutation.isPending} onPress={handleCreateExpense}>
+                  {createMutation.isPending ? "Guardando..." : "Guardar Gasto"}
+                </Button>
+              </Modal.Footer>
+            </Modal.Dialog>
+          </Modal.Container>
+        </Modal.Backdrop>
       </Modal>
     </div>
   );

@@ -211,138 +211,140 @@ export default function CouponsPage() {
 
       {/* Form Modal */}
       <Modal isOpen={showFormModal} onOpenChange={setShowFormModal}>
-        <Modal.Backdrop />
-        <Modal.Container>
-          <Modal.Dialog className="bg-[var(--surface)] border border-[var(--border)]">
-            <Modal.CloseTrigger className="text-[var(--muted)] hover:text-[var(--foreground)]" />
-            <Modal.Header>
-              <Modal.Heading className="text-xl font-bold text-[var(--foreground)]">
-                {formData.id ? "Editar Cupón" : "Crear Cupón"}
-              </Modal.Heading>
-            </Modal.Header>
-            <Modal.Body className="py-4 space-y-4">
-              <div className="space-y-1.5 flex flex-col">
-                <Label className="text-sm font-medium text-[var(--muted)]">Código</Label>
-                <Input
-                  value={formData.code}
-                  onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
-                  placeholder="ej. VERANO20"
-                  className="bg-transparent border border-[var(--border)] font-mono"
-                />
-              </div>
-              <div className="space-y-1.5 flex flex-col">
-                <Label className="text-sm font-medium text-[var(--muted)]">Tipo de Descuento</Label>
-                <Select
-                  selectedKey={formData.discount_type || "PERCENTAGE"}
-                  onSelectionChange={(key: unknown) => { if (key) setFormData({ ...formData, discount_type: key as "PERCENTAGE" | "FIXED" }); }}
-                  className="w-full"
-                >
-                  <Select.Trigger className="bg-transparent border border-[var(--border)]">
-                    <Select.Value />
-                    <Select.Indicator />
-                  </Select.Trigger>
-                  <Select.Popover className="bg-[var(--surface)] border border-[var(--border)]">
-                    <ListBox className="text-[var(--foreground)]">
-                      <ListBox.Item id="PERCENTAGE" textValue="Porcentaje">
-                        Porcentaje (%)
-                        <ListBox.ItemIndicator />
-                      </ListBox.Item>
-                      <ListBox.Item id="FIXED" textValue="Monto Fijo">
-                        Monto Fijo ($)
-                        <ListBox.ItemIndicator />
-                      </ListBox.Item>
-                    </ListBox>
-                  </Select.Popover>
-                </Select>
-              </div>
-              <div className="space-y-1.5 flex flex-col">
-                <Label className="text-sm font-medium text-[var(--muted)]">Valor del Descuento</Label>
-                <Input
-                  type="number"
-                  value={formData.discount_value?.toString()}
-                  onChange={(e) => setFormData({ ...formData, discount_value: Number(e.target.value) })}
-                  placeholder="ej. 20"
-                  className="bg-transparent border border-[var(--border)]"
-                />
-              </div>
-              <div className="space-y-1.5 flex flex-col">
-                <Label className="text-sm font-medium text-[var(--muted)]">Compra Mínima (Opcional)</Label>
-                <Input
-                  type="number"
-                  value={formData.min_purchase?.toString() || ""}
-                  onChange={(e) => setFormData({ ...formData, min_purchase: Number(e.target.value) })}
-                  placeholder="ej. 15000"
-                  className="bg-transparent border border-[var(--border)]"
-                />
-              </div>
-            </Modal.Body>
-            <Modal.Footer className="border-t border-[var(--border)]/40 p-4">
-              <Button variant="outline" onPress={() => setShowFormModal(false)}>
-                Cancelar
-              </Button>
-              <Button variant="primary" isDisabled={saving} onPress={handleSaveCoupon}>
-                {saving ? "Guardando..." : "Guardar Cupón"}
-              </Button>
-            </Modal.Footer>
-          </Modal.Dialog>
-        </Modal.Container>
+        <Modal.Backdrop>
+          <Modal.Container>
+            <Modal.Dialog className="bg-[var(--surface)] border border-[var(--border)]">
+              <Modal.CloseTrigger className="text-[var(--muted)] hover:text-[var(--foreground)]" />
+              <Modal.Header>
+                <Modal.Heading className="text-xl font-bold text-[var(--foreground)]">
+                  {formData.id ? "Editar Cupón" : "Crear Cupón"}
+                </Modal.Heading>
+              </Modal.Header>
+              <Modal.Body className="py-4 space-y-4">
+                <div className="space-y-1.5 flex flex-col">
+                  <Label className="text-sm font-medium text-[var(--muted)]">Código</Label>
+                  <Input
+                    value={formData.code}
+                    onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
+                    placeholder="ej. VERANO20"
+                    className="bg-transparent border border-[var(--border)] font-mono"
+                  />
+                </div>
+                <div className="space-y-1.5 flex flex-col">
+                  <Label className="text-sm font-medium text-[var(--muted)]">Tipo de Descuento</Label>
+                  <Select
+                    selectedKey={formData.discount_type || "PERCENTAGE"}
+                    onSelectionChange={(key: unknown) => { if (key) setFormData({ ...formData, discount_type: key as "PERCENTAGE" | "FIXED" }); }}
+                    className="w-full"
+                  >
+                    <Select.Trigger className="bg-transparent border border-[var(--border)]">
+                      <Select.Value />
+                      <Select.Indicator />
+                    </Select.Trigger>
+                    <Select.Popover className="bg-[var(--surface)] border border-[var(--border)]">
+                      <ListBox className="text-[var(--foreground)]">
+                        <ListBox.Item id="PERCENTAGE" textValue="Porcentaje">
+                          Porcentaje (%)
+                          <ListBox.ItemIndicator />
+                        </ListBox.Item>
+                        <ListBox.Item id="FIXED" textValue="Monto Fijo">
+                          Monto Fijo ($)
+                          <ListBox.ItemIndicator />
+                        </ListBox.Item>
+                      </ListBox>
+                    </Select.Popover>
+                  </Select>
+                </div>
+                <div className="space-y-1.5 flex flex-col">
+                  <Label className="text-sm font-medium text-[var(--muted)]">Valor del Descuento</Label>
+                  <Input
+                    type="number"
+                    value={formData.discount_value?.toString()}
+                    onChange={(e) => setFormData({ ...formData, discount_value: Number(e.target.value) })}
+                    placeholder="ej. 20"
+                    className="bg-transparent border border-[var(--border)]"
+                  />
+                </div>
+                <div className="space-y-1.5 flex flex-col">
+                  <Label className="text-sm font-medium text-[var(--muted)]">Compra Mínima (Opcional)</Label>
+                  <Input
+                    type="number"
+                    value={formData.min_purchase?.toString() || ""}
+                    onChange={(e) => setFormData({ ...formData, min_purchase: Number(e.target.value) })}
+                    placeholder="ej. 15000"
+                    className="bg-transparent border border-[var(--border)]"
+                  />
+                </div>
+              </Modal.Body>
+              <Modal.Footer className="border-t border-[var(--border)]/40 p-4">
+                <Button variant="outline" onPress={() => setShowFormModal(false)}>
+                  Cancelar
+                </Button>
+                <Button variant="primary" isDisabled={saving} onPress={handleSaveCoupon}>
+                  {saving ? "Guardando..." : "Guardar Cupón"}
+                </Button>
+              </Modal.Footer>
+            </Modal.Dialog>
+          </Modal.Container>
+        </Modal.Backdrop>
       </Modal>
 
       {/* Usages Modal */}
       <Modal isOpen={showUsagesModal} onOpenChange={setShowUsagesModal}>
-        <Modal.Backdrop />
-        <Modal.Container>
-          <Modal.Dialog className="bg-[var(--surface)] border border-[var(--border)] overflow-hidden">
-            <Modal.CloseTrigger className="text-[var(--muted)] hover:text-[var(--foreground)]" />
-            <Modal.Header className="border-b border-[var(--border)] bg-[var(--surface-sunken)]">
-              <Modal.Heading className="text-xl font-bold text-[var(--foreground)]">
-                Historial de Uso
-              </Modal.Heading>
-            </Modal.Header>
-            <Modal.Body className="p-0">
-              {loadingUsages ? (
-                <div className="flex flex-col gap-4 p-6">
-                  {Array.from({ length: 3 }).map((_, i) => (
-                    <div key={i} className="flex justify-between border-b border-[var(--border)] pb-2 last:border-0">
-                      <Skeleton className="h-5 w-32 rounded" />
-                      <Skeleton className="h-5 w-32 rounded" />
-                      <Skeleton className="h-5 w-24 rounded" />
-                    </div>
-                  ))}
-                </div>
-              ) : usages.length === 0 ? (
-                <div className="p-10 text-center text-[var(--muted)]">
-                  Este cupón aún no ha sido utilizado.
-                </div>
-              ) : (
-                <div className="w-full overflow-x-auto max-h-[500px]">
-                  <Table className="w-full">
-                    <Table.ScrollContainer>
-                      <Table.Content aria-label="Tabla de usos del cupón">
-                        <Table.Header className="bg-[var(--surface-sunken)] border-b border-[var(--border)]">
-                          <Table.Column isRowHeader className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Orden ID</Table.Column>
-                          <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Usuario ID</Table.Column>
-                          <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider text-right">Fecha</Table.Column>
-                        </Table.Header>
-                        <Table.Body>
-                          {usages.map((u, idx) => (
-                            <Table.Row key={idx} className="border-b border-[var(--border)] last:border-0 hover:bg-white/[0.02]">
-                              <Table.Cell className="py-4 px-4 text-[var(--foreground)] text-sm">{u.order_id}</Table.Cell>
-                              <Table.Cell className="py-4 px-4 text-[var(--foreground)] text-sm">{u.user_id}</Table.Cell>
-                              <Table.Cell className="py-4 px-4 text-[var(--muted)] text-sm text-right">
-                                {new Date(u.used_at).toLocaleDateString()}
-                              </Table.Cell>
-                            </Table.Row>
-                          ))}
-                        </Table.Body>
-                      </Table.Content>
-                    </Table.ScrollContainer>
-                  </Table>
-                </div>
-              )}
-            </Modal.Body>
-          </Modal.Dialog>
-        </Modal.Container>
+        <Modal.Backdrop>
+          <Modal.Container>
+            <Modal.Dialog className="bg-[var(--surface)] border border-[var(--border)] overflow-hidden">
+              <Modal.CloseTrigger className="text-[var(--muted)] hover:text-[var(--foreground)]" />
+              <Modal.Header className="border-b border-[var(--border)] bg-[var(--surface-sunken)]">
+                <Modal.Heading className="text-xl font-bold text-[var(--foreground)]">
+                  Historial de Uso
+                </Modal.Heading>
+              </Modal.Header>
+              <Modal.Body className="p-0">
+                {loadingUsages ? (
+                  <div className="flex flex-col gap-4 p-6">
+                    {Array.from({ length: 3 }).map((_, i) => (
+                      <div key={i} className="flex justify-between border-b border-[var(--border)] pb-2 last:border-0">
+                        <Skeleton className="h-5 w-32 rounded" />
+                        <Skeleton className="h-5 w-32 rounded" />
+                        <Skeleton className="h-5 w-24 rounded" />
+                      </div>
+                    ))}
+                  </div>
+                ) : usages.length === 0 ? (
+                  <div className="p-10 text-center text-[var(--muted)]">
+                    Este cupón aún no ha sido utilizado.
+                  </div>
+                ) : (
+                  <div className="w-full overflow-x-auto max-h-[500px]">
+                    <Table className="w-full">
+                      <Table.ScrollContainer>
+                        <Table.Content aria-label="Tabla de usos del cupón">
+                          <Table.Header className="bg-[var(--surface-sunken)] border-b border-[var(--border)]">
+                            <Table.Column isRowHeader className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Orden ID</Table.Column>
+                            <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Usuario ID</Table.Column>
+                            <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider text-right">Fecha</Table.Column>
+                          </Table.Header>
+                          <Table.Body>
+                            {usages.map((u, idx) => (
+                              <Table.Row key={idx} className="border-b border-[var(--border)] last:border-0 hover:bg-white/[0.02]">
+                                <Table.Cell className="py-4 px-4 text-[var(--foreground)] text-sm">{u.order_id}</Table.Cell>
+                                <Table.Cell className="py-4 px-4 text-[var(--foreground)] text-sm">{u.user_id}</Table.Cell>
+                                <Table.Cell className="py-4 px-4 text-[var(--muted)] text-sm text-right">
+                                  {new Date(u.used_at).toLocaleDateString()}
+                                </Table.Cell>
+                              </Table.Row>
+                            ))}
+                          </Table.Body>
+                        </Table.Content>
+                      </Table.ScrollContainer>
+                    </Table>
+                  </div>
+                )}
+              </Modal.Body>
+            </Modal.Dialog>
+          </Modal.Container>
+        </Modal.Backdrop>
       </Modal>
     </div>
   );
