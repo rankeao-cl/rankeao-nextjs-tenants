@@ -44,7 +44,7 @@ export default function InventoryPage() {
           </h1>
           <p className="text-sm text-[var(--muted)] mt-1">Revisa el historial de movimientos y alertas de stock</p>
         </div>
-        <Button variant="outline" onPress={() => toast.info("Ajuste manual de stock próximamente")}>
+        <Button variant="primary" onPress={() => toast.info("Ajuste manual de stock próximamente")}>
           Ajustar Stock
         </Button>
       </div>
