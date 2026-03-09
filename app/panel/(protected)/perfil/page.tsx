@@ -7,6 +7,7 @@ import { StoreConfig } from "./components/StoreConfig";
 import { SchedulesConfig } from "./components/SchedulesConfig";
 import { SocialLinksConfig } from "./components/SocialLinksConfig";
 import { PaymentMethodsConfig } from "./components/PaymentMethodsConfig";
+import { ProfileCompleteness } from "./components/ProfileCompleteness";
 
 export default function PerfilPage() {
   const user = useAuthStore((s) => s.user);
@@ -76,6 +77,8 @@ export default function PerfilPage() {
           Gestiona tu información de usuario y la configuración de tu tienda
         </p>
       </div>
+
+      <ProfileCompleteness />
 
       <Tabs className="w-full">
         <Tabs.ListContainer>

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Card, Input, Button, Switch, TextField, Label, InputGroup, toast, Skeleton } from "@heroui/react";
 import { getMyTenant, updateMyTenant, setTenantSlug, tenantGoPublic, tenantGoPrivate, setTenantLogo, setTenantBanner } from "@/lib/api/tenant";
+import { ImageIcon } from "lucide-react";
 
 export function StoreConfig() {
   const [tenant, setTenant] = useState<Record<string, unknown> | null>(null);
@@ -144,18 +145,56 @@ export function StoreConfig() {
 
           <h3 className="text-lg font-semibold text-[var(--foreground)] mt-8 mb-4">Imágenes (URLs)</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <TextField name="logoUrl" className={inputWrapperClass}>
-              <Label className={labelClass}>URL del Logo</Label>
-              <InputGroup className={groupClass}>
-                <Input name="logoUrl" type="url" value={formData.logoUrl} onChange={handleChange} className={inputClass} placeholder="https://ejemplo.com/logo.png" />
-              </InputGroup>
-            </TextField>
-            <TextField name="bannerUrl" className={inputWrapperClass}>
-              <Label className={labelClass}>URL del Banner</Label>
-              <InputGroup className={groupClass}>
-                <Input name="bannerUrl" type="url" value={formData.bannerUrl} onChange={handleChange} className={inputClass} placeholder="https://ejemplo.com/banner.png" />
-              </InputGroup>
-            </TextField>
+            <div className="space-y-3">
+              <TextField name="logoUrl" className={inputWrapperClass}>
+                <Label className={labelClass}>URL del Logo</Label>
+                <InputGroup className={groupClass}>
+                  <Input name="logoUrl" type="url" value={formData.logoUrl} onChange={handleChange} className={inputClass} placeholder="https://ejemplo.com/logo.png" />
+                </InputGroup>
+              </TextField>
+              {formData.logoUrl ? (
+                <div className="flex items-center gap-3 p-3 rounded-xl border border-[var(--border)] bg-[var(--surface-sunken)]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={formData.logoUrl}
+                    alt="Preview Logo"
+                    className="w-16 h-16 rounded-lg object-contain border border-[var(--border)] bg-white"
+                    onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; (e.currentTarget.nextElementSibling as HTMLElement)?.classList.remove('hidden'); }}
+                    onLoad={(e) => { (e.currentTarget as HTMLImageElement).style.display = ''; (e.currentTarget.nextElementSibling as HTMLElement)?.classList.add('hidden'); }}
+                  />
+                  <div className="hidden flex items-center gap-2 text-amber-400 text-xs">
+                    <ImageIcon className="w-4 h-4" />
+                    <span>No se pudo cargar la imagen</span>
+                  </div>
+                  <span className="text-xs text-[var(--muted)]">Vista previa del logo</span>
+                </div>
+              ) : null}
+            </div>
+            <div className="space-y-3">
+              <TextField name="bannerUrl" className={inputWrapperClass}>
+                <Label className={labelClass}>URL del Banner</Label>
+                <InputGroup className={groupClass}>
+                  <Input name="bannerUrl" type="url" value={formData.bannerUrl} onChange={handleChange} className={inputClass} placeholder="https://ejemplo.com/banner.png" />
+                </InputGroup>
+              </TextField>
+              {formData.bannerUrl ? (
+                <div className="space-y-2 p-3 rounded-xl border border-[var(--border)] bg-[var(--surface-sunken)]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={formData.bannerUrl}
+                    alt="Preview Banner"
+                    className="w-full h-24 rounded-lg object-cover border border-[var(--border)]"
+                    onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; (e.currentTarget.nextElementSibling as HTMLElement)?.classList.remove('hidden'); }}
+                    onLoad={(e) => { (e.currentTarget as HTMLImageElement).style.display = ''; (e.currentTarget.nextElementSibling as HTMLElement)?.classList.add('hidden'); }}
+                  />
+                  <div className="hidden flex items-center gap-2 text-amber-400 text-xs">
+                    <ImageIcon className="w-4 h-4" />
+                    <span>No se pudo cargar la imagen</span>
+                  </div>
+                  <span className="text-xs text-[var(--muted)]">Vista previa del banner</span>
+                </div>
+              ) : null}
+            </div>
           </div>
 
           <div className="mt-8 flex justify-end">

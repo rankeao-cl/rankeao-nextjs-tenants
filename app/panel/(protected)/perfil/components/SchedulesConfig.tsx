@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Card, Button, Switch, Label, Skeleton, toast } from "@heroui/react";
 import { getTenantSchedules, updateTenantSchedules } from "@/lib/api/tenant";
 import { getErrorMessage } from "@/lib/utils/error-message";
+import { Copy } from "lucide-react";
 import type { ScheduleDay, DayOfWeek } from "@/lib/types/tenant";
 
 const DAY_ORDER: DayOfWeek[] = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
@@ -92,8 +93,36 @@ export function SchedulesConfig() {
 
   return (
     <Card className="bg-[var(--surface)] border border-[var(--border)] p-6">
-      <h3 className="text-lg font-semibold text-[var(--foreground)] mb-1">Horarios de Atención</h3>
-      <p className="text-[var(--muted)] text-sm mb-6">Configura los días y horarios en los que tu tienda está abierta al público.</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+        <div>
+          <h3 className="text-lg font-semibold text-[var(--foreground)] mb-1">Horarios de Atención</h3>
+          <p className="text-[var(--muted)] text-sm">Configura los días y horarios en los que tu tienda está abierta al público.</p>
+        </div>
+        <Button
+          size="sm"
+          variant="secondary"
+          className="flex items-center gap-2 shrink-0"
+          onPress={() => {
+            const firstOpen = schedules.find((s) => !s.is_closed);
+            if (!firstOpen) {
+              toast.danger("No hay ningún día abierto para copiar");
+              return;
+            }
+            setSchedules((prev) =>
+              prev.map((s) => ({
+                ...s,
+                opens_at: firstOpen.opens_at,
+                closes_at: firstOpen.closes_at,
+                is_closed: false,
+              }))
+            );
+            toast.success(`Horario de ${DAY_LABELS[firstOpen.day_of_week]} aplicado a todos los días`);
+          }}
+        >
+          <Copy className="w-4 h-4" />
+          Aplicar a todos
+        </Button>
+      </div>
 
       <div className="space-y-4">
         {schedules.map((schedule) => (
