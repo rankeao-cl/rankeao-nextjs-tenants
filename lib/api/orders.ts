@@ -41,5 +41,5 @@ export async function refundOrder(orderId: string, data: { amount: number; reaso
 }
 
 export async function updateOrderNotes(orderId: string, data: { internal_notes: string }) {
-  return apiFetch(`/store/panel/orders/${orderId}/notes`, { method: "PUT", body: data });
+  return apiFetch(`/store/panel/orders/${orderId}/notes`, { method: "PATCH", body: data });
 }

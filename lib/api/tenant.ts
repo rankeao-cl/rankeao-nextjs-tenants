@@ -90,3 +90,28 @@ export async function addPaymentMethod(data: Record<string, unknown>) {
 export async function updatePaymentMethod(id: string, data: Record<string, unknown>) {
   return apiFetch(`/tenants/me/payment-methods/${id}`, { method: "PATCH", body: data });
 }
+
+export async function deletePaymentMethod(id: string) {
+  return apiFetch(`/tenants/me/payment-methods/${id}`, { method: "DELETE" });
+}
+
+export async function createScheduleOverride(data: Record<string, unknown>) {
+  return apiFetch("/tenants/me/schedules/overrides", { method: "POST", body: data });
+}
+
+export async function deleteScheduleOverride(id: string) {
+  return apiFetch(`/tenants/me/schedules/overrides/${id}`, { method: "DELETE" });
+}
+
+export async function getTenantNotifications() {
+  const payload = await apiFetch<{ notifications: unknown[] }>("/tenants/me/notifications");
+  return payload.notifications ?? [];
+}
+
+export async function markNotificationRead(id: string) {
+  return apiFetch(`/tenants/me/notifications/${id}/read`, { method: "POST" });
+}
+
+export async function markAllNotificationsRead() {
+  return apiFetch("/tenants/me/notifications/read-all", { method: "POST" });
+}

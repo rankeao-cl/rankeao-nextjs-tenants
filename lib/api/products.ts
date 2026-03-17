@@ -47,3 +47,20 @@ export async function updateProductVariant(productId: string, variantId: string,
 export async function deleteProductVariant(productId: string, variantId: string) {
   return apiFetch(`/store/panel/products/${productId}/variants/${variantId}`, { method: "DELETE" });
 }
+
+export async function bulkProductAction(data: { product_ids: string[]; action: string }) {
+  return apiFetch<{ success_count: number; failed_count: number }>("/store/panel/products/bulk-action", { method: "POST", body: data });
+}
+
+export async function reorderProductImages(productId: string, imageIds: string[]) {
+  return apiFetch(`/store/panel/products/${productId}/images/reorder`, { method: "PUT", body: { image_ids: imageIds } });
+}
+
+export async function updateProductImage(productId: string, imageId: string, data: Record<string, unknown>) {
+  return apiFetch(`/store/panel/products/${productId}/images/${imageId}`, { method: "PATCH", body: data });
+}
+
+export async function listVariants(productId: string) {
+  const payload = await apiFetch<unknown>(`/store/panel/products/${productId}/variants`);
+  return extractList(payload, ["variants", "items"]);
+}

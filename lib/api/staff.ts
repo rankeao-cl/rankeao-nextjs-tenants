@@ -21,3 +21,20 @@ export async function updateStaffRole(id: string, data: { role: string }) {
 export async function transferOwnership(data: { new_owner_staff_id: number; password: string }) {
   return apiFetch("/tenants/me/transfer-ownership", { method: "POST", body: data });
 }
+
+export async function listStaffInvitations() {
+  const payload = await apiFetch<{ invitations: unknown[] }>("/tenants/me/staff/invitations");
+  return payload.invitations ?? [];
+}
+
+export async function removeStaffMember(id: string) {
+  return apiFetch(`/tenants/me/staff/${id}`, { method: "DELETE" });
+}
+
+export async function setStaffGrant(staffId: string, data: { grant_code: string; is_granted: boolean; reason?: string }) {
+  return apiFetch(`/tenants/me/staff/${staffId}/grants`, { method: "POST", body: data });
+}
+
+export async function removeStaffGrant(staffId: string, grantCode: string) {
+  return apiFetch(`/tenants/me/staff/${staffId}/grants/${grantCode}`, { method: "DELETE" });
+}
