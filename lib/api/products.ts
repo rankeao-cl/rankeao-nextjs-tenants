@@ -21,7 +21,7 @@ export async function getProduct(id: string): Promise<ProductDetail> {
 }
 
 export async function updateProduct(id: string, data: Record<string, unknown>) {
-  return apiFetch(`/store/panel/products/${id}`, { method: "PUT", body: data });
+  return apiFetch(`/store/panel/products/${id}`, { method: "PATCH", body: data });
 }
 
 export async function deleteProduct(id: string) {
@@ -41,7 +41,7 @@ export async function addProductVariant(productId: string, data: Record<string, 
 }
 
 export async function updateProductVariant(productId: string, variantId: string, data: Record<string, unknown>) {
-  return apiFetch(`/store/panel/products/${productId}/variants/${variantId}`, { method: "PUT", body: data });
+  return apiFetch(`/store/panel/products/${productId}/variants/${variantId}`, { method: "PATCH", body: data });
 }
 
 export async function deleteProductVariant(productId: string, variantId: string) {

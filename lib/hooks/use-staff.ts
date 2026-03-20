@@ -35,7 +35,7 @@ export function useUpdateStaffRole() {
 export function useTransferOwnership() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (data: { new_owner_staff_id: number; password: string }) => staffApi.transferOwnership(data),
+    mutationFn: (data: { new_owner_staff_id: string; password: string }) => staffApi.transferOwnership(data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["staff"] }),
   });
 }

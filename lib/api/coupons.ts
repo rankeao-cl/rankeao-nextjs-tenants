@@ -16,7 +16,7 @@ export async function createCoupon(data: Record<string, unknown>) {
 }
 
 export async function updateCoupon(id: string, data: Record<string, unknown>) {
-  return apiFetch(`/store/panel/coupons/${id}`, { method: "PUT", body: data });
+  return apiFetch(`/store/panel/coupons/${id}`, { method: "PATCH", body: data });
 }
 
 export async function deleteCoupon(id: string) {

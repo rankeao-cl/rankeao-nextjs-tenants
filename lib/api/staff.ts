@@ -11,14 +11,14 @@ export async function inviteStaff(data: { email: string; role: string }) {
 }
 
 export async function cancelStaffInvitation(id: string) {
-  return apiFetch(`/tenants/me/staff/${id}`, { method: "DELETE" });
+  return apiFetch(`/tenants/me/staff/invitations/${id}`, { method: "DELETE" });
 }
 
 export async function updateStaffRole(id: string, data: { role: string }) {
   return apiFetch(`/tenants/me/staff/${id}/role`, { method: "PATCH", body: data });
 }
 
-export async function transferOwnership(data: { new_owner_staff_id: number; password: string }) {
+export async function transferOwnership(data: { new_owner_staff_id: string; password: string }) {
   return apiFetch("/tenants/me/transfer-ownership", { method: "POST", body: data });
 }
 
