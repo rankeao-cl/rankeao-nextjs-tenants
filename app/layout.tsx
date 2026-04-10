@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
-import { Inter, Rajdhani } from "next/font/google";
+import { Inter, Rajdhani, Geist } from "next/font/google";
 import { Providers } from "@/lib/providers";
 import "./globals.css";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const inter = Inter({
   variable: "--font-inter",
@@ -25,14 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className="dark" suppressHydrationWarning>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('rankeao-panel-theme');if(t==='light'){document.documentElement.classList.remove('dark');document.documentElement.classList.add('light')}}catch(e){}})()`,
-          }}
-        />
-      </head>
+    <html lang="es" className={cn("light", "font-sans", geist.variable)} data-theme="light" suppressHydrationWarning>
       <body
         className={`${inter.variable} ${rajdhani.variable} font-[var(--font-body)] antialiased bg-[var(--background)] text-[var(--foreground)]`}
       >

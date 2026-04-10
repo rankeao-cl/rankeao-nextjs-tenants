@@ -39,7 +39,7 @@ const getSegmentColor = (segment: string) => {
     case "NEW":
       return "bg-sky-500/10 text-sky-400 border-sky-500/20";
     case "INACTIVE":
-      return "bg-zinc-500/10 text-zinc-400 border-zinc-500/20";
+      return "bg-[var(--surface-secondary)] text-[var(--muted)] border-[var(--border)]";
     default:
       return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
   }
@@ -203,7 +203,7 @@ export default function CustomersPage() {
                       </Table.Row>
                     ) : (
                       filtered.map((customer) => (
-                        <Table.Row key={customer.id} className="border-b border-[var(--border)] hover:bg-white/[0.02] transition-colors">
+                        <Table.Row key={customer.id} className="border-b border-[var(--border)] hover:bg-[var(--surface-secondary)] transition-colors">
                           <Table.Cell className="py-4 px-4">
                             <div className="flex items-center gap-3">
                               <div className="w-8 h-8 rounded-full bg-[var(--primary)]/20 flex items-center justify-center text-xs font-bold text-[var(--primary)]">
@@ -230,7 +230,7 @@ export default function CustomersPage() {
                             <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${
                               customer.is_vip
                                 ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                                : "bg-zinc-500/10 text-zinc-400 border-zinc-500/20"
+                                : "bg-[var(--surface-secondary)] text-[var(--muted)] border-[var(--border)]"
                             }`}>
                               {customer.is_vip ? "VIP" : "Normal"}
                             </span>

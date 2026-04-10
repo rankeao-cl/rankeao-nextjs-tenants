@@ -65,7 +65,7 @@ export default function NotificationsPage() {
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       {n.type && (
-                        <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium bg-zinc-500/10 text-zinc-400 border-zinc-500/20">
+                        <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium bg-[var(--surface-secondary)] text-[var(--muted)] border-[var(--border)]">
                           {n.type}
                         </span>
                       )}

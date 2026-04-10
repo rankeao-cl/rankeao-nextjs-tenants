@@ -1,55 +1,142 @@
 import {
   LayoutDashboard,
-  ShoppingBag,
   ShoppingCart,
-  PackageSearch,
+  ShoppingBag,
   Ticket,
-  Code2,
   User,
   Users,
   Heart,
-  Receipt,
   BarChart3,
   Truck,
-  CalendarDays,
-  CreditCard,
-  Bell,
+  Settings,
+  Store,
+  Tag,
+  PieChart,
   type LucideIcon,
 } from "lucide-react";
 
 export interface NavItem {
   label: string;
   href: string;
-  icon: LucideIcon;
 }
 
-export interface NavDivider {
-  type: "divider";
+export interface NavSection {
+  title?: string;
+  items: NavItem[];
+}
+
+export interface NavMainGroup {
   label: string;
+  icon: LucideIcon;
+  href?: string;
+  sections?: NavSection[];
 }
 
-export type NavEntry = NavItem | NavDivider;
-
-export const NAV_ITEMS: NavEntry[] = [
-  { label: "Panel principal", href: "/panel/dashboard", icon: LayoutDashboard },
-  { label: "Perfil", href: "/panel/perfil", icon: User },
-  { type: "divider", label: "Gestión" },
-  { label: "Productos", href: "/panel/products", icon: ShoppingBag },
-  { label: "Órdenes", href: "/panel/orders", icon: ShoppingCart },
-  { label: "Inventario", href: "/panel/inventory", icon: PackageSearch },
-  { label: "Envíos", href: "/panel/shipments", icon: Truck },
-  { type: "divider", label: "Marketing" },
-  { label: "Cupones", href: "/panel/coupons", icon: Ticket },
-  { label: "Fidelidad", href: "/panel/loyalty", icon: Heart },
-  { label: "Clientes", href: "/panel/customers", icon: Users },
-  { label: "Eventos", href: "/panel/events", icon: CalendarDays },
-  { type: "divider", label: "Finanzas" },
-  { label: "Gastos", href: "/panel/expenses", icon: Receipt },
-  { label: "Analítica", href: "/panel/analytics", icon: BarChart3 },
-  { label: "Suscripción", href: "/panel/subscriptions", icon: CreditCard },
-  { type: "divider", label: "Equipo" },
-  { label: "Staff", href: "/panel/staff", icon: Users },
-  { label: "Notificaciones", href: "/panel/notifications", icon: Bell },
-  { type: "divider", label: "Desarrollo" },
-  { label: "API Explorer", href: "/panel/api-explorer", icon: Code2 },
+export const NAV_GROUPS: NavMainGroup[] = [
+  {
+    label: "Acceso",
+    icon: LayoutDashboard,
+    href: "/panel/dashboard",
+  },
+  {
+    label: "Ventas",
+    icon: ShoppingCart,
+    sections: [
+      {
+        title: "Transacciones",
+        items: [
+          { label: "Todas las órdenes", href: "/panel/orders" },
+          { label: "Suscripciones", href: "/panel/subscriptions" },
+        ],
+      },
+      {
+        title: "Logística",
+        items: [
+          { label: "Envíos", href: "/panel/shipments" },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Productos",
+    icon: ShoppingBag,
+    sections: [
+      {
+        title: "Catálogo",
+        items: [
+          { label: "Lista de productos", href: "/panel/products" },
+        ],
+      },
+      {
+        title: "Inventario",
+        items: [
+          { label: "Gestión de Stock", href: "/panel/inventory" },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Clientes",
+    icon: Users,
+    sections: [
+      {
+        title: "Gestión de clientes",
+        items: [
+          { label: "Directorio", href: "/panel/customers" },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Marketing",
+    icon: Ticket,
+    sections: [
+      {
+        title: "Promociones",
+        items: [
+          { label: "Cupones", href: "/panel/coupons" },
+          { label: "Plan de Lealtad", href: "/panel/loyalty" },
+        ],
+      },
+      {
+        title: "Campañas",
+        items: [
+          { label: "Eventos Especiales", href: "/panel/events" },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Reportes",
+    icon: PieChart,
+    sections: [
+      {
+        title: "Análisis",
+        items: [
+          { label: "Analítica general", href: "/panel/analytics" },
+        ],
+      },
+      {
+        title: "Registro",
+        items: [
+          { label: "Control de Gastos", href: "/panel/expenses" },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Ajustes",
+    icon: Settings,
+    sections: [
+      {
+        title: "Cuenta y Sistema",
+        items: [
+          { label: "Mi Perfil", href: "/panel/perfil" },
+          { label: "Configuración Tienda", href: "/panel/tienda" },
+          { label: "Staff", href: "/panel/staff" },
+          { label: "API y Devs", href: "/panel/api-explorer" },
+        ],
+      },
+    ],
+  },
 ];

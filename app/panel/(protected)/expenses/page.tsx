@@ -100,7 +100,7 @@ export default function ExpensesPage() {
                     </Table.Row>
                   ) : (
                     expenses.map((expense, idx) => (
-                      <Table.Row key={expense.id || idx} className="border-b border-[var(--border)] last:border-0 hover:bg-white/[0.02] transition-colors">
+                      <Table.Row key={expense.id || idx} className="border-b border-[var(--border)] last:border-0 hover:bg-[var(--surface-secondary)] transition-colors">
                         <Table.Cell className="py-4 px-4 whitespace-nowrap text-sm text-[var(--muted)]">
                           {expense.date || expense.created_at || "-"}
                         </Table.Cell>
@@ -108,7 +108,7 @@ export default function ExpensesPage() {
                           {expense.title || expense.description || "Sin descripción"}
                         </Table.Cell>
                         <Table.Cell className="py-4 px-4">
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-zinc-500/10 text-zinc-400 border border-zinc-500/20">
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[var(--surface-secondary)] text-[var(--muted)] border border-[var(--border)]">
                             {expense.category || "General"}
                           </span>
                         </Table.Cell>

@@ -34,7 +34,7 @@ const getStatusColor = (status: string) => {
     case "REFUNDED":
       return "bg-red-500/10 text-red-500 border-red-500/20";
     default:
-      return "bg-zinc-500/10 text-zinc-400 border-zinc-500/20";
+      return "bg-[var(--surface-secondary)] text-[var(--muted)] border-[var(--border)]";
   }
 };
 

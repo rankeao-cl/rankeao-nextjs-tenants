@@ -106,7 +106,7 @@ export default function InvitationsPage() {
             <Skeleton className="h-8 w-64 rounded-lg" />
             <Skeleton className="h-4 w-80 rounded-lg" />
           </div>
-          <Card className="bg-[var(--surface)]/90 border border-white/20">
+          <Card className="bg-[var(--surface)]/90 border border-[var(--border)]">
             <Card.Content className="p-6">
               <div className="flex items-start gap-4">
                 <Skeleton className="h-12 w-12 rounded-xl" />
@@ -129,10 +129,7 @@ export default function InvitationsPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4 bg-[var(--background)]">
-      <div className="pointer-events-none fixed inset-0">
-        <div className="absolute left-1/4 top-1/4 h-96 w-96 rounded-full bg-white/10 blur-[120px]" />
-        <div className="absolute right-1/4 bottom-1/4 h-96 w-96 rounded-full bg-zinc-300/8 blur-[120px]" />
-      </div>
+
 
       <div className="w-full max-w-lg relative z-10 space-y-6">
         <div className="text-center space-y-2">
@@ -145,7 +142,7 @@ export default function InvitationsPage() {
         </div>
 
         {invitations.length === 0 ? (
-          <Card className="bg-[var(--surface)]/90 border border-white/20 backdrop-blur-xl">
+          <Card className="bg-[var(--surface)]/90 border border-[var(--border)]">
             <Card.Content className="p-8 text-center space-y-4">
               <p className="text-[var(--muted)]">No tienes invitaciones pendientes.</p>
               <Button variant="tertiary" onPress={handleLogout}>
@@ -163,7 +160,7 @@ export default function InvitationsPage() {
               >
                 <Card.Content className="p-6">
                   <div className="flex items-start gap-4">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white/5">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--surface-secondary)]">
                       {inv.tenant_logo_url ? (
                         <img src={inv.tenant_logo_url} alt="" className="h-8 w-8 rounded-lg object-cover" />
                       ) : (

@@ -27,7 +27,7 @@ const getStatusColor = (status: string) => {
       return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
     case "INACTIVE":
     case "EXPIRED":
-      return "bg-zinc-500/10 text-zinc-400 border-zinc-500/20";
+      return "bg-[var(--surface-secondary)] text-[var(--muted)] border-[var(--border)]";
     default:
       return "bg-amber-500/10 text-amber-400 border-amber-500/20";
   }
@@ -168,7 +168,7 @@ export default function CouponsPage() {
                       </Table.Row>
                     ) : (
                       coupons.map((coupon) => (
-                        <Table.Row key={coupon.id} className="border-b border-[var(--border)] hover:bg-white/[0.02] transition-colors">
+                        <Table.Row key={coupon.id} className="border-b border-[var(--border)] hover:bg-[var(--surface-secondary)] transition-colors">
                           <Table.Cell className="py-4 px-4 text-emerald-400 font-mono font-medium">
                             {coupon.code}
                           </Table.Cell>
@@ -327,7 +327,7 @@ export default function CouponsPage() {
                           </Table.Header>
                           <Table.Body>
                             {usages.map((u, idx) => (
-                              <Table.Row key={idx} className="border-b border-[var(--border)] last:border-0 hover:bg-white/[0.02]">
+                              <Table.Row key={idx} className="border-b border-[var(--border)] last:border-0 hover:bg-[var(--surface-secondary)]">
                                 <Table.Cell className="py-4 px-4 text-[var(--foreground)] text-sm">{u.order_id}</Table.Cell>
                                 <Table.Cell className="py-4 px-4 text-[var(--foreground)] text-sm">{u.user_id}</Table.Cell>
                                 <Table.Cell className="py-4 px-4 text-[var(--muted)] text-sm text-right">

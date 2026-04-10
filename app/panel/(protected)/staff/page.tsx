@@ -36,7 +36,7 @@ const getRoleColor = (role: string) => {
     case "ADMIN": return "bg-purple-500/10 text-purple-400 border-purple-500/20";
     case "JUDGE": return "bg-sky-500/10 text-sky-400 border-sky-500/20";
     case "CASHIER": return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
-    default: return "bg-zinc-500/10 text-zinc-400 border-zinc-500/20";
+    default: return "bg-[var(--surface-secondary)] text-[var(--muted)] border-[var(--border)]";
   }
 };
 
@@ -139,7 +139,7 @@ export default function StaffPage() {
                     staff.map((member) => {
                       const isOwner = member.role === "OWNER";
                       return (
-                        <Table.Row key={member.id} className="border-b border-[var(--border)] last:border-0 hover:bg-white/[0.02] transition-colors">
+                        <Table.Row key={member.id} className="border-b border-[var(--border)] last:border-0 hover:bg-[var(--surface-secondary)] transition-colors">
                           <Table.Cell className="py-4 px-4">
                             <div className="flex items-center gap-3">
                               {member.avatar_url ? (

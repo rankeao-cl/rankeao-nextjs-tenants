@@ -1,7 +1,7 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState, type ReactNode } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import { Toast } from "@heroui/react";
 
 export function Providers({ children }: { children: ReactNode }) {
@@ -17,6 +17,15 @@ export function Providers({ children }: { children: ReactNode }) {
         },
       })
   );
+
+  // Force light mode — remove any dark class from previous sessions
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.remove("dark");
+    root.classList.add("light");
+    root.removeAttribute("data-theme");
+    localStorage.removeItem("rankeao-panel-theme");
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

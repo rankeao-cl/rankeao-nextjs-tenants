@@ -5,7 +5,7 @@ export interface Product {
   price: number;
   stock_quantity: number;
   status: string;
-  primary_image_url?: string;
+  image_url?: string;
 }
 
 export interface ProductImage {

@@ -30,26 +30,20 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       const resp = await loginPanel(email, password);
-      // Store auth first so the API client can use the token
       setAuth(resp);
 
-      // Check if user has any tenant memberships
       const memberships = await fetchMyMemberships();
       if (!memberships || memberships.length === 0) {
-        // No memberships — check for pending invitations
         const invitations = await fetchMyPendingInvitations();
         if (invitations && invitations.length > 0) {
-          // Has pending invitations — redirect to accept them
           router.push("/panel/invitations");
           return;
         }
-        // No memberships and no invitations — block access
         useAuthStore.getState().logout();
         toast.danger("No tienes tiendas asociadas. Solicita una tienda primero.");
         return;
       }
 
-      // Store the first membership's tenant_id on the user
       const membership = memberships[0];
       useAuthStore.getState().setAuth({
         ...resp,
@@ -72,87 +66,84 @@ export default function LoginPage() {
     }
   };
 
-  const inputClasses = "w-full bg-[var(--surface)] text-[var(--foreground)] placeholder:text-[var(--field-placeholder)] focus:outline-none";
-  const groupClasses = "flex items-center gap-2 border border-white/15 bg-[var(--surface)] rounded-xl px-3 py-2 focus-within:border-white/70 hover:border-white/40 transition-colors";
-
   return (
-    <div className="flex min-h-screen items-center justify-center px-4 bg-[var(--background)]">
-      <div className="pointer-events-none fixed inset-0">
-        <div className="absolute left-1/4 top-1/4 h-96 w-96 rounded-full bg-white/10 blur-[120px]" />
-        <div className="absolute right-1/4 bottom-1/4 h-96 w-96 rounded-full bg-zinc-300/8 blur-[120px]" />
-      </div>
+    <div className="flex min-h-screen items-center justify-center px-4" style={{ background: "linear-gradient(135deg, #f7f9fa 0%, #e6eaef 100%)" }}>
 
-      <Card className="w-full max-w-md bg-[var(--surface)]/90 border border-white/20 backdrop-blur-xl shadow-neon-white relative z-10">
-        <Card.Content className="p-8">
+      <div className="w-full max-w-md">
+        <div className="bg-white rounded-2xl border border-[var(--border)] shadow-[0_4px_24px_rgba(0,0,0,0.06)] p-8">
+          
+          {/* Logo */}
           <div className="flex flex-col items-center mb-8">
-            <div className="relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl border border-white/30 bg-gradient-to-br from-zinc-200 to-white mb-4 shadow-lg shadow-white/20">
+            <div className="relative flex h-10 w-48 items-center justify-center overflow-hidden mb-5">
               <Image
-                src="/logo.png"
+                src="/logo.svg"
                 alt="Rankeao"
                 fill
-                sizes="56px"
-                className="object-contain p-2"
+                sizes="192px"
+                className="object-contain"
                 priority
               />
             </div>
-            <h1 className="font-[var(--font-heading)] text-2xl font-bold text-gradient-brand">
-              Rankeao Panel
+            <h1 className="text-[22px] font-bold text-[#2d3748] tracking-tight">
+              Panel Administrativo
             </h1>
-            <p className="text-sm text-[var(--muted)] mt-1">
-              Ingresa al panel de administración de tiendas
+            <p className="text-[14px] text-[#64748b] mt-1">
+              Ingresa al entorno de gestión de tu tienda
             </p>
           </div>
 
+          {/* Form */}
           <Form onSubmit={handleSubmit} className="space-y-5">
-            <TextField name="email" className="space-y-1.5 flex flex-col">
-              <Label className="text-[var(--muted)] text-sm">Email</Label>
-              <InputGroup className={groupClasses}>
+            <TextField name="email" className="space-y-1.5 flex flex-col w-full">
+              <Label className="text-sm font-medium" style={{ color: "var(--c-dark-gray)" }}>Email</Label>
+              <InputGroup className="flex items-center gap-2 border border-[var(--border)] bg-[#f9fafb] rounded-xl px-3 py-2 focus-within:border-[var(--c-cyan)] focus-within:ring-2 focus-within:ring-[var(--c-cyan)]/10 hover:border-[#c0c5cc] transition-all">
                 <InputGroupPrefix>
-                  <Mail className="h-4 w-4 text-[var(--muted)] pointer-events-none" />
+                  <Mail className="h-4 w-4 pointer-events-none" style={{ color: "var(--c-gray)" }} />
                 </InputGroupPrefix>
                 <Input
                   type="email"
                   placeholder="tienda@rankeao.cl"
                   value={email}
                   onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setEmail(e.target.value)}
-                  className={inputClasses}
+                  className="w-full bg-transparent placeholder:text-[#a0aec0] focus:outline-none text-sm"
+                  style={{ color: "var(--c-dark-gray)" }}
                   required
                 />
               </InputGroup>
             </TextField>
 
-            <TextField name="password" className="space-y-1.5 flex flex-col">
-              <Label className="text-[var(--muted)] text-sm">Contraseña</Label>
-              <InputGroup className={groupClasses}>
+            <TextField name="password" className="space-y-1.5 flex flex-col w-full">
+              <Label className="text-sm font-medium" style={{ color: "var(--c-dark-gray)" }}>Contraseña</Label>
+              <InputGroup className="flex items-center gap-2 border border-[var(--border)] bg-[#f9fafb] rounded-xl px-3 py-2 focus-within:border-[var(--c-cyan)] focus-within:ring-2 focus-within:ring-[var(--c-cyan)]/10 hover:border-[#c0c5cc] transition-all">
                 <InputGroupPrefix>
-                  <Lock className="h-4 w-4 text-[var(--muted)] pointer-events-none" />
+                  <Lock className="h-4 w-4 pointer-events-none" style={{ color: "var(--c-gray)" }} />
                 </InputGroupPrefix>
                 <Input
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
                   value={password}
                   onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setPassword(e.target.value)}
-                  className={inputClasses}
+                  className="w-full bg-transparent placeholder:text-[#a0aec0] focus:outline-none text-sm"
+                  style={{ color: "var(--c-dark-gray)" }}
                   required
                 />
                 <InputGroupSuffix>
-                  <Button
+                  <button
                     type="button"
-                    isIconOnly
-                    size="sm"
-                    variant="ghost"
-                    onPress={() => setShowPassword(!showPassword)}
-                    className="text-[var(--muted)] hover:text-[var(--foreground)]"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="transition-colors p-0.5 hover:opacity-70"
+                    style={{ color: "var(--c-gray)" }}
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </Button>
+                  </button>
                 </InputGroupSuffix>
               </InputGroup>
             </TextField>
 
             <Button
               type="submit"
-              className="w-full bg-gradient-to-r from-zinc-200 to-white text-black font-semibold hover:from-zinc-100 hover:to-zinc-50 shadow-lg shadow-white/20 transition-all hover:scale-[1.02] py-2 rounded-xl mt-4"
+              className="w-full text-white font-semibold shadow-sm transition-all py-2.5 rounded-xl mt-2 text-sm hover:opacity-90"
+              style={{ backgroundColor: "var(--c-cyan)" }}
               isPending={isLoading}
             >
               Iniciar Sesión
@@ -160,14 +151,19 @@ export default function LoginPage() {
 
             <div className="relative flex items-center py-2">
               <div className="flex-grow border-t border-[var(--border)]"></div>
-              <span className="flex-shrink-0 mx-4 text-xs text-[var(--muted)]">o</span>
+              <span className="flex-shrink-0 mx-4 text-xs" style={{ color: "var(--c-gray)" }}>o</span>
               <div className="flex-grow border-t border-[var(--border)]"></div>
             </div>
 
             <Button
               type="button"
               variant="secondary"
-              className="w-full bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20 hover:bg-[var(--accent)]/20 transition-all font-medium py-2 rounded-xl"
+              className="w-full border transition-all font-medium py-2.5 rounded-xl text-sm"
+              style={{ 
+                backgroundColor: "var(--surface-secondary)", 
+                color: "var(--c-orange)", 
+                borderColor: "var(--border)" 
+              }}
               onPress={() => {
                 setEmail("demo@rankeao.cl");
                 setPassword("demo123");
@@ -178,11 +174,11 @@ export default function LoginPage() {
             </Button>
           </Form>
 
-          <p className="mt-6 text-center text-xs text-[var(--field-placeholder)]">
+          <p className="mt-6 text-center text-xs" style={{ color: "var(--c-gray)" }}>
             Panel exclusivo para tiendas de Rankeao.cl
           </p>
-        </Card.Content>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

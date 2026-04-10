@@ -116,7 +116,7 @@ export default function InventoryPage() {
                         </Table.Row>
                       ) : (
                         movements.map((mov) => (
-                          <Table.Row key={mov.id} className="border-b border-[var(--border)] last:border-0 hover:bg-white/[0.02] transition-colors">
+                          <Table.Row key={mov.id} className="border-b border-[var(--border)] last:border-0 hover:bg-[var(--surface-secondary)] transition-colors">
                             <Table.Cell className="py-4 px-4 text-sm text-[var(--muted)]">
                               {new Date(mov.created_at).toLocaleDateString()}
                             </Table.Cell>
@@ -124,7 +124,7 @@ export default function InventoryPage() {
                               {mov.product_id}
                             </Table.Cell>
                             <Table.Cell className="py-4 px-4">
-                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-zinc-500/10 text-zinc-400 border border-zinc-500/20">
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[var(--surface-secondary)] text-[var(--muted)] border border-[var(--border)]">
                                 {mov.movement_type}
                               </span>
                             </Table.Cell>
@@ -180,7 +180,7 @@ export default function InventoryPage() {
                       </Table.Row>
                     ) : (
                       alerts.map((alert) => (
-                        <Table.Row key={alert.product_id} className="border-b border-[var(--border)] last:border-0 hover:bg-white/[0.02]">
+                        <Table.Row key={alert.product_id} className="border-b border-[var(--border)] last:border-0 hover:bg-[var(--surface-secondary)]">
                           <Table.Cell className="py-4 px-4 font-mono text-sm text-[var(--foreground)]">
                             {alert.product_id}
                           </Table.Cell>

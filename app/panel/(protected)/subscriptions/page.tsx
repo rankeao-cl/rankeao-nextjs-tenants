@@ -42,7 +42,7 @@ const getStatusColor = (status: string) => {
     case "PENDING":
       return "bg-amber-500/10 text-amber-400 border-amber-500/20";
     default:
-      return "bg-zinc-500/10 text-zinc-400 border-zinc-500/20";
+      return "bg-[var(--surface-secondary)] text-[var(--muted)] border-[var(--border)]";
   }
 };
 
@@ -246,7 +246,7 @@ export default function SubscriptionsPage() {
                       </Table.Row>
                     ) : (
                       invoices.map((invoice) => (
-                        <Table.Row key={invoice.id} className="border-b border-[var(--border)] last:border-0 hover:bg-white/[0.02] transition-colors">
+                        <Table.Row key={invoice.id} className="border-b border-[var(--border)] last:border-0 hover:bg-[var(--surface-secondary)] transition-colors">
                           <Table.Cell className="py-4 px-4 text-sm font-medium text-[var(--foreground)]">
                             {invoice.id}
                           </Table.Cell>
