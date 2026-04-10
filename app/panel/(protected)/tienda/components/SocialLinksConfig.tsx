@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, Input, Button, Switch, TextField, Label, InputGroup, toast, Skeleton } from "@heroui/react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { Switch } from "@/components/ui/switch";
 import { getTenantSocialLinks, updateTenantSocialLinks } from "@/lib/api/tenant";
 import { getErrorMessage } from "@/lib/utils/error-message";
 import type { SocialLink } from "@/lib/types/tenant";
@@ -108,7 +114,7 @@ export function SocialLinksConfig() {
       await updateTenantSocialLinks({ links });
       toast.success("Redes sociales actualizadas");
     } catch (error: unknown) {
-      toast.danger(getErrorMessage(error, "Error al guardar redes sociales"));
+      toast.error(getErrorMessage(error, "Error al guardar redes sociales"));
     } finally {
       setSaving(false);
     }
@@ -116,7 +122,7 @@ export function SocialLinksConfig() {
 
   if (loading) {
     return (
-      <Card className="bg-[var(--surface)] border border-[var(--border)] p-6">
+      <Card className="bg-[#ffffff] border border-[var(--c-gray-200)] p-6">
         <Skeleton className="h-6 w-48 rounded-lg mb-1" />
         <Skeleton className="h-4 w-3/4 max-w-md rounded-lg mb-6" />
         <div className="space-y-4">
@@ -137,13 +143,12 @@ export function SocialLinksConfig() {
     );
   }
 
-  const groupClass = "flex items-center gap-2 border border-[var(--border)] bg-[var(--surface)] rounded-xl px-3 py-2";
-  const inputClass = "w-full bg-transparent focus:outline-none text-[var(--foreground)]";
+    const inputClass = "flex h-10 w-full rounded-xl border border-[var(--c-gray-200)] bg-white px-3 py-2 text-sm text-[var(--c-gray-800)] placeholder:text-[var(--c-gray-400)] focus:outline-none focus:border-[var(--c-navy-400)] transition-colors";
 
   return (
-    <Card className="bg-[var(--surface)] border border-[var(--border)] p-6">
-      <h3 className="text-lg font-semibold text-[var(--foreground)] mb-1">Redes Sociales</h3>
-      <p className="text-[var(--muted)] text-sm mb-6">Administra los enlaces a tus perfiles sociales. Estos aparecerán en tu tienda pública.</p>
+    <Card className="bg-[#ffffff] border border-[var(--c-gray-200)] p-6">
+      <h3 className="text-lg font-semibold text-[var(--c-gray-800)] mb-1">Redes Sociales</h3>
+      <p className="text-[var(--c-gray-500)] text-sm mb-6">Administra los enlaces a tus perfiles sociales. Estos aparecerán en tu tienda pública.</p>
 
       <div className="space-y-4">
         {PLATFORMS.map((platform) => {
@@ -151,7 +156,7 @@ export function SocialLinksConfig() {
           return (
             <div
               key={platform.id}
-              className="flex flex-col sm:flex-row gap-4 items-start sm:items-center p-3 rounded-xl border border-[var(--border)] bg-[var(--surface-sunken)] transition-all hover:border-[var(--border-hover)]"
+              className="flex flex-col sm:flex-row gap-4 items-start sm:items-center p-3 rounded-xl border border-[var(--c-gray-200)] bg-[var(--c-gray-100)] transition-all hover:border-[var(--border-hover)]"
             >
               <div className="flex items-center gap-3 w-[140px] flex-shrink-0">
                 <div
@@ -160,10 +165,10 @@ export function SocialLinksConfig() {
                 >
                   {platform.icon}
                 </div>
-                <Label className="text-sm font-medium text-[var(--foreground)]">{platform.name}</Label>
+                <Label className="text-sm font-medium text-[var(--c-gray-800)]">{platform.name}</Label>
               </div>
-              <TextField name={platform.id} className="flex flex-col space-y-1.5 flex-1">
-                <InputGroup className={groupClass}>
+              <div className="flex flex-col space-y-1.5 flex-1">
+                <div>
                   <Input
                     type="url"
                     placeholder={`https://${platform.id}.com/tu-usuario`}
@@ -171,19 +176,13 @@ export function SocialLinksConfig() {
                     onChange={(e) => handleUrlChange(platform.id, e.target.value)}
                     className={inputClass}
                   />
-                </InputGroup>
-              </TextField>
+                </div>
+              </div>
               <div className="flex items-center gap-2 pt-2 sm:pt-0 pl-1">
-                <Switch
-                  isSelected={linkData.is_active as boolean}
-                  onChange={(isSelected: boolean) => handleToggleActive(platform.id, isSelected)}
-                  isDisabled={!linkData.url}
-                >
-                  <Switch.Control>
-                    <Switch.Thumb />
-                  </Switch.Control>
-                </Switch>
-                <span className={`text-xs font-medium ${linkData.is_active ? "text-emerald-400" : "text-[var(--muted)]"}`}>
+                <Switch checked={linkData.is_active as boolean}
+                  onCheckedChange={(isSelected: boolean) => handleToggleActive(platform.id, isSelected)}
+                  disabled={!linkData.url} />
+                <span className={`text-xs font-medium ${linkData.is_active ? "text-emerald-400" : "text-[var(--c-gray-500)]"}`}>
                   {linkData.is_active ? "Visible" : "Oculto"}
                 </span>
               </div>
@@ -193,7 +192,7 @@ export function SocialLinksConfig() {
       </div>
 
       <div className="mt-8 flex justify-end">
-        <Button variant="primary" onPress={handleSave} isDisabled={saving}>
+        <Button variant="default" onClick={handleSave} disabled={saving}>
           {saving ? "Guardando..." : "Guardar Redes Sociales"}
         </Button>
       </div>

@@ -14,8 +14,17 @@ export interface InventoryValuation {
 }
 
 export interface InventoryAlert {
-  product_id: string;
-  product_name?: string;
+  product: {
+    id: string;
+    name: string;
+    sku?: string;
+    image_url?: string;
+  };
+  variant?: {
+    id: string;
+    name: string;
+  };
   current_stock: number;
-  alert_threshold?: number;
+  low_stock_alert: number;
+  alert_type: string;
 }

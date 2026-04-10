@@ -2,8 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Card, Skeleton, toast } from "@heroui/react";
-import { Check, X, Store, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
+import { Check, X, Store, ArrowLeft, Loader2 } from "lucide-react";
 import { useAuthStore } from "@/lib/stores/auth-store";
 import {
   fetchMyPendingInvitations,
@@ -40,7 +43,7 @@ export default function InvitationsPage() {
       const data = await fetchMyPendingInvitations();
       setInvitations(data);
     } catch {
-      toast.danger("Error al cargar invitaciones");
+      toast.error("Error al cargar invitaciones");
     } finally {
       setLoading(false);
     }
@@ -73,7 +76,7 @@ export default function InvitationsPage() {
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Error al aceptar";
-      toast.danger(message);
+      toast.error(message);
     } finally {
       setProcessing(null);
     }
@@ -87,7 +90,7 @@ export default function InvitationsPage() {
       setInvitations((prev) => prev.filter((inv) => inv.id !== id));
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Error al rechazar";
-      toast.danger(message);
+      toast.error(message);
     } finally {
       setProcessing(null);
     }
@@ -106,8 +109,8 @@ export default function InvitationsPage() {
             <Skeleton className="h-8 w-64 rounded-lg" />
             <Skeleton className="h-4 w-80 rounded-lg" />
           </div>
-          <Card className="bg-[var(--surface)]/90 border border-[var(--border)]">
-            <Card.Content className="p-6">
+          <Card className="bg-[#ffffff]/90 border border-[var(--c-gray-200)]">
+            <CardContent className="p-6">
               <div className="flex items-start gap-4">
                 <Skeleton className="h-12 w-12 rounded-xl" />
                 <div className="flex-1 space-y-2">
@@ -120,7 +123,7 @@ export default function InvitationsPage() {
                 <Skeleton className="h-10 flex-1 rounded-lg" />
                 <Skeleton className="h-10 flex-1 rounded-lg" />
               </div>
-            </Card.Content>
+            </CardContent>
           </Card>
         </div>
       </div>
@@ -133,84 +136,84 @@ export default function InvitationsPage() {
 
       <div className="w-full max-w-lg relative z-10 space-y-6">
         <div className="text-center space-y-2">
-          <h1 className="font-[var(--font-heading)] text-2xl font-bold text-[var(--foreground)]">
+          <h1 className="font-[var(--font-heading)] text-2xl font-bold text-[var(--c-gray-800)]">
             Invitaciones Pendientes
           </h1>
-          <p className="text-sm text-[var(--muted)]">
+          <p className="text-sm text-[var(--c-gray-500)]">
             Tienes invitaciones para unirte a las siguientes tiendas
           </p>
         </div>
 
         {invitations.length === 0 ? (
-          <Card className="bg-[var(--surface)]/90 border border-[var(--border)]">
-            <Card.Content className="p-8 text-center space-y-4">
-              <p className="text-[var(--muted)]">No tienes invitaciones pendientes.</p>
-              <Button variant="tertiary" onPress={handleLogout}>
+          <Card className="bg-[#ffffff]/90 border border-[var(--c-gray-200)]">
+            <CardContent className="p-8 text-center space-y-4 pt-6">
+              <p className="text-[var(--c-gray-500)]">No tienes invitaciones pendientes.</p>
+              <Button variant="secondary" onClick={handleLogout}>
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Volver al login
               </Button>
-            </Card.Content>
+            </CardContent>
           </Card>
         ) : (
           <>
             {invitations.map((inv) => (
               <Card
                 key={inv.id}
-                className="bg-[var(--surface)]/90 border border-white/20 backdrop-blur-xl"
+                className="bg-[#ffffff]/90 border border-white/20 backdrop-blur-xl"
               >
-                <Card.Content className="p-6">
+                <CardContent className="p-6">
                   <div className="flex items-start gap-4">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--surface-secondary)]">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[var(--c-gray-200)] bg-[var(--c-gray-50)]">
                       {inv.tenant_logo_url ? (
                         <img src={inv.tenant_logo_url} alt="" className="h-8 w-8 rounded-lg object-cover" />
                       ) : (
-                        <Store className="h-6 w-6 text-[var(--muted)]" />
+                        <Store className="h-6 w-6 text-[var(--c-gray-500)]" />
                       )}
                     </div>
                     <div className="flex-1 min-w-0 space-y-1">
-                      <h3 className="font-semibold text-[var(--foreground)] text-lg">
+                      <h3 className="font-semibold text-[var(--c-gray-800)] text-lg">
                         {inv.tenant_name}
                       </h3>
-                      <p className="text-sm text-[var(--muted)]">
-                        Rol: <span className="text-[var(--foreground)] font-medium">{ROLE_LABELS[inv.role] || inv.role}</span>
+                      <p className="text-sm text-[var(--c-gray-500)]">
+                        Rol: <span className="text-[var(--c-gray-800)] font-medium">{ROLE_LABELS[inv.role] || inv.role}</span>
                       </p>
                       {inv.invited_by_username && (
-                        <p className="text-xs text-[var(--muted)]">
+                        <p className="text-xs text-[var(--c-gray-500)]">
                           Invitado por @{inv.invited_by_username}
                         </p>
                       )}
                       {inv.message && (
-                        <p className="text-sm text-[var(--muted)] italic mt-2">&quot;{inv.message}&quot;</p>
+                        <p className="text-sm text-[var(--c-gray-500)] italic mt-2">&quot;{inv.message}&quot;</p>
                       )}
                     </div>
                   </div>
 
                   <div className="flex gap-3 mt-5">
                     <Button
-                      variant="primary"
-                      className="flex-1"
-                      isPending={processing === inv.id}
-                      onPress={() => handleAccept(inv.id)}
+                      variant="default"
+                      className="flex-1 whitespace-nowrap"
+                      disabled={processing === inv.id}
+                      onClick={() => handleAccept(inv.id)}
                     >
-                      <Check className="h-4 w-4 mr-2" />
+                      {processing === inv.id ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Check className="h-4 w-4 mr-2" />}
                       Aceptar
                     </Button>
                     <Button
-                      variant="danger"
-                      className="flex-1"
-                      isPending={processing === inv.id}
-                      onPress={() => handleDecline(inv.id)}
+                      variant="destructive"
+                      className="flex-1 whitespace-nowrap"
+                      disabled={processing === inv.id}
+                      onClick={() => handleDecline(inv.id)}
                     >
-                      <X className="h-4 w-4 mr-2" />
+                      {processing === inv.id ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <X className="h-4 w-4 mr-2" />}
                       Rechazar
                     </Button>
                   </div>
-                </Card.Content>
+                </CardContent>
               </Card>
             ))}
 
             <div className="text-center">
-              <Button variant="tertiary" className="text-[var(--muted)]" onPress={handleLogout}>
+              <Button variant="secondary" className="text-[var(--c-gray-500)]" onClick={handleLogout}>
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Cerrar sesión
               </Button>

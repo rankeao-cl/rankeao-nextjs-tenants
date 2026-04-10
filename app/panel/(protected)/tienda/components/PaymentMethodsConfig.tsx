@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, Input, Button, Switch, Label, Skeleton, toast, TextArea } from "@heroui/react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import { listPaymentMethods, addPaymentMethod, updatePaymentMethod } from "@/lib/api/tenant";
 import { getErrorMessage } from "@/lib/utils/error-message";
 import type { PaymentConfig, PaymentMethod } from "@/lib/types/tenant";
@@ -50,7 +57,7 @@ export function PaymentMethodsConfig() {
       }
       await fetchMethods();
     } catch (err) {
-      toast.danger(getErrorMessage(err, "Error al actualizar método de pago"));
+      toast.error(getErrorMessage(err, "Error al actualizar método de pago"));
     } finally {
       setSaving(null);
     }
@@ -73,7 +80,7 @@ export function PaymentMethodsConfig() {
       toast.success("Configuración guardada");
       await fetchMethods();
     } catch (err) {
-      toast.danger(getErrorMessage(err, "Error al guardar configuración"));
+      toast.error(getErrorMessage(err, "Error al guardar configuración"));
     } finally {
       setSaving(null);
     }
@@ -83,7 +90,7 @@ export function PaymentMethodsConfig() {
     return (
       <div className="space-y-6">
         {Array.from({ length: 2 }).map((_, i) => (
-          <Card key={i} className="bg-[var(--surface)] border border-[var(--border)] p-6">
+          <Card key={i} className="bg-[#ffffff] border border-[var(--c-gray-200)] p-6">
             <div className="flex items-center justify-between mb-6">
               <div className="space-y-2 w-full">
                 <Skeleton className="h-6 w-48 rounded-lg" />
@@ -109,45 +116,39 @@ export function PaymentMethodsConfig() {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-[var(--surface)] border border-[var(--border)] p-6">
+      <Card className="bg-[#ffffff] border border-[var(--c-gray-200)] p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="text-lg font-semibold text-[var(--foreground)] mb-1">Transferencia Bancaria</h3>
-            <p className="text-[var(--muted)] text-sm">Permite a los clientes pagar depositando directamente en tu cuenta.</p>
+            <h3 className="text-lg font-semibold text-[var(--c-gray-800)] mb-1">Transferencia Bancaria</h3>
+            <p className="text-[var(--c-gray-500)] text-sm">Permite a los clientes pagar depositando directamente en tu cuenta.</p>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-xs text-[var(--muted)]">{transferMethod?.is_active ? "Activado" : "Desactivado"}</span>
-            <Switch
-              isSelected={!!transferMethod?.is_active}
-              onChange={(val) => handleToggle("BANK_TRANSFER", val, transferMethod?.id)}
-              isDisabled={saving !== null}
-            >
-              <Switch.Control>
-                <Switch.Thumb />
-              </Switch.Control>
-            </Switch>
+            <span className="text-xs text-[var(--c-gray-500)]">{transferMethod?.is_active ? "Activado" : "Desactivado"}</span>
+            <Switch checked={!!transferMethod?.is_active}
+              onCheckedChange={(val) => handleToggle("BANK_TRANSFER", val, transferMethod?.id)}
+              disabled={saving !== null} />
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label className="text-sm text-[var(--muted)] mb-1.5 block">Banco</Label>
+            <Label className="text-sm text-[var(--c-gray-500)] mb-1.5 block">Banco</Label>
             <Input value={transferConfig.bank || ""} onChange={(e) => setTransferConfig({ ...transferConfig, bank: e.target.value })} placeholder="Ej: Banco Estado" className="bg-transparent" />
           </div>
           <div>
-            <Label className="text-sm text-[var(--muted)] mb-1.5 block">Tipo de Cuenta</Label>
+            <Label className="text-sm text-[var(--c-gray-500)] mb-1.5 block">Tipo de Cuenta</Label>
             <Input value={transferConfig.account_type || ""} onChange={(e) => setTransferConfig({ ...transferConfig, account_type: e.target.value })} placeholder="Ej: Cuenta Corriente" className="bg-transparent" />
           </div>
           <div>
-            <Label className="text-sm text-[var(--muted)] mb-1.5 block">Número de Cuenta</Label>
+            <Label className="text-sm text-[var(--c-gray-500)] mb-1.5 block">Número de Cuenta</Label>
             <Input value={transferConfig.account_number || ""} onChange={(e) => setTransferConfig({ ...transferConfig, account_number: e.target.value })} placeholder="12345678" className="bg-transparent" />
           </div>
           <div>
-            <Label className="text-sm text-[var(--muted)] mb-1.5 block">RUT / Identificación</Label>
+            <Label className="text-sm text-[var(--c-gray-500)] mb-1.5 block">RUT / Identificación</Label>
             <Input value={transferConfig.rut || ""} onChange={(e) => setTransferConfig({ ...transferConfig, rut: e.target.value })} placeholder="12.345.678-9" className="bg-transparent" />
           </div>
           <div className="md:col-span-2">
-            <Label className="text-sm text-[var(--muted)] mb-1.5 block">Correo Electrónico para Comprobantes</Label>
+            <Label className="text-sm text-[var(--c-gray-500)] mb-1.5 block">Correo Electrónico para Comprobantes</Label>
             <Input value={transferConfig.email || ""} onChange={(e) => setTransferConfig({ ...transferConfig, email: e.target.value })} placeholder="ventas@mitienda.cl" className="bg-transparent" />
           </div>
         </div>
@@ -155,52 +156,46 @@ export function PaymentMethodsConfig() {
         <div className="mt-6 flex justify-end">
           <Button
             size="sm"
-            variant="primary"
-            onPress={() => handleSaveConfig("BANK_TRANSFER", transferConfig, transferMethod?.id)}
-            isDisabled={saving !== null}
+            variant="default"
+            onClick={() => handleSaveConfig("BANK_TRANSFER", transferConfig, transferMethod?.id)}
+            disabled={saving !== null}
           >
             Guardar Datos Bancarios
           </Button>
         </div>
       </Card>
 
-      <Card className="bg-[var(--surface)] border border-[var(--border)] p-6">
+      <Card className="bg-[#ffffff] border border-[var(--c-gray-200)] p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="text-lg font-semibold text-[var(--foreground)] mb-1">Pago en Efectivo / Presencial</h3>
-            <p className="text-[var(--muted)] text-sm">El cliente paga al momento de retirar su pedido en tienda.</p>
+            <h3 className="text-lg font-semibold text-[var(--c-gray-800)] mb-1">Pago en Efectivo / Presencial</h3>
+            <p className="text-[var(--c-gray-500)] text-sm">El cliente paga al momento de retirar su pedido en tienda.</p>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-xs text-[var(--muted)]">{cashMethod?.is_active ? "Activado" : "Desactivado"}</span>
-            <Switch
-              isSelected={!!cashMethod?.is_active}
-              onChange={(val) => handleToggle("CASH", val, cashMethod?.id)}
-              isDisabled={saving !== null}
-            >
-              <Switch.Control>
-                <Switch.Thumb />
-              </Switch.Control>
-            </Switch>
+            <span className="text-xs text-[var(--c-gray-500)]">{cashMethod?.is_active ? "Activado" : "Desactivado"}</span>
+            <Switch checked={!!cashMethod?.is_active}
+              onCheckedChange={(val) => handleToggle("CASH", val, cashMethod?.id)}
+              disabled={saving !== null} />
           </div>
         </div>
 
         <div>
-          <Label className="text-sm text-[var(--muted)] mb-1.5 block">Instrucciones Adicionales (Opcional)</Label>
-          <TextArea
+          <Label className="text-sm text-[var(--c-gray-500)] mb-1.5 block">Instrucciones Adicionales (Opcional)</Label>
+          <Textarea
             value={cashConfig.instructions || ""}
             onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setCashConfig({ ...cashConfig, instructions: e.target.value })}
             placeholder="Ej: Te esperamos en nuestra sucursal. Tienes 24 horas para recoger el pedido."
             rows={3}
-            className="bg-transparent border border-[var(--border)] w-full resize-y"
+            className="bg-transparent border border-[var(--c-gray-200)] w-full resize-y"
           />
         </div>
 
         <div className="mt-6 flex justify-end">
           <Button
             size="sm"
-            variant="primary"
-            onPress={() => handleSaveConfig("CASH", cashConfig, cashMethod?.id)}
-            isDisabled={saving !== null}
+            variant="default"
+            onClick={() => handleSaveConfig("CASH", cashConfig, cashMethod?.id)}
+            disabled={saving !== null}
           >
             Guardar Instrucciones
           </Button>

@@ -1,9 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { Card, Table, Skeleton, Button, Label, Input, Modal, toast } from "@heroui/react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
 import { useExpenses, useCreateExpense } from "@/lib/hooks/use-expenses";
 import { getErrorMessage } from "@/lib/utils/error-message";
+import { Wallet, TrendingDown, ArrowDownRight } from "lucide-react";
+
+// Modular Components
+import { ExpenseHeader } from "./components/ExpenseHeader";
+import { ExpenseList } from "./components/ExpenseList";
+import { ExpenseFormModal } from "./components/ExpenseFormModal";
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP" }).format(value);
@@ -22,7 +30,7 @@ export default function ExpensesPage() {
 
   const handleCreateExpense = async () => {
     if (!newExpense.title || !newExpense.amount) {
-      return toast.danger("Concepto y monto son requeridos");
+      return toast.error("Concepto y monto son requeridos");
     }
     try {
       await createMutation.mutateAsync({
@@ -31,164 +39,69 @@ export default function ExpensesPage() {
         category: newExpense.category,
         date: newExpense.date,
       });
-      toast.success("Gasto registrado");
+      toast.success("Gasto registrado exitosamente");
       setShowModal(false);
       setNewExpense({ title: "", amount: "", category: "", date: new Date().toISOString().split("T")[0] });
     } catch (error: unknown) {
-      toast.danger(getErrorMessage(error, "Error al registrar gasto"));
+      toast.error(getErrorMessage(error, "Error al registrar gasto"));
     }
   };
 
   const totalExpenses = expenses.reduce((sum, e) => sum + Number(e.amount || e.cost || 0), 0);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold font-[var(--font-heading)] text-[var(--foreground)]">
-            Gastos y Presupuestos
-          </h1>
-          <p className="text-sm text-[var(--muted)] mt-1">Registra y rastrea los gastos operativos de tu tienda</p>
-        </div>
-        <Button variant="primary" onPress={() => setShowModal(true)}>
-          Registrar Gasto
-        </Button>
+    <div className="space-y-10 max-w-[1400px] mx-auto pb-10 px-4 sm:px-0">
+      <ExpenseHeader onNewExpense={() => setShowModal(true)} />
+
+      {/* Summary Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="bg-white border border-[var(--c-gray-100)] rounded-[32px] shadow-sm overflow-hidden group">
+          <CardContent className="p-8">
+             <div className="flex items-center gap-4">
+                <div className="p-4 rounded-2xl bg-red-50 text-red-500 transition-colors group-hover:bg-red-500 group-hover:text-white">
+                  <TrendingDown className="h-6 w-6" />
+                </div>
+                <div>
+                  <p className="text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest mb-1">Gasto Total Acumulado</p>
+                  <p className="text-3xl font-black text-red-500 tracking-tight">
+                    {isLoading ? <Skeleton className="h-8 w-32" /> : formatCurrency(totalExpenses)}
+                  </p>
+                </div>
+             </div>
+             <div className="mt-6 flex items-center gap-2 text-[12px] font-medium text-[var(--c-gray-500)] bg-[var(--c-gray-50)] p-3 rounded-xl">
+                <ArrowDownRight className="h-4 w-4 text-emerald-500" />
+                <span>Dentro del margen operativo proyectado</span>
+             </div>
+          </CardContent>
+        </Card>
+
+        <Card className="md:col-span-2 bg-[var(--c-navy-500)] border-none rounded-[32px] shadow-lg shadow-[var(--c-navy-500)]/20 relative overflow-hidden">
+           <div className="absolute top-0 right-0 p-8 opacity-10">
+              <Wallet className="h-32 w-32 text-white" />
+           </div>
+           <CardContent className="p-8 flex flex-col justify-center h-full relative z-10">
+              <h3 className="text-white font-bold text-lg mb-2">Control de Presupuesto</h3>
+              <p className="text-[var(--c-cyan-500)] text-sm font-medium max-w-md leading-relaxed">
+                 Mantén tus finanzas saludables registrando cada egreso. Un buen control de gastos permite una mejor planificación de inventario y marketing.
+              </p>
+           </CardContent>
+        </Card>
       </div>
 
-      <Card className="bg-[var(--surface)] border border-[var(--border)]">
-        <Card.Content className="p-6">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-red-500/10 text-red-400">
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 17a5 5 0 0 0 10 0c0-2.76-2.5-5-5-3l-5-8" /><path d="M12 17a5 5 0 0 0 10 0c0-2.76-2.5-5-5-3l-5-8" /></svg>
-            </div>
-            <div>
-              <p className="text-sm text-[var(--muted)]">Gastos Totales Registrados</p>
-              <p className="text-2xl font-bold text-red-400">
-                {isLoading ? "..." : formatCurrency(totalExpenses)}
-              </p>
-            </div>
-          </div>
-        </Card.Content>
-      </Card>
+      <ExpenseList 
+        expenses={expenses} 
+        isLoading={isLoading} 
+        formatCurrency={formatCurrency} 
+      />
 
-      <Card className="bg-[var(--surface)] border border-[var(--border)] overflow-hidden">
-        <div className="overflow-x-auto">
-          <Table>
-            <Table.ScrollContainer>
-              <Table.Content aria-label="Historial de gastos" className="min-w-full">
-                <Table.Header className="bg-[var(--surface-sunken)] border-b border-[var(--border)]">
-                  <Table.Column isRowHeader className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Fecha</Table.Column>
-                  <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Concepto</Table.Column>
-                  <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Categoría</Table.Column>
-                  <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider text-right">Monto</Table.Column>
-                </Table.Header>
-                <Table.Body>
-                  {isLoading ? (
-                    Array(3).fill(0).map((_, i) => (
-                      <Table.Row key={i} className="border-b border-[var(--border)]">
-                        <Table.Cell className="py-4 px-4"><Skeleton className="h-5 w-24 rounded" /></Table.Cell>
-                        <Table.Cell className="py-4 px-4"><Skeleton className="h-5 w-40 rounded" /></Table.Cell>
-                        <Table.Cell className="py-4 px-4"><Skeleton className="h-5 w-24 rounded" /></Table.Cell>
-                        <Table.Cell className="py-4 px-4"><Skeleton className="h-5 w-20 rounded ml-auto" /></Table.Cell>
-                      </Table.Row>
-                    ))
-                  ) : expenses.length === 0 ? (
-                    <Table.Row>
-                      <Table.Cell colSpan={4} className="py-12 text-center text-[var(--muted)]">
-                        No hay gastos registrados. Usa &quot;Registrar Gasto&quot; para comenzar.
-                      </Table.Cell>
-                    </Table.Row>
-                  ) : (
-                    expenses.map((expense, idx) => (
-                      <Table.Row key={expense.id || idx} className="border-b border-[var(--border)] last:border-0 hover:bg-[var(--surface-secondary)] transition-colors">
-                        <Table.Cell className="py-4 px-4 whitespace-nowrap text-sm text-[var(--muted)]">
-                          {expense.date || expense.created_at || "-"}
-                        </Table.Cell>
-                        <Table.Cell className="py-4 px-4 text-sm font-medium text-[var(--foreground)]">
-                          {expense.title || expense.description || "Sin descripción"}
-                        </Table.Cell>
-                        <Table.Cell className="py-4 px-4">
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[var(--surface-secondary)] text-[var(--muted)] border border-[var(--border)]">
-                            {expense.category || "General"}
-                          </span>
-                        </Table.Cell>
-                        <Table.Cell className="py-4 px-4 text-right font-semibold text-red-400">
-                          -{formatCurrency(Number(expense.amount || expense.cost || 0))}
-                        </Table.Cell>
-                      </Table.Row>
-                    ))
-                  )}
-                </Table.Body>
-              </Table.Content>
-            </Table.ScrollContainer>
-          </Table>
-        </div>
-      </Card>
-
-      <Modal isOpen={showModal} onOpenChange={setShowModal}>
-        <Modal.Backdrop>
-          <Modal.Container>
-            <Modal.Dialog className="bg-[var(--surface)] border border-[var(--border)]">
-              <Modal.CloseTrigger className="text-[var(--muted)] hover:text-[var(--foreground)]" />
-              <Modal.Header>
-                <Modal.Heading className="text-xl font-bold text-[var(--foreground)]">
-                  Registrar Gasto
-                </Modal.Heading>
-              </Modal.Header>
-              <Modal.Body className="py-4 space-y-4">
-                <div className="space-y-1.5 flex flex-col">
-                  <Label className="text-sm font-medium text-[var(--muted)]">Concepto</Label>
-                  <Input
-                    placeholder="Ej. Publicidad Instagram"
-                    value={newExpense.title}
-                    onChange={(e) => setNewExpense({ ...newExpense, title: e.target.value })}
-                    className="bg-transparent border border-[var(--border)]"
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1.5 flex flex-col">
-                    <Label className="text-sm font-medium text-[var(--muted)]">Monto</Label>
-                    <Input
-                      type="number"
-                      min="0"
-                      placeholder="Ej. 15000"
-                      value={newExpense.amount}
-                      onChange={(e) => setNewExpense({ ...newExpense, amount: e.target.value })}
-                      className="bg-transparent border border-[var(--border)]"
-                    />
-                  </div>
-                  <div className="space-y-1.5 flex flex-col">
-                    <Label className="text-sm font-medium text-[var(--muted)]">Categoría</Label>
-                    <Input
-                      placeholder="Ej. Marketing"
-                      value={newExpense.category}
-                      onChange={(e) => setNewExpense({ ...newExpense, category: e.target.value })}
-                      className="bg-transparent border border-[var(--border)]"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-1.5 flex flex-col">
-                  <Label className="text-sm font-medium text-[var(--muted)]">Fecha</Label>
-                  <Input
-                    type="date"
-                    value={newExpense.date}
-                    onChange={(e) => setNewExpense({ ...newExpense, date: e.target.value })}
-                    className="bg-transparent border border-[var(--border)]"
-                  />
-                </div>
-              </Modal.Body>
-              <Modal.Footer className="border-t border-[var(--border)]/40 p-4">
-                <Button variant="outline" onPress={() => setShowModal(false)}>
-                  Cancelar
-                </Button>
-                <Button variant="primary" isDisabled={createMutation.isPending} onPress={handleCreateExpense}>
-                  {createMutation.isPending ? "Guardando..." : "Guardar Gasto"}
-                </Button>
-              </Modal.Footer>
-            </Modal.Dialog>
-          </Modal.Container>
-        </Modal.Backdrop>
-      </Modal>
+      <ExpenseFormModal
+        open={showModal}
+        onOpenChange={setShowModal}
+        newExpense={newExpense}
+        onExpenseChange={setNewExpense}
+        onSave={handleCreateExpense}
+        saving={createMutation.isPending}
+      />
     </div>
   );
 }

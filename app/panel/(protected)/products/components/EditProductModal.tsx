@@ -1,18 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  Modal,
-  Button,
-  Input,
-  Label,
-  TextArea,
-  Tabs,
-  Spinner,
-  Skeleton,
-  toast,
-} from "@heroui/react";
-import { Info, Image as ImageIcon, Layers } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Info, Image as ImageIcon, Layers, Plus, Trash2, Save, X, Box } from "lucide-react";
 import {
   getProduct,
   updateProduct,
@@ -25,6 +22,9 @@ import {
 import { getErrorMessage } from "@/lib/utils/error-message";
 import { useQueryClient } from "@tanstack/react-query";
 import type { ProductImage, ProductVariant } from "@/lib/types/products";
+
+const formatCurrency = (value: number) =>
+  new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP" }).format(value);
 
 const getImageUrl = (url?: string) => {
   if (!url) return undefined;
@@ -41,17 +41,6 @@ interface EditProductModalProps {
   onProductUpdated: () => void;
 }
 
-function SecondaryCloseButton({ onClose }: { onClose: () => void }) {
-  return (
-    <Button 
-      className="bg-white border border-[#e2e8f0] text-[#2d3748] font-medium hover:bg-[#f1f5f9] transition-colors rounded-lg px-4" 
-      onPress={onClose}
-    >
-      Cerrar
-    </Button>
-  );
-}
-
 export function EditProductModal({ isOpen, onClose, productId, onProductUpdated }: EditProductModalProps) {
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
@@ -60,9 +49,6 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
   const [form, setForm] = useState({ name: "", sku: "", price: "", stock_quantity: "", description: "" });
   const [images, setImages] = useState<ProductImage[]>([]);
   const [variants, setVariants] = useState<ProductVariant[]>([]);
-
-  const [newImageUrl, setNewImageUrl] = useState("");
-  const [newVariant, setNewVariant] = useState({ name: "", sku: "", price_diff: "", stock: "" });
 
   const fetchProduct = async () => {
     if (!productId) return;
@@ -79,7 +65,7 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
       setImages(data.images || []);
       setVariants(data.variants || []);
     } catch (error: unknown) {
-      toast.danger(getErrorMessage(error, "Error al cargar producto"));
+      toast.error(getErrorMessage(error, "Error al cargar producto"));
     } finally {
       setLoading(false);
     }
@@ -110,13 +96,13 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
     const description = formData.get("description") as string;
 
     if (!name || !priceStr) {
-      toast.danger("Nombre y precio son requeridos");
+      toast.error("Nombre y precio son requeridos");
       return;
     }
     
     const priceNum = Number(priceStr);
     if (isNaN(priceNum) || priceNum < 0) {
-      toast.danger("El precio debe ser un número válido");
+      toast.error("El precio debe ser un número válido");
       return;
     }
 
@@ -133,7 +119,7 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
       invalidate();
       onClose();
     } catch (error: unknown) {
-      toast.danger(getErrorMessage(error, "Error al actualizar producto"));
+      toast.error(getErrorMessage(error, "Error al actualizar producto"));
     } finally {
       setSaving(false);
     }
@@ -152,7 +138,7 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
       fetchProduct();
       invalidate();
     } catch (error: unknown) {
-      toast.danger(getErrorMessage(error, "Error al agregar imagen"));
+      toast.error(getErrorMessage(error, "Error al agregar imagen"));
     }
   };
 
@@ -164,7 +150,7 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
       fetchProduct();
       invalidate();
     } catch (error: unknown) {
-      toast.danger(getErrorMessage(error, "Error al eliminar imagen"));
+      toast.error(getErrorMessage(error, "Error al eliminar imagen"));
     }
   };
 
@@ -179,7 +165,7 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
     const stockStr = formData.get("stock") as string;
 
     if (!name) {
-      toast.danger("Nombre de variante es requerido");
+      toast.error("Nombre de variante es requerido");
       return;
     }
 
@@ -195,7 +181,7 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
       fetchProduct();
       invalidate();
     } catch (error: unknown) {
-      toast.danger(getErrorMessage(error, "Error al agregar variante"));
+      toast.error(getErrorMessage(error, "Error al agregar variante"));
     }
   };
 
@@ -207,7 +193,7 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
       fetchProduct();
       invalidate();
     } catch (error: unknown) {
-      toast.danger(getErrorMessage(error, "Error al actualizar variante"));
+      toast.error(getErrorMessage(error, "Error al actualizar variante"));
     }
   };
 
@@ -219,168 +205,174 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
       fetchProduct();
       invalidate();
     } catch (error: unknown) {
-      toast.danger(getErrorMessage(error, "Error al eliminar variante"));
+      toast.error(getErrorMessage(error, "Error al eliminar variante"));
     }
   };
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
-      <Modal.Backdrop className="bg-[#2d3748]/50 backdrop-blur-sm">
-        <Modal.Container>
-          <Modal.Dialog className="sm:max-w-3xl bg-white border border-[#e2e8f0] shadow-xl !rounded-[20px]">
-            <Modal.CloseTrigger className="text-[#64748b] hover:bg-[#f8fafc] rounded-full" />
-            <Modal.Header className="border-b border-[#e2e8f0] pb-4">
-              <Modal.Heading className="text-xl font-bold text-[#2d3748]">
-                Editar Producto
-              </Modal.Heading>
-            </Modal.Header>
-            <Modal.Body className="py-6 min-h-[460px] flex flex-col">
-              {loading ? (
-                <div className="space-y-4 py-4 flex-1">
-                  <div className="flex gap-4 border-b border-[var(--border)] pb-2">
-                    <Skeleton className="h-8 w-24 rounded-lg" />
-                    <Skeleton className="h-8 w-32 rounded-lg" />
-                    <Skeleton className="h-8 w-32 rounded-lg" />
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
+      <DialogContent className="sm:max-w-3xl bg-white border border-[var(--c-gray-200)] shadow-2xl !rounded-3xl overflow-hidden p-0 gap-0">
+        <DialogHeader className="p-6 pb-2">
+          <DialogTitle className="text-[20px] font-extrabold text-[var(--c-gray-800)] tracking-tight">
+            Editar Producto
+          </DialogTitle>
+          <div className="flex items-center gap-2 mt-1">
+             <span className="text-[12px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest">{form.sku || "Sin SKU"}</span>
+             <span className="w-1 h-1 rounded-full bg-[var(--c-gray-300)]"></span>
+             <span className="text-[12px] font-medium text-[var(--c-gray-400)]">ID: {productId?.slice(-8)}</span>
+          </div>
+        </DialogHeader>
+
+        <div className="px-6 py-2 min-h-[500px] flex flex-col">
+          {loading ? (
+             <div className="space-y-6 pt-4 flex-1">
+               <Skeleton className="h-10 w-full rounded-xl" />
+               <div className="grid grid-cols-2 gap-6">
+                 <div className="space-y-2"><Skeleton className="h-4 w-20" /><Skeleton className="h-11 w-full rounded-xl" /></div>
+                 <div className="space-y-2"><Skeleton className="h-4 w-20" /><Skeleton className="h-11 w-full rounded-xl" /></div>
+               </div>
+               <Skeleton className="h-32 w-full rounded-xl" />
+             </div>
+          ) : (
+            <Tabs defaultValue="details" className="w-full flex-1 flex flex-col">
+              <TabsList className="bg-[var(--c-gray-50)] border border-[var(--c-gray-200)] p-1 rounded-xl w-full justify-start gap-1">
+                <TabsTrigger value="details" className="h-9 px-4 text-[13px] font-bold rounded-lg data-[state=active]:bg-white data-[state=active]:text-[var(--c-navy-500)] data-[state=active]:shadow-sm flex items-center gap-2">
+                  <Info className="w-4 h-4" /> Detalles
+                </TabsTrigger>
+                <TabsTrigger value="images" className="h-9 px-4 text-[13px] font-bold rounded-lg data-[state=active]:bg-white data-[state=active]:text-[var(--c-navy-500)] data-[state=active]:shadow-sm flex items-center gap-2">
+                  <ImageIcon className="w-4 h-4" /> Imágenes ({images.length})
+                </TabsTrigger>
+                <TabsTrigger value="variants" className="h-9 px-4 text-[13px] font-bold rounded-lg data-[state=active]:bg-white data-[state=active]:text-[var(--c-navy-500)] data-[state=active]:shadow-sm flex items-center gap-2">
+                  <Layers className="w-4 h-4" /> Variantes ({variants.length})
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="details" className="flex-1 mt-6 animate-in fade-in duration-300">
+                <form onSubmit={handleSaveDetails} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label className="text-[11px] font-bold uppercase tracking-widest text-[var(--c-gray-400)]">Nombre de producto</Label>
+                      <Input name="name" defaultValue={form.name} className="h-11 bg-[var(--c-gray-50)] border-none rounded-xl focus-visible:ring-2 focus-visible:ring-[var(--c-cyan-500)] font-medium" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-[11px] font-bold uppercase tracking-widest text-[var(--c-gray-400)]">SKU / Código</Label>
+                      <Input name="sku" defaultValue={form.sku} className="h-11 bg-[var(--c-gray-50)] border-none rounded-xl focus-visible:ring-2 focus-visible:ring-[var(--c-cyan-500)] font-medium" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-[11px] font-bold uppercase tracking-widest text-[var(--c-gray-400)]">Precio Base (CLP)</Label>
+                      <Input name="price" type="number" defaultValue={form.price} className="h-11 bg-[var(--c-gray-50)] border-none rounded-xl focus-visible:ring-2 focus-visible:ring-[var(--c-cyan-500)] font-bold" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-[11px] font-bold uppercase tracking-widest text-[var(--c-gray-400)]">Stock Actual</Label>
+                      <Input name="stock_quantity" type="number" defaultValue={form.stock_quantity} className="h-11 bg-[var(--c-gray-100)] border-none rounded-xl focus-visible:ring-2 focus-visible:ring-[var(--c-cyan-500)] font-medium" readOnly />
+                    </div>
+                    <div className="md:col-span-2 space-y-2">
+                      <Label className="text-[11px] font-bold uppercase tracking-widest text-[var(--c-gray-400)]">Descripción</Label>
+                      <Textarea name="description" defaultValue={form.description} className="bg-[var(--c-gray-50)] border-none rounded-xl focus-visible:ring-2 focus-visible:ring-[var(--c-cyan-500)] font-medium min-h-[140px] resize-none" />
+                    </div>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
-                    <div className="space-y-1.5"><Skeleton className="h-4 w-20 rounded" /><Skeleton className="h-10 w-full rounded-xl" /></div>
-                    <div className="space-y-1.5"><Skeleton className="h-4 w-20 rounded" /><Skeleton className="h-10 w-full rounded-xl" /></div>
-                    <div className="space-y-1.5"><Skeleton className="h-4 w-24 rounded" /><Skeleton className="h-10 w-full rounded-xl" /></div>
-                    <div className="space-y-1.5"><Skeleton className="h-4 w-20 rounded" /><Skeleton className="h-10 w-full rounded-xl" /></div>
-                    <div className="md:col-span-2 space-y-1.5"><Skeleton className="h-4 w-24 rounded" /><Skeleton className="h-24 w-full rounded-xl" /></div>
+                  <div className="flex justify-end gap-3 pt-4 border-t border-[var(--c-gray-100)]">
+                    <Button type="button" variant="ghost" className="h-11 px-6 text-[13px] font-bold text-[var(--c-gray-500)] hover:bg-[var(--c-gray-50)] rounded-xl" onClick={onClose}>Cancelar</Button>
+                    <Button type="submit" className="h-11 px-8 bg-[var(--c-navy-500)] hover:bg-[var(--c-navy-600)] text-white font-bold rounded-xl shadow-lg shadow-[var(--c-navy-500)]/10" disabled={saving}>
+                      {saving ? "Guardando..." : <><Save className="w-4 h-4 mr-2" /> Guardar Cambios</>}
+                    </Button>
                   </div>
-                  <div className="flex justify-end gap-2 pt-4">
-                    <Skeleton className="h-10 w-24 rounded-lg" />
-                    <Skeleton className="h-10 w-32 rounded-lg" />
+                </form>
+              </TabsContent>
+
+              <TabsContent value="images" className="flex-1 mt-6 animate-in fade-in duration-300">
+                <div className="space-y-6">
+                  <form onSubmit={handleAddImage} className="flex gap-2">
+                    <Input name="url" placeholder="https://ejemplo.com/imagen.jpg" className="h-11 bg-[var(--c-gray-50)] border-none rounded-xl focus-visible:ring-2 focus-visible:ring-[var(--c-cyan-500)] font-medium flex-1 px-4" />
+                    <Button type="submit" className="h-11 px-6 bg-[var(--c-navy-500)] text-white font-bold rounded-xl hover:bg-[var(--c-navy-600)] shadow-md">
+                      <Plus className="w-4 h-4 mr-2" /> Agregar
+                    </Button>
+                  </form>
+                  
+                  {images.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-12 bg-[var(--c-gray-50)] rounded-2xl border-2 border-dashed border-[var(--c-gray-200)]">
+                      <ImageIcon className="w-10 h-10 text-[var(--c-gray-300)] mb-2" />
+                      <p className="text-[13px] font-bold text-[var(--c-gray-400)]">No hay imágenes vinculadas</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                      {images.map((img) => (
+                        <div key={img.id} className="group relative aspect-square rounded-2xl overflow-hidden border border-[var(--c-gray-200)] bg-[var(--c-gray-100)] shadow-sm">
+                          <img src={getImageUrl(img.url)} alt="" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                             <Button variant="ghost" size="icon" className="h-10 w-10 bg-white/20 hover:bg-red-500 text-white rounded-xl backdrop-blur-md" onClick={() => handleDeleteImage(img.id)}>
+                               <Trash2 className="w-4 h-4" />
+                             </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="variants" className="flex-1 mt-6 animate-in fade-in duration-300">
+                <div className="space-y-6">
+                  <form onSubmit={handleAddVariant} className="bg-[var(--c-gray-50)] p-5 rounded-2xl border border-[var(--c-gray-200)] space-y-4">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                      <div className="space-y-1.5">
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-[var(--c-gray-400)]">Nombre</Label>
+                        <Input name="name" placeholder="Ej. L / Azul" className="h-10 bg-white border-none rounded-lg" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-[var(--c-gray-400)]">SKU</Label>
+                        <Input name="sku" placeholder="SKU-VAR" className="h-10 bg-white border-none rounded-lg" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-[var(--c-gray-400)]">Inc. Precio</Label>
+                        <Input name="price_diff" type="number" placeholder="0" className="h-10 bg-white border-none rounded-lg" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-[var(--c-gray-400)]">Stock</Label>
+                        <Input name="stock" type="number" placeholder="0" className="h-10 bg-white border-none rounded-lg" />
+                      </div>
+                    </div>
+                    <Button type="submit" className="w-full h-10 bg-[var(--c-cyan-500)] hover:bg-[var(--c-cyan-600)] text-white font-bold rounded-xl transition-all">
+                      Confirmar Nueva Variante
+                    </Button>
+                  </form>
+
+                  <div className="space-y-3">
+                    {variants.length === 0 ? (
+                      <div className="text-center py-10 bg-[var(--c-gray-50)] rounded-2xl border border-[var(--c-gray-100)]">
+                        <Box className="w-8 h-8 text-[var(--c-gray-300)] mx-auto mb-2" />
+                        <p className="text-[13px] font-bold text-[var(--c-gray-400)]">Este producto no tiene variantes</p>
+                      </div>
+                    ) : (
+                      variants.map((v) => (
+                        <div key={v.id} className="flex items-center gap-4 p-4 rounded-2xl bg-white border border-[var(--c-gray-200)] hover:border-[var(--c-cyan-300)] transition-all group">
+                          <div className="flex-1">
+                            <p className="text-[14px] font-bold text-[var(--c-gray-800)]">{v.name}</p>
+                            <p className="text-[11px] text-[var(--c-gray-400)] font-mono font-bold mt-0.5">SKU: {v.sku || "N/A"}</p>
+                          </div>
+                          <div className="text-right flex flex-col items-end">
+                            <p className="text-[13px] font-bold text-[var(--c-navy-500)]">+{formatCurrency(v.price_diff || 0)}</p>
+                            <p className="text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-tighter">Stock: {v.stock || 0}</p>
+                          </div>
+                          <div className="flex gap-1 pl-2 border-l border-[var(--c-gray-100)]">
+                             <Button size="icon" variant="ghost" className="h-9 w-9 text-red-400 hover:text-red-500 hover:bg-red-50 rounded-lg" onClick={() => handleDeleteVariant(v.id)}>
+                               <X className="w-4 h-4" />
+                             </Button>
+                          </div>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
-              ) : (
-                <Tabs className="w-full flex-1 flex flex-col">
-                  <Tabs.ListContainer className="flex-shrink-0">
-                    <Tabs.List
-                      aria-label="Secciones del producto"
-                      className="gap-2 w-full flex bg-[#f8fafc] border border-[#e2e8f0] p-1.5 rounded-[12px] overflow-x-auto scrollbar-hide flex-nowrap"
-                    >
-                      <Tabs.Tab id="details" className="relative flex-1 px-4 h-10 flex items-center justify-center gap-2 text-sm font-bold text-[#64748b] data-[selected=true]:text-[#009baf] transition-colors z-10 whitespace-nowrap">
-                        <Info className="w-4 h-4 shrink-0" />
-                        <span>Detalles</span>
-                        <Tabs.Indicator className="absolute inset-0 w-full h-full bg-white shadow-sm border border-[#009baf]/20 rounded-[8px] pointer-events-none" />
-                      </Tabs.Tab>
-                      <Tabs.Tab id="images" className="relative flex-1 px-4 h-10 flex items-center justify-center gap-2 text-sm font-bold text-[#64748b] data-[selected=true]:text-[#009baf] transition-colors z-10 whitespace-nowrap">
-                        <ImageIcon className="w-4 h-4 shrink-0" />
-                        <span>Imágenes <span className="hidden sm:inline">({images.length})</span></span>
-                        <Tabs.Indicator className="absolute inset-0 w-full h-full bg-white shadow-sm border border-[#009baf]/20 rounded-[8px] pointer-events-none" />
-                      </Tabs.Tab>
-                      <Tabs.Tab id="variants" className="relative flex-1 px-4 h-10 flex items-center justify-center gap-2 text-sm font-bold text-[#64748b] data-[selected=true]:text-[#009baf] transition-colors z-10 whitespace-nowrap">
-                        <Layers className="w-4 h-4 shrink-0" />
-                        <span>Variantes <span className="hidden sm:inline">({variants.length})</span></span>
-                        <Tabs.Indicator className="absolute inset-0 w-full h-full bg-white shadow-sm border border-[#009baf]/20 rounded-[8px] pointer-events-none" />
-                      </Tabs.Tab>
-                    </Tabs.List>
-                  </Tabs.ListContainer>
-
-                  <Tabs.Panel id="details" className="pt-6 space-y-4">
-                    <form onSubmit={handleSaveDetails} className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                      <div className="flex flex-col gap-1.5">
-                        <Label className="text-xs font-bold uppercase tracking-wider text-[#64748b]">Nombre</Label>
-                        <Input name="name" defaultValue={form.name} className="bg-[#f8fafc] border border-[#e2e8f0] text-[#2d3748] rounded-lg focus-within:border-[#009baf] focus-within:ring-1 focus-within:ring-[#009baf]/20 transition-all font-medium" />
-                      </div>
-                      <div className="flex flex-col gap-1.5">
-                        <Label className="text-xs font-bold uppercase tracking-wider text-[#64748b]">SKU</Label>
-                        <Input name="sku" defaultValue={form.sku} className="bg-[#f8fafc] border border-[#e2e8f0] text-[#2d3748] rounded-lg focus-within:border-[#009baf] focus-within:ring-1 focus-within:ring-[#009baf]/20 transition-all font-medium" />
-                      </div>
-                      <div className="flex flex-col gap-1.5">
-                        <Label className="text-xs font-bold uppercase tracking-wider text-[#64748b]">Precio (CLP)</Label>
-                        <Input name="price" type="number" defaultValue={form.price} className="bg-[#f8fafc] border border-[#e2e8f0] text-[#2d3748] rounded-lg focus-within:border-[#009baf] focus-within:ring-1 focus-within:ring-[#009baf]/20 transition-all font-medium" />
-                      </div>
-                      <div className="flex flex-col gap-1.5">
-                        <Label className="text-xs font-bold uppercase tracking-wider text-[#64748b]">Stock</Label>
-                        <Input name="stock_quantity" type="number" defaultValue={form.stock_quantity} className="bg-[#f8fafc] border border-[#e2e8f0] text-[#2d3748] rounded-lg focus-within:border-[#009baf] focus-within:ring-1 focus-within:ring-[#009baf]/20 transition-all font-medium" />
-                      </div>
-                      <div className="md:col-span-2 flex flex-col gap-1.5">
-                        <Label className="text-xs font-bold uppercase tracking-wider text-[#64748b]">Descripción</Label>
-                        <TextArea name="description" defaultValue={form.description} rows={3} className="bg-[#f8fafc] border border-[#e2e8f0] text-[#2d3748] rounded-lg focus-within:border-[#009baf] focus-within:ring-1 focus-within:ring-[#009baf]/20 transition-all w-full resize-y font-medium min-h-[100px]" />
-                      </div>
-                      <div className="md:col-span-2 flex justify-end gap-2 pt-4">
-                        <SecondaryCloseButton onClose={onClose} />
-                        <Button type="submit" className="bg-[#009baf] text-white font-medium hover:opacity-90 shadow-sm rounded-lg px-6" isDisabled={saving}>
-                          {saving ? "Guardando..." : "Guardar Detalles"}
-                        </Button>
-                      </div>
-                    </form>
-                  </Tabs.Panel>
-
-                  <Tabs.Panel id="images" className="pt-6 space-y-4">
-                    <form onSubmit={handleAddImage} className="flex gap-2">
-                      <Input name="url" placeholder="URL de la imagen" className="bg-[#f8fafc] border border-[#e2e8f0] text-[#2d3748] rounded-lg focus-within:border-[#009baf] focus-within:ring-1 focus-within:ring-[#009baf]/20 transition-all font-medium flex-1" />
-                      <Button type="submit" className="bg-[#009baf] text-white font-medium hover:opacity-90 shadow-sm rounded-lg px-6">Agregar</Button>
-                    </form>
-                    {images.length === 0 ? (
-                      <p className="text-sm text-[#64748b] text-center py-6 font-medium">No hay imágenes vinculadas.</p>
-                    ) : (
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 pt-2">
-                        {images.map((img) => (
-                          <div key={img.id} className="relative group rounded-lg overflow-hidden border border-[#e2e8f0] bg-[#f8fafc] shadow-sm">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={getImageUrl(img.url)} alt={img.alt_text || "Producto sin imagen"} className="w-full h-32 object-cover" />
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                              <Button
-                                className="bg-red-500 text-white shadow-sm font-medium px-4 opacity-90 hover:opacity-100 transition-opacity rounded-lg"
-                                onPress={() => handleDeleteImage(img.id)}
-                              >
-                                Eliminar
-                              </Button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    <div className="flex justify-end pt-4">
-                      <SecondaryCloseButton onClose={onClose} />
-                    </div>
-                  </Tabs.Panel>
-
-                  <Tabs.Panel id="variants" className="pt-6 space-y-4">
-                    <form onSubmit={handleAddVariant} className="flex flex-col gap-3">
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        <Input name="name" placeholder="Nombre" className="bg-[#f8fafc] border border-[#e2e8f0] text-[#2d3748] rounded-lg focus-within:border-[#009baf] focus-within:ring-1 focus-within:ring-[#009baf]/20 transition-all font-medium" />
-                        <Input name="sku" placeholder="SKU" className="bg-[#f8fafc] border border-[#e2e8f0] text-[#2d3748] rounded-lg focus-within:border-[#009baf] focus-within:ring-1 focus-within:ring-[#009baf]/20 transition-all font-medium" />
-                        <Input name="price_diff" placeholder="Dif. Precio" type="number" className="bg-[#f8fafc] border border-[#e2e8f0] text-[#2d3748] rounded-lg focus-within:border-[#009baf] focus-within:ring-1 focus-within:ring-[#009baf]/20 transition-all font-medium" />
-                        <Input name="stock" placeholder="Stock" type="number" className="bg-[#f8fafc] border border-[#e2e8f0] text-[#2d3748] rounded-lg focus-within:border-[#009baf] focus-within:ring-1 focus-within:ring-[#009baf]/20 transition-all font-medium" />
-                      </div>
-                      <Button type="submit" className="bg-[#009baf] text-white font-medium hover:opacity-90 shadow-sm rounded-lg w-max">Agregar Variante</Button>
-                    </form>
-
-                    {variants.length === 0 ? (
-                      <p className="text-sm text-[#64748b] text-center py-6 font-medium">No hay variantes configuradas.</p>
-                    ) : (
-                      <div className="space-y-3 pt-2">
-                        {variants.map((v) => (
-                          <div key={v.id} className="flex items-center gap-3 p-4 rounded-[12px] bg-[#f8fafc] border border-[#e2e8f0]">
-                            <span className="text-sm font-bold text-[#2d3748] flex-1">{v.name}</span>
-                            <span className="text-xs text-[#64748b] font-medium hidden sm:inline">SKU: {v.sku || "N/A"}</span>
-                            <span className="text-xs text-[#009baf] font-bold">+{formatCurrency(v.price_diff || 0)}</span>
-                            <span className="text-xs text-[#64748b] font-medium">Stock: {v.stock || 0}</span>
-                            <Button size="sm" className="bg-white border border-[#e2e8f0] text-[#2d3748] shadow-sm ml-2 font-medium hover:bg-[#e2e8f0] transition-colors" onPress={() => handleUpdateVariant(v.id, { name: v.name })}>
-                              Guardar
-                            </Button>
-                            <Button size="sm" className="bg-red-50 text-red-600 font-medium hover:bg-red-100 transition-colors" onPress={() => handleDeleteVariant(v.id)}>
-                              X
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    <div className="flex justify-end pt-4">
-                      <SecondaryCloseButton onClose={onClose} />
-                    </div>
-                  </Tabs.Panel>
-                </Tabs>
-              )}
-            </Modal.Body>
-          </Modal.Dialog>
-        </Modal.Container>
-      </Modal.Backdrop>
-    </Modal>
+              </TabsContent>
+            </Tabs>
+          )}
+        </div>
+        
+        <DialogFooter className="hidden">
+           {/* Controlled by internal forms */}
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

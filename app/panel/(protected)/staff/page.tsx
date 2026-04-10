@@ -1,27 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Card,
-  Table,
-  Button,
-  Skeleton,
-  Modal,
-  Input,
-  Label,
-  Select,
-  ListBox,
-  toast,
-} from "@heroui/react";
+import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   useStaff,
   useInviteStaff,
   useCancelStaffInvitation,
   useUpdateStaffRole,
-  useTransferOwnership,
 } from "@/lib/hooks/use-staff";
 import { getErrorMessage } from "@/lib/utils/error-message";
 import type { StaffMember } from "@/lib/types/staff";
+import { UserPlus, ShieldCheck, Mail, Info } from "lucide-react";
+
+// Modular Components
+import { StaffHeader } from "./components/StaffHeader";
+import { StaffList } from "./components/StaffList";
 
 const ROLE_LABELS: Record<string, string> = {
   OWNER: "Propietario",
@@ -32,11 +29,11 @@ const ROLE_LABELS: Record<string, string> = {
 
 const getRoleColor = (role: string) => {
   switch (role?.toUpperCase()) {
-    case "OWNER": return "bg-amber-500/10 text-amber-400 border-amber-500/20";
-    case "ADMIN": return "bg-purple-500/10 text-purple-400 border-purple-500/20";
-    case "JUDGE": return "bg-sky-500/10 text-sky-400 border-sky-500/20";
-    case "CASHIER": return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
-    default: return "bg-[var(--surface-secondary)] text-[var(--muted)] border-[var(--border)]";
+    case "OWNER": return "bg-amber-50 text-amber-600 border-amber-100";
+    case "ADMIN": return "bg-purple-50 text-purple-600 border-purple-100";
+    case "JUDGE": return "bg-sky-50 text-sky-600 border-sky-100";
+    case "CASHIER": return "bg-emerald-50 text-emerald-600 border-emerald-100";
+    default: return "bg-[var(--c-gray-50)] text-[var(--c-gray-500)] border-[var(--c-gray-200)]";
   }
 };
 
@@ -45,7 +42,6 @@ export default function StaffPage() {
   const inviteMutation = useInviteStaff();
   const revokeMutation = useCancelStaffInvitation();
   const updateRoleMutation = useUpdateStaffRole();
-  const transferMutation = useTransferOwnership();
 
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
@@ -59,22 +55,22 @@ export default function StaffPage() {
     if (!inviteEmail) return;
     try {
       await inviteMutation.mutateAsync({ email: inviteEmail, role: inviteRole });
-      toast.success("Invitacion enviada");
+      toast.success("Invitación enviada exitosamente");
       setShowInviteModal(false);
       setInviteEmail("");
       setInviteRole("CASHIER");
     } catch (error: unknown) {
-      toast.danger(getErrorMessage(error, "No se pudo invitar al usuario"));
+      toast.error(getErrorMessage(error, "No se pudo enviar la invitación"));
     }
   };
 
   const handleRevoke = async (id: number) => {
-    if (!window.confirm("Seguro que deseas remover este miembro?")) return;
+    if (!window.confirm("¿Seguro que deseas remover este miembro del equipo?")) return;
     try {
       await revokeMutation.mutateAsync(String(id));
-      toast.success("Miembro removido");
+      toast.success("Miembro removido permanentemente");
     } catch (error: unknown) {
-      toast.danger(getErrorMessage(error, "No se pudo remover al miembro"));
+      toast.error(getErrorMessage(error, "No se pudo remover al miembro"));
     }
   };
 
@@ -82,272 +78,135 @@ export default function StaffPage() {
     if (!selectedMember || !newRole) return;
     try {
       await updateRoleMutation.mutateAsync({ id: String(selectedMember.id), role: newRole });
-      toast.success("Rol actualizado");
+      toast.success("Rol actualizado con éxito");
       setShowRoleModal(false);
       setSelectedMember(null);
     } catch (error: unknown) {
-      toast.danger(getErrorMessage(error, "Error al cambiar el rol"));
+      toast.error(getErrorMessage(error, "Error al actualizar el rol"));
     }
   };
 
   const actionLoading = inviteMutation.isPending || updateRoleMutation.isPending;
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold font-[var(--font-heading)] text-[var(--foreground)]">
-            Equipo y Roles
-          </h1>
-          <p className="text-sm text-[var(--muted)] mt-1">Gestiona los miembros de tu tienda y sus permisos</p>
-        </div>
-        <Button variant="primary" onPress={() => setShowInviteModal(true)}>
-          Invitar Miembro
-        </Button>
-      </div>
+    <div className="space-y-10 max-w-[1400px] mx-auto pb-10 px-4 sm:px-0">
+      <StaffHeader onInvite={() => setShowInviteModal(true)} />
 
-      <Card className="bg-[var(--surface)] border border-[var(--border)] overflow-hidden">
-        <div className="overflow-x-auto">
-          <Table>
-            <Table.ScrollContainer>
-              <Table.Content aria-label="Lista de Staff" className="min-w-full">
-                <Table.Header className="bg-[var(--surface-sunken)] border-b border-[var(--border)]">
-                  <Table.Column isRowHeader className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Miembro</Table.Column>
-                  <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Email</Table.Column>
-                  <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Rol</Table.Column>
-                  <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Estado</Table.Column>
-                  <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider text-right">Acciones</Table.Column>
-                </Table.Header>
-                <Table.Body>
-                  {isLoading ? (
-                    Array(3).fill(0).map((_, i) => (
-                      <Table.Row key={i} className="border-b border-[var(--border)]">
-                        <Table.Cell className="py-4 px-4"><Skeleton className="h-5 w-28 rounded" /></Table.Cell>
-                        <Table.Cell className="py-4 px-4"><Skeleton className="h-5 w-40 rounded" /></Table.Cell>
-                        <Table.Cell className="py-4 px-4"><Skeleton className="h-5 w-16 rounded" /></Table.Cell>
-                        <Table.Cell className="py-4 px-4"><Skeleton className="h-5 w-20 rounded" /></Table.Cell>
-                        <Table.Cell className="py-4 px-4"><Skeleton className="h-5 w-24 rounded ml-auto" /></Table.Cell>
-                      </Table.Row>
-                    ))
-                  ) : staff.length === 0 ? (
-                    <Table.Row>
-                      <Table.Cell colSpan={5} className="py-12 text-center text-[var(--muted)]">
-                        Aun no hay mas miembros en tu tienda.
-                      </Table.Cell>
-                    </Table.Row>
-                  ) : (
-                    staff.map((member) => {
-                      const isOwner = member.role === "OWNER";
-                      return (
-                        <Table.Row key={member.id} className="border-b border-[var(--border)] last:border-0 hover:bg-[var(--surface-secondary)] transition-colors">
-                          <Table.Cell className="py-4 px-4">
-                            <div className="flex items-center gap-3">
-                              {member.avatar_url ? (
-                                <img src={member.avatar_url} alt="" className="w-8 h-8 rounded-full object-cover" />
-                              ) : (
-                                <div className="w-8 h-8 rounded-full bg-[var(--primary)]/20 flex items-center justify-center text-xs font-bold text-[var(--primary)]">
-                                  {(member.display_name || member.username || "?")[0].toUpperCase()}
-                                </div>
-                              )}
-                              <div>
-                                <p className="font-medium text-[var(--foreground)]">
-                                  {member.display_name || member.username || "Sin nombre"}
-                                </p>
-                                <p className="text-xs text-[var(--muted)]">@{member.username}</p>
-                              </div>
-                            </div>
-                          </Table.Cell>
-                          <Table.Cell className="py-4 px-4 text-sm text-[var(--muted)]">
-                            {member.email}
-                          </Table.Cell>
-                          <Table.Cell className="py-4 px-4">
-                            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getRoleColor(member.role)}`}>
-                              {ROLE_LABELS[member.role] || member.role}
-                            </span>
-                          </Table.Cell>
-                          <Table.Cell className="py-4 px-4">
-                            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${member.is_active
-                              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                              : "bg-red-500/10 text-red-400 border-red-500/20"
-                              }`}>
-                              {member.is_active ? "Activo" : "Inactivo"}
-                            </span>
-                          </Table.Cell>
-                          <Table.Cell className="py-4 px-4 text-right">
-                            {isOwner ? (
-                              <span className="text-xs text-[var(--muted)] italic">Propietario</span>
-                            ) : (
-                              <div className="flex gap-2 justify-end">
-                                <Button
-                                  size="sm" variant="outline"
-                                  onPress={() => { setSelectedMember(member); setNewRole(member.role); setShowRoleModal(true); }}
-                                >
-                                  Cambiar Rol
-                                </Button>
-                                <Button
-                                  size="sm" variant="outline"
-                                  className="border-red-500/50 text-red-500 hover:bg-red-500/10"
-                                  onPress={() => handleRevoke(member.id)}
-                                >
-                                  Remover
-                                </Button>
-                              </div>
-                            )}
-                          </Table.Cell>
-                        </Table.Row>
-                      );
-                    })
-                  )}
-                </Table.Body>
-              </Table.Content>
-            </Table.ScrollContainer>
-          </Table>
-        </div>
-      </Card>
+      <StaffList 
+        staff={staff}
+        isLoading={isLoading}
+        onEditRole={(member) => { setSelectedMember(member); setNewRole(member.role); setShowRoleModal(true); }}
+        onRemove={handleRevoke}
+        getRoleColor={getRoleColor}
+        ROLE_LABELS={ROLE_LABELS}
+      />
 
-      <Modal isOpen={showInviteModal} onOpenChange={setShowInviteModal}>
-        <Modal.Backdrop>
-          <Modal.Container>
-            <Modal.Dialog className="bg-[var(--surface)] border border-[var(--border)] max-w-md w-full mx-4">
-              <Modal.CloseTrigger className="text-[var(--muted)] hover:text-[var(--foreground)]" />
-              <Modal.Header className="p-6 pb-0">
-                <Modal.Heading className="text-xl font-bold text-[var(--foreground)]">
-                  Invitar al Equipo
-                </Modal.Heading>
-                <p className="text-sm text-[var(--muted)] mt-1">Envia una invitacion por correo electronico</p>
-              </Modal.Header>
-              <Modal.Body className="p-6 space-y-4">
-                <div className="space-y-1.5 flex flex-col">
-                  <Label className="text-sm font-medium text-[var(--muted)]">Correo Electronico</Label>
-                  <Input
-                    placeholder="ejemplo@email.com"
-                    value={inviteEmail}
-                    onChange={(e) => setInviteEmail(e.target.value)}
-                    type="email"
-                    className="bg-transparent border border-[var(--border)] focus:border-[var(--primary)]"
-                  />
-                </div>
-                <div className="space-y-1.5 flex flex-col">
-                  <Label className="text-sm font-medium text-[var(--muted)]">Rol a Asignar</Label>
-                  <Select
-                    className="w-full"
-                    selectedKey={inviteRole}
-                    onSelectionChange={(key: unknown) => { if (key) setInviteRole(key as string); }}
-                  >
-                    <Select.Trigger className="bg-transparent border border-[var(--border)]">
-                      <Select.Value />
-                      <Select.Indicator />
-                    </Select.Trigger>
-                    <Select.Popover className="bg-[var(--surface)] border border-[var(--border)]">
-                      <ListBox className="text-[var(--foreground)]">
-                        <ListBox.Item id="ADMIN" textValue="Administrador">
-                          <div>
-                            <p className="font-medium">Administrador</p>
-                            <p className="text-xs text-[var(--muted)]">Control total salvo suscripcion</p>
-                          </div>
-                          <ListBox.ItemIndicator />
-                        </ListBox.Item>
-                        <ListBox.Item id="JUDGE" textValue="Juez">
-                          <div>
-                            <p className="font-medium">Juez</p>
-                            <p className="text-xs text-[var(--muted)]">Torneos y eventos</p>
-                          </div>
-                          <ListBox.ItemIndicator />
-                        </ListBox.Item>
-                        <ListBox.Item id="CASHIER" textValue="Cajero">
-                          <div>
-                            <p className="font-medium">Cajero</p>
-                            <p className="text-xs text-[var(--muted)]">Ordenes, inventario y pagos</p>
-                          </div>
-                          <ListBox.ItemIndicator />
-                        </ListBox.Item>
-                      </ListBox>
-                    </Select.Popover>
-                  </Select>
-                </div>
-              </Modal.Body>
-              <Modal.Footer className="border-t border-[var(--border)]/40 p-4 flex justify-end gap-3">
-                <Button variant="outline" onPress={() => setShowInviteModal(false)}>Cancelar</Button>
-                <Button
-                  variant="primary"
-                  isDisabled={actionLoading || !inviteEmail}
-                  onPress={handleInvite}
-                >
-                  {inviteMutation.isPending ? "Enviando..." : "Enviar Invitacion"}
+      {/* Invite Modal */}
+      <Dialog open={showInviteModal} onOpenChange={setShowInviteModal}>
+        <DialogContent className="bg-[#ffffff] border border-[var(--c-gray-200)] sm:max-w-[450px] p-0 overflow-hidden rounded-[28px] shadow-2xl">
+          <div className="p-6 border-b border-[var(--c-gray-100)] bg-[var(--c-gray-50)]/50 flex items-center gap-4">
+            <div className="p-3 rounded-2xl bg-[var(--c-navy-500)]/10 text-[var(--c-navy-500)]">
+              <UserPlus className="h-6 w-6" />
+            </div>
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold text-[var(--c-gray-800)]">
+                Invitar al Equipo
+              </DialogTitle>
+              <p className="text-sm text-[var(--c-gray-500)] font-medium">
+                Expande tu staff y delega funciones
+              </p>
+            </DialogHeader>
+          </div>
+
+          <div className="p-8 space-y-6">
+            <div className="space-y-2 flex flex-col">
+              <Label className="text-[12px] font-bold text-[var(--c-gray-500)] uppercase tracking-wider flex items-center gap-2">
+                <Mail className="h-3 w-3 text-[var(--c-navy-500)]" /> Correo Electrónico
+              </Label>
+              <Input
+                placeholder="ejemplo@correo.com"
+                value={inviteEmail}
+                onChange={(e) => setInviteEmail(e.target.value)}
+                className="bg-white border-[var(--c-gray-200)] rounded-xl h-11 focus:ring-[var(--c-navy-500)]/20"
+              />
+            </div>
+
+            <div className="space-y-2 flex flex-col">
+              <Label className="text-[12px] font-bold text-[var(--c-gray-500)] uppercase tracking-wider flex items-center gap-2">
+                <ShieldCheck className="h-3.5 w-3.5 text-[var(--c-cyan-500)]" /> Selecciona un Rol
+              </Label>
+              <select
+                className="w-full bg-white border border-[var(--c-gray-200)] rounded-xl h-11 px-3 py-2 text-sm text-[var(--c-gray-800)] font-bold focus:outline-none focus:ring-2 focus:ring-[var(--c-navy-500)]/20 transition-all appearance-none"
+                value={inviteRole}
+                onChange={(e) => setInviteRole(e.target.value)}
+              >
+                <option value="ADMIN">Administrador</option>
+                <option value="JUDGE">Juez / Staff</option>
+                <option value="CASHIER">Cajero / Atención</option>
+              </select>
+              <div className="flex items-start gap-2 p-3 bg-blue-50/50 rounded-xl mt-2">
+                 <Info className="h-4 w-4 text-[var(--c-navy-500)] mt-0.5" />
+                 <p className="text-[11px] text-[var(--c-navy-500)] leading-tight font-medium">
+                    El usuario recibirá un correo para unirse a tu tienda y configurar sus accesos.
+                 </p>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="p-6 pt-2 bg-[var(--c-gray-50)]/30 border-t border-[var(--c-gray-100)]">
+            <div className="flex w-full gap-3">
+              <Button variant="outline" onClick={() => setShowInviteModal(false)} className="flex-1 rounded-xl h-11">
+                Cancelar
+              </Button>
+              <Button
+                variant="default"
+                disabled={actionLoading || !inviteEmail}
+                onClick={handleInvite}
+                className="flex-1 rounded-xl h-11 bg-[var(--c-navy-500)] hover:bg-[var(--c-navy-600)]"
+              >
+                {inviteMutation.isPending ? "Enviando..." : "Enviar Invitación"}
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Role Management Modal */}
+      <Dialog open={showRoleModal} onOpenChange={setShowRoleModal}>
+        <DialogContent className="bg-[#ffffff] border border-[var(--c-gray-200)] sm:max-w-[400px] p-0 overflow-hidden rounded-[28px] shadow-2xl">
+          <div className="p-6 border-b border-[var(--c-gray-100)] bg-[var(--c-gray-50)]/50">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold text-[var(--c-gray-800)]">
+                Modificar Privilegios
+              </DialogTitle>
+            </DialogHeader>
+          </div>
+          <div className="p-8 space-y-6">
+            <p className="text-sm text-[var(--c-gray-500)] leading-relaxed">
+              Estás modificando el rol de <strong className="text-[var(--c-gray-800)] underline decoration-[var(--c-cyan-500)] decoration-2">{selectedMember?.display_name || selectedMember?.username}</strong>. Asegúrate de otorgar los permisos adecuados.
+            </p>
+            <div className="space-y-4">
+              <select
+                className="w-full bg-white border border-[var(--c-gray-200)] rounded-xl h-12 px-4 text-sm text-[var(--c-gray-800)] font-bold focus:outline-none focus:ring-2 focus:ring-[var(--c-navy-500)]/20 transition-all appearance-none"
+                value={newRole}
+                onChange={(e) => setNewRole(e.target.value)}
+              >
+                <option value="ADMIN">Administrador</option>
+                <option value="JUDGE">Juez / Staff</option>
+                <option value="CASHIER">Cajero / Atención</option>
+              </select>
+            </div>
+          </div>
+          <DialogFooter className="p-6 pt-2 bg-[var(--c-gray-50)]/30 border-t border-[var(--c-gray-100)]">
+             <div className="flex w-full gap-3">
+                <Button variant="outline" onClick={() => setShowRoleModal(false)} className="flex-1 rounded-xl h-11">Cancelar</Button>
+                <Button variant="default" disabled={actionLoading} onClick={handleUpdateRole} className="flex-1 rounded-xl h-11 bg-[var(--c-navy-500)]">
+                  {updateRoleMutation.isPending ? "Procesando..." : "Actualizar Rol"}
                 </Button>
-              </Modal.Footer>
-            </Modal.Dialog>
-          </Modal.Container>
-        </Modal.Backdrop>
-      </Modal>
-
-      <Modal isOpen={showRoleModal} onOpenChange={setShowRoleModal}>
-        <Modal.Backdrop>
-          <Modal.Container>
-            <Modal.Dialog className="bg-[var(--surface)] border border-[var(--border)] max-w-md w-full mx-4">
-              <Modal.CloseTrigger className="text-[var(--muted)] hover:text-[var(--foreground)]" />
-              <Modal.Header className="p-6 pb-0">
-                <Modal.Heading className="text-xl font-bold text-[var(--foreground)]">
-                  Modificar Rol
-                </Modal.Heading>
-              </Modal.Header>
-              <Modal.Body className="p-6 space-y-4">
-                <p className="text-sm text-[var(--muted)]">
-                  Modificando el rol de <strong className="text-[var(--foreground)]">{selectedMember?.display_name || selectedMember?.username}</strong>.
-                </p>
-                <div className="space-y-1.5 flex flex-col">
-                  <Label className="text-sm font-medium text-[var(--muted)]">Nuevo Rol</Label>
-                  <Select
-                    className="w-full"
-                    selectedKey={newRole}
-                    onSelectionChange={(key: unknown) => { if (key) setNewRole(key as string); }}
-                  >
-                    <Select.Trigger className="bg-transparent border border-[var(--border)]">
-                      <Select.Value />
-                      <Select.Indicator />
-                    </Select.Trigger>
-                    <Select.Popover className="bg-[var(--surface)] border border-[var(--border)]">
-                      <ListBox className="text-[var(--foreground)]">
-                        <ListBox.Item id="ADMIN" textValue="Administrador">
-                          <div>
-                            <p className="font-medium">Administrador</p>
-                            <p className="text-xs text-[var(--muted)]">Control total salvo suscripcion</p>
-                          </div>
-                          <ListBox.ItemIndicator />
-                        </ListBox.Item>
-                        <ListBox.Item id="JUDGE" textValue="Juez">
-                          <div>
-                            <p className="font-medium">Juez</p>
-                            <p className="text-xs text-[var(--muted)]">Torneos y eventos</p>
-                          </div>
-                          <ListBox.ItemIndicator />
-                        </ListBox.Item>
-                        <ListBox.Item id="CASHIER" textValue="Cajero">
-                          <div>
-                            <p className="font-medium">Cajero</p>
-                            <p className="text-xs text-[var(--muted)]">Ordenes, inventario y pagos</p>
-                          </div>
-                          <ListBox.ItemIndicator />
-                        </ListBox.Item>
-                      </ListBox>
-                    </Select.Popover>
-                  </Select>
-                </div>
-              </Modal.Body>
-              <Modal.Footer className="border-t border-[var(--border)]/40 p-4 flex justify-end gap-3">
-                <Button variant="outline" onPress={() => setShowRoleModal(false)}>Cancelar</Button>
-                <Button
-                  variant="primary"
-                  isDisabled={actionLoading}
-                  onPress={handleUpdateRole}
-                >
-                  {updateRoleMutation.isPending ? "Guardando..." : "Guardar Rol"}
-                </Button>
-              </Modal.Footer>
-            </Modal.Dialog>
-          </Modal.Container>
-        </Modal.Backdrop>
-      </Modal>
+             </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

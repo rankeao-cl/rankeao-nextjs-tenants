@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, Skeleton } from "@heroui/react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { CheckCircle2, Circle } from "lucide-react";
 import { getMyTenant, getTenantSchedules, getTenantSocialLinks, listPaymentMethods } from "@/lib/api/tenant";
 import type { ScheduleDay, SocialLink, PaymentMethod } from "@/lib/types/tenant";
@@ -48,7 +49,7 @@ export function ProfileCompleteness() {
 
     if (loading) {
         return (
-            <Card className="bg-[var(--surface)] border border-[var(--border)] p-5">
+            <Card className="bg-[#ffffff] border border-[var(--c-gray-200)] p-5">
                 <div className="flex items-center justify-between mb-3">
                     <Skeleton className="h-5 w-48 rounded-lg" />
                     <Skeleton className="h-5 w-12 rounded-lg" />
@@ -64,9 +65,9 @@ export function ProfileCompleteness() {
     const pending = items.filter((i) => !i.done);
 
     return (
-        <Card className="bg-[var(--surface)] border border-[var(--border)] p-5">
+        <Card className="bg-[#ffffff] border border-[var(--c-gray-200)] p-5">
             <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold text-[var(--foreground)]">
+                <h3 className="text-sm font-semibold text-[var(--c-gray-800)]">
                     Completitud del Perfil
                 </h3>
                 <span
@@ -82,7 +83,7 @@ export function ProfileCompleteness() {
             </div>
 
             {/* Progress Bar */}
-            <div className="w-full h-2.5 rounded-full bg-[var(--surface-sunken)] overflow-hidden mb-4">
+            <div className="w-full h-2.5 rounded-full bg-[var(--c-gray-100)] overflow-hidden mb-4">
                 <div
                     className={`h-full rounded-full transition-all duration-700 ease-out ${percentage === 100
                             ? "bg-gradient-to-r from-emerald-500 to-emerald-400"
@@ -100,9 +101,9 @@ export function ProfileCompleteness() {
                     {pending.map((item) => (
                         <span
                             key={item.label}
-                            className="inline-flex items-center gap-1.5 text-xs text-[var(--muted)] bg-[var(--surface-sunken)] border border-[var(--border)] px-2.5 py-1 rounded-full"
+                            className="inline-flex items-center gap-1.5 text-xs text-[var(--c-gray-500)] bg-[var(--c-gray-100)] border border-[var(--c-gray-200)] px-2.5 py-1 rounded-full"
                         >
-                            <Circle className="w-3 h-3 text-[var(--muted)]" />
+                            <Circle className="w-3 h-3 text-[var(--c-gray-500)]" />
                             {item.label}
                         </span>
                     ))}

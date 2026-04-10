@@ -1,13 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, Input, Button, Switch, TextField, Label, InputGroup, toast, Skeleton } from "@heroui/react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { Switch } from "@/components/ui/switch";
 import { getMyTenant, updateMyTenant, setTenantSlug, tenantGoPublic, tenantGoPrivate, setTenantLogo, setTenantBanner } from "@/lib/api/tenant";
-import { ImageIcon } from "lucide-react";
+import { ImageIcon, Globe, MapPin, Store, Palette, Eye, Save } from "lucide-react";
 
 export function StoreConfig() {
   const [tenant, setTenant] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -42,6 +49,7 @@ export function StoreConfig() {
   };
 
   const handleSave = async () => {
+    setSaving(true);
     try {
       await updateMyTenant({
         name: formData.name,
@@ -58,182 +66,182 @@ export function StoreConfig() {
       if (tenant && formData.bannerUrl !== (tenant.banner_url || tenant.banner)) {
         await setTenantBanner(formData.bannerUrl);
       }
-      toast.success("Información guardada correctamente");
+      toast.success("Configuración actualizada exitosamente");
       const newTenant = await getMyTenant();
       setTenant(newTenant);
     } catch (error: unknown) {
       const err = error as Error;
-      toast.danger(err.message || "Error al actualizar la información");
+      toast.error(err.message || "Error al actualizar la configuración");
+    } finally {
+      setSaving(false);
     }
   };
 
   if (loading) {
     return (
-      <div className="space-y-6">
-        <Card className="bg-[var(--surface)] border border-[var(--border)]">
-          <Card.Content className="p-6">
-            <Skeleton className="h-6 w-48 rounded-lg mb-4" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="flex flex-col space-y-1.5">
-                  <Skeleton className="h-4 w-24 rounded" />
-                  <Skeleton className="h-10 w-full rounded-xl" />
-                </div>
-              ))}
-            </div>
-            <Skeleton className="h-6 w-48 rounded-lg mt-8 mb-4" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {Array.from({ length: 2 }).map((_, i) => (
-                <div key={i} className="flex flex-col space-y-1.5">
-                  <Skeleton className="h-4 w-24 rounded" />
-                  <Skeleton className="h-10 w-full rounded-xl" />
-                </div>
-              ))}
-            </div>
-            <div className="mt-8 flex justify-end">
-              <Skeleton className="h-10 w-32 rounded-lg" />
-            </div>
-          </Card.Content>
-        </Card>
+      <div className="space-y-8">
+        <Skeleton className="h-[300px] w-full rounded-[32px]" />
+        <Skeleton className="h-[250px] w-full rounded-[32px]" />
       </div>
     );
   }
-  if (!tenant) return <p className="text-red-400">No se pudo cargar la información de la tienda.</p>;
 
-  const inputWrapperClass = "flex flex-col space-y-1.5";
-  const labelClass = "text-[var(--muted)] text-sm";
-  const groupClass = "flex items-center gap-2 border border-[var(--border)] bg-[var(--surface)] rounded-xl px-3 py-2";
-  const inputClass = "w-full bg-transparent focus:outline-none text-[var(--foreground)]";
+  if (!tenant) return <p className="text-red-500 font-bold">Error crítico: No se pudo cargar la información de la tienda.</p>;
+
+  const labelClass = "text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest mb-2 flex items-center gap-2";
+  const inputClass = "h-11 rounded-xl border-[var(--c-gray-200)] bg-white px-4 text-sm text-[var(--c-gray-800)] font-bold focus:ring-[var(--c-navy-500)]/10 transition-all shadow-sm";
 
   return (
-    <div className="space-y-6">
-      <Card className="bg-[var(--surface)] border border-[var(--border)]">
-        <Card.Content className="p-6">
-          <h3 className="text-lg font-semibold text-[var(--foreground)] mb-4">Información General</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <TextField name="name" className={inputWrapperClass}>
-              <Label className={labelClass}>Nombre de la Tienda</Label>
-              <InputGroup className={groupClass}>
-                <Input name="name" value={formData.name} onChange={handleChange} className={inputClass} />
-              </InputGroup>
-            </TextField>
-            <TextField name="slug" className={inputWrapperClass}>
-              <Label className={labelClass}>Slug (URL)</Label>
-              <InputGroup className={groupClass}>
-                <Input name="slug" value={formData.slug} onChange={handleChange} className={inputClass} />
-              </InputGroup>
-            </TextField>
-            <TextField name="city" className={inputWrapperClass}>
-              <Label className={labelClass}>Ciudad</Label>
-              <InputGroup className={groupClass}>
-                <Input name="city" value={formData.city} onChange={handleChange} className={inputClass} />
-              </InputGroup>
-            </TextField>
-            <TextField name="region" className={inputWrapperClass}>
-              <Label className={labelClass}>Región</Label>
-              <InputGroup className={groupClass}>
-                <Input name="region" value={formData.region} onChange={handleChange} className={inputClass} />
-              </InputGroup>
-            </TextField>
-            <TextField name="country" className={inputWrapperClass}>
-              <Label className={labelClass}>País</Label>
-              <InputGroup className={groupClass}>
-                <Input name="country" value={formData.country} onChange={handleChange} className={inputClass} />
-              </InputGroup>
-            </TextField>
-          </div>
+    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      
+      {/* SECCIÓN: IDENTIDAD DE MARCA */}
+      <Card className="bg-white border border-[var(--c-gray-100)] rounded-[32px] shadow-sm overflow-hidden">
+        <div className="p-8 border-b border-[var(--c-gray-50)] bg-[var(--c-gray-50)]/30 flex items-center gap-4">
+           <div className="p-3 rounded-2xl bg-[var(--c-navy-500)]/5 text-[var(--c-navy-500)]">
+              <Palette className="h-6 w-6" />
+           </div>
+           <div>
+              <h3 className="text-lg font-black text-[var(--c-gray-800)] tracking-tight">Identidad Visual</h3>
+              <p className="text-xs text-[var(--c-gray-400)] font-medium">Personaliza el aspecto público de tu sucursal</p>
+           </div>
+        </div>
+        <CardContent className="p-8 space-y-10">
+           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+              <div className="space-y-6">
+                 <div className="space-y-2 flex flex-col">
+                    <Label className={labelClass}>Enlace Logotipo (URL)</Label>
+                    <Input name="logoUrl" type="url" value={formData.logoUrl} onChange={handleChange} className={inputClass} placeholder="https://..." />
+                 </div>
+                 <div className="space-y-2 flex flex-col">
+                    <Label className={labelClass}>Enlace Portada (URL)</Label>
+                    <Input name="bannerUrl" type="url" value={formData.bannerUrl} onChange={handleChange} className={inputClass} placeholder="https://..." />
+                 </div>
+              </div>
 
-          <h3 className="text-lg font-semibold text-[var(--foreground)] mt-8 mb-4">Imágenes (URLs)</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-3">
-              <TextField name="logoUrl" className={inputWrapperClass}>
-                <Label className={labelClass}>URL del Logo</Label>
-                <InputGroup className={groupClass}>
-                  <Input name="logoUrl" type="url" value={formData.logoUrl} onChange={handleChange} className={inputClass} placeholder="https://ejemplo.com/logo.png" />
-                </InputGroup>
-              </TextField>
-              {formData.logoUrl ? (
-                <div className="flex items-center gap-3 p-3 rounded-xl border border-[var(--border)] bg-[var(--surface-sunken)]">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={formData.logoUrl}
-                    alt="Preview Logo"
-                    className="w-16 h-16 rounded-lg object-contain border border-[var(--border)] bg-white"
-                    onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; (e.currentTarget.nextElementSibling as HTMLElement)?.classList.remove('hidden'); }}
-                    onLoad={(e) => { (e.currentTarget as HTMLImageElement).style.display = ''; (e.currentTarget.nextElementSibling as HTMLElement)?.classList.add('hidden'); }}
-                  />
-                  <div className="hidden flex items-center gap-2 text-amber-400 text-xs">
-                    <ImageIcon className="w-4 h-4" />
-                    <span>No se pudo cargar la imagen</span>
-                  </div>
-                  <span className="text-xs text-[var(--muted)]">Vista previa del logo</span>
-                </div>
-              ) : null}
-            </div>
-            <div className="space-y-3">
-              <TextField name="bannerUrl" className={inputWrapperClass}>
-                <Label className={labelClass}>URL del Banner</Label>
-                <InputGroup className={groupClass}>
-                  <Input name="bannerUrl" type="url" value={formData.bannerUrl} onChange={handleChange} className={inputClass} placeholder="https://ejemplo.com/banner.png" />
-                </InputGroup>
-              </TextField>
-              {formData.bannerUrl ? (
-                <div className="space-y-2 p-3 rounded-xl border border-[var(--border)] bg-[var(--surface-sunken)]">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={formData.bannerUrl}
-                    alt="Preview Banner"
-                    className="w-full h-24 rounded-lg object-cover border border-[var(--border)]"
-                    onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; (e.currentTarget.nextElementSibling as HTMLElement)?.classList.remove('hidden'); }}
-                    onLoad={(e) => { (e.currentTarget as HTMLImageElement).style.display = ''; (e.currentTarget.nextElementSibling as HTMLElement)?.classList.add('hidden'); }}
-                  />
-                  <div className="hidden flex items-center gap-2 text-amber-400 text-xs">
-                    <ImageIcon className="w-4 h-4" />
-                    <span>No se pudo cargar la imagen</span>
-                  </div>
-                  <span className="text-xs text-[var(--muted)]">Vista previa del banner</span>
-                </div>
-              ) : null}
-            </div>
-          </div>
-
-          <div className="mt-8 flex justify-end">
-            <Button variant="primary" onPress={handleSave}>
-              Guardar Cambios
-            </Button>
-          </div>
-        </Card.Content>
+              <div className="relative group rounded-[24px] overflow-hidden border border-[var(--c-gray-100)] shadow-inner bg-[var(--c-gray-50)] min-h-[180px]">
+                 {/* Banner Preview */}
+                 <div className="absolute inset-0">
+                    {formData.bannerUrl ? (
+                      <img src={formData.bannerUrl} alt="" className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-1000" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                         <ImageIcon className="h-10 w-10 text-[var(--c-gray-200)]" />
+                      </div>
+                    )}
+                 </div>
+                 {/* Logo Preview Overlay */}
+                 <div className="absolute inset-x-0 bottom-0 p-6 flex items-end gap-4 bg-gradient-to-t from-black/20 to-transparent">
+                    <div className="w-16 h-16 rounded-2xl bg-white p-1.5 shadow-xl border border-white/20">
+                       {formData.logoUrl ? (
+                         <img src={formData.logoUrl} alt="" className="w-full h-full object-contain" />
+                       ) : (
+                         <div className="w-full h-full flex items-center justify-center bg-[var(--c-navy-500)]/5">
+                            <Store className="h-6 w-6 text-[var(--c-navy-500)]" />
+                         </div>
+                       )}
+                    </div>
+                    <div className="text-white drop-shadow-md pb-1">
+                       <p className="text-[10px] font-black uppercase tracking-widest opacity-80">Vista Previa</p>
+                       <h4 className="text-sm font-black tracking-tight">{formData.name || "Nombre de Tienda"}</h4>
+                    </div>
+                 </div>
+              </div>
+           </div>
+        </CardContent>
       </Card>
 
-      <Card className="bg-[var(--surface)] border border-[var(--border)]">
-        <Card.Content className="p-6">
-          <h3 className="text-lg font-semibold text-[var(--foreground)] mb-4">Visibilidad</h3>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-[var(--foreground)]">Tienda Pública</p>
-              <p className="text-xs text-[var(--muted)]">Hace que la tienda sea visible en el directorio.</p>
-            </div>
-            <Switch
-              isSelected={!!tenant.is_public}
-              onChange={async (isSelected: boolean) => {
-                try {
-                  if (isSelected) await tenantGoPublic();
-                  else await tenantGoPrivate();
-                  setTenant({ ...tenant, is_public: isSelected });
-                  toast.success("Visibilidad actualizada");
-                } catch (err: unknown) {
-                  const error = err as Error;
-                  toast.danger(error.message || "Error al actualizar la visibilidad");
-                }
-              }}
-            >
-              <Switch.Control>
-                <Switch.Thumb />
-              </Switch.Control>
-            </Switch>
-          </div>
-        </Card.Content>
+      {/* SECCIÓN: INFORMACIÓN GENERAL */}
+      <Card className="bg-white border border-[var(--c-gray-100)] rounded-[32px] shadow-sm overflow-hidden">
+        <div className="p-8 border-b border-[var(--c-gray-50)] bg-[var(--c-gray-50)]/30 flex items-center gap-4">
+           <div className="p-3 rounded-2xl bg-[var(--c-cyan-500)]/5 text-[var(--c-cyan-500)]">
+              <Globe className="h-6 w-6" />
+           </div>
+           <div>
+              <h3 className="text-lg font-black text-[var(--c-gray-800)] tracking-tight">Ubicación y Dominio</h3>
+              <p className="text-xs text-[var(--c-gray-400)] font-medium">Configura cómo te encuentran y dónde operas</p>
+           </div>
+        </div>
+        <CardContent className="p-8">
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
+              <div className="space-y-2 flex flex-col">
+                 <Label className={labelClass}>Nombre Comercial</Label>
+                 <Input name="name" value={formData.name} onChange={handleChange} className={inputClass} />
+              </div>
+
+              <div className="space-y-2 flex flex-col">
+                 <Label className={labelClass}>Subdominio Rankeao</Label>
+                 <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[12px] font-bold text-[var(--c-gray-400)]">rankeao.cl /</span>
+                    <Input name="slug" value={formData.slug} onChange={handleChange} className={`${inputClass} pl-[88px] font-mono lowercase`} />
+                 </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-6">
+                 <div className="space-y-2 flex flex-col">
+                    <Label className={labelClass}>País</Label>
+                    <Input name="country" value={formData.country} onChange={handleChange} className={inputClass} />
+                 </div>
+                 <div className="space-y-2 flex flex-col">
+                    <Label className={labelClass}>Ciudad</Label>
+                    <Input name="city" value={formData.city} onChange={handleChange} className={inputClass} />
+                 </div>
+              </div>
+
+              <div className="space-y-2 flex flex-col">
+                 <Label className={labelClass}><MapPin className="h-3 w-3" /> Región / Estado</Label>
+                 <Input name="region" value={formData.region} onChange={handleChange} className={inputClass} />
+              </div>
+           </div>
+        </CardContent>
       </Card>
+
+      {/* SECCIÓN: VISIBILIDAD */}
+      <Card className="bg-white border border-[var(--c-gray-100)] rounded-[32px] shadow-sm overflow-hidden">
+        <CardContent className="p-8">
+           <div className="flex flex-col sm:flex-row gap-8 justify-between sm:items-center">
+              <div className="flex items-center gap-6">
+                 <div className={`p-4 rounded-full transition-all duration-500 ${tenant.is_public ? 'bg-emerald-50 text-emerald-500' : 'bg-red-50 text-red-500'}`}>
+                    <Eye className="h-6 w-6" />
+                 </div>
+                 <div>
+                    <h3 className="text-base font-black text-[var(--c-gray-800)] tracking-tight">Presencia en el Directorio</h3>
+                    <p className="text-sm text-[var(--c-gray-500)] font-medium mt-1">Define si tu tienda es visible para los algoritmos de búsqueda globale.</p>
+                 </div>
+              </div>
+              
+              <div className={`flex items-center gap-6 px-6 py-4 rounded-2xl border transition-all ${tenant.is_public ? 'bg-emerald-50/30 border-emerald-100' : 'bg-red-50/30 border-red-100'}`}>
+                 <span className={`text-xs font-black uppercase tracking-widest ${tenant.is_public ? 'text-emerald-600' : 'text-red-600'}`}>
+                    {tenant.is_public ? 'Sucursal Pública' : 'Modo Privado'}
+                 </span>
+                 <Switch 
+                   checked={!!tenant.is_public}
+                   onCheckedChange={async (isSelected: boolean) => {
+                     try {
+                       if (isSelected) await tenantGoPublic();
+                       else await tenantGoPrivate();
+                       setTenant({ ...tenant, is_public: isSelected });
+                       toast.success(`La tienda ahora es ${isSelected ? 'pública' : 'privada'}`);
+                     } catch (err: unknown) {
+                       const error = err as Error;
+                       toast.error(error.message || "Error al cambiar estado");
+                     }
+                   }} 
+                 />
+              </div>
+           </div>
+        </CardContent>
+      </Card>
+
+      <div className="flex justify-end pt-4">
+        <Button 
+          onClick={handleSave} 
+          disabled={saving}
+          className="bg-[var(--c-navy-500)] hover:bg-[var(--c-navy-600)] text-white shadow-xl shadow-[var(--c-navy-500)]/20 rounded-2xl px-12 h-14 w-full sm:w-auto font-black text-sm uppercase tracking-widest transition-all"
+        >
+          {saving ? "Guardando Configuración..." : "Sincronizar Cambios"}
+          <Save className="h-4 w-4 ml-3" />
+        </Button>
+      </div>
     </div>
   );
 }

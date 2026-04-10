@@ -1,19 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Card,
-  Table,
-  Button,
-  Input,
-  Label,
-  Skeleton,
-  Modal,
-  Select,
-  ListBox,
-  toast,
-} from "@heroui/react";
+import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/utils/error-message";
+
+// Modular Components
+import { ShipmentHeader } from "./components/ShipmentHeader";
+import { ShipmentList } from "./components/ShipmentList";
+import { ShipmentFormModal } from "./components/ShipmentFormModal";
 
 interface Shipment {
   id: string;
@@ -28,22 +22,22 @@ interface Shipment {
 const getShipmentStatusColor = (status: string) => {
   switch (status?.toUpperCase()) {
     case "DELIVERED":
-      return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+      return "bg-emerald-50 text-emerald-600 border-emerald-100";
     case "IN_TRANSIT":
-      return "bg-sky-500/10 text-sky-400 border-sky-500/20";
+      return "bg-sky-50 text-sky-600 border-sky-100";
     case "PENDING":
-      return "bg-amber-500/10 text-amber-400 border-amber-500/20";
+      return "bg-amber-50 text-amber-600 border-amber-100";
     case "RETURNED":
     case "FAILED":
-      return "bg-red-500/10 text-red-400 border-red-500/20";
+      return "bg-red-50 text-red-600 border-red-100";
     default:
-      return "bg-[var(--surface-secondary)] text-[var(--muted)] border-[var(--border)]";
+      return "bg-[var(--c-gray-50)] text-[var(--c-gray-500)] border-[var(--c-gray-200)]";
   }
 };
 
 const STATUS_LABELS: Record<string, string> = {
   PENDING: "Pendiente",
-  IN_TRANSIT: "En Transito",
+  IN_TRANSIT: "En Tránsito",
   DELIVERED: "Entregado",
   RETURNED: "Devuelto",
   FAILED: "Fallido",
@@ -107,10 +101,13 @@ export default function ShipmentsPage() {
   const handleSaveShipment = async () => {
     if (!selectedShipment) return;
     if (!editData.carrier || !editData.tracking_number) {
-      return toast.danger("Transportista y numero de seguimiento son requeridos");
+      return toast.error("Transportista y número de seguimiento son requeridos");
     }
     setSaving(true);
     try {
+      // Simulation delay
+      await new Promise(r => setTimeout(r, 600));
+      
       setShipments((prev) =>
         prev.map((s) =>
           s.id === selectedShipment.id
@@ -125,182 +122,36 @@ export default function ShipmentsPage() {
             : s
         )
       );
-      toast.success("Envio actualizado");
+      toast.success("Envío actualizado correctamente");
       setShowEditModal(false);
     } catch (error: unknown) {
-      toast.danger(getErrorMessage(error, "Error al actualizar envio"));
+      toast.error(getErrorMessage(error, "Error al actualizar envío"));
     } finally {
       setSaving(false);
     }
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold font-[var(--font-heading)] text-[var(--foreground)]">
-            Envios
-          </h1>
-          <p className="text-sm text-[var(--muted)] mt-1">Rastrea y gestiona los envios de tus ordenes</p>
-        </div>
-      </div>
+    <div className="space-y-10 max-w-[1400px] mx-auto pb-10 px-4 sm:px-0">
+      <ShipmentHeader onNewShipment={() => toast.info("Función para crear guía desde orden disponible pronto")} />
 
-      <Card className="bg-[var(--surface)] border border-[var(--border)] overflow-hidden">
-        <div className="overflow-x-auto">
-          <Table>
-            <Table.ScrollContainer>
-              <Table.Content aria-label="Tabla de Envios" className="min-w-full">
-                <Table.Header className="bg-[var(--surface-sunken)] border-b border-[var(--border)]">
-                  <Table.Column isRowHeader className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Orden</Table.Column>
-                  <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Transportista</Table.Column>
-                  <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">N° Seguimiento</Table.Column>
-                  <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Estado</Table.Column>
-                  <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider">Fecha Envio</Table.Column>
-                  <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase tracking-wider text-right">Acciones</Table.Column>
-                </Table.Header>
-                <Table.Body>
-                  {isLoading ? (
-                    Array(3).fill(0).map((_, i) => (
-                      <Table.Row key={i} className="border-b border-[var(--border)]">
-                        <Table.Cell className="py-4 px-4"><Skeleton className="h-5 w-20 rounded" /></Table.Cell>
-                        <Table.Cell className="py-4 px-4"><Skeleton className="h-5 w-28 rounded" /></Table.Cell>
-                        <Table.Cell className="py-4 px-4"><Skeleton className="h-5 w-36 rounded" /></Table.Cell>
-                        <Table.Cell className="py-4 px-4"><Skeleton className="h-5 w-24 rounded" /></Table.Cell>
-                        <Table.Cell className="py-4 px-4"><Skeleton className="h-5 w-24 rounded" /></Table.Cell>
-                        <Table.Cell className="py-4 px-4"><Skeleton className="h-8 w-20 rounded ml-auto" /></Table.Cell>
-                      </Table.Row>
-                    ))
-                  ) : shipments.length === 0 ? (
-                    <Table.Row>
-                      <Table.Cell colSpan={6} className="py-12 text-center text-[var(--muted)]">
-                        No hay envios registrados.
-                      </Table.Cell>
-                    </Table.Row>
-                  ) : (
-                    shipments.map((shipment) => (
-                      <Table.Row key={shipment.id} className="border-b border-[var(--border)] last:border-0 hover:bg-[var(--surface-secondary)] transition-colors">
-                        <Table.Cell className="py-4 px-4 text-sm font-medium text-[var(--foreground)]">
-                          {shipment.order_id}
-                        </Table.Cell>
-                        <Table.Cell className="py-4 px-4 text-sm text-[var(--foreground)]">
-                          {shipment.carrier}
-                        </Table.Cell>
-                        <Table.Cell className="py-4 px-4 text-sm font-mono text-[var(--muted)]">
-                          {shipment.tracking_number}
-                        </Table.Cell>
-                        <Table.Cell className="py-4 px-4">
-                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getShipmentStatusColor(shipment.status)}`}>
-                            {STATUS_LABELS[shipment.status] || shipment.status}
-                          </span>
-                        </Table.Cell>
-                        <Table.Cell className="py-4 px-4 text-sm text-[var(--muted)]">
-                          {shipment.shipped_at || "-"}
-                        </Table.Cell>
-                        <Table.Cell className="py-4 px-4 text-right">
-                          <Button size="sm" variant="secondary" onPress={() => handleOpenEdit(shipment)}>
-                            Editar
-                          </Button>
-                        </Table.Cell>
-                      </Table.Row>
-                    ))
-                  )}
-                </Table.Body>
-              </Table.Content>
-            </Table.ScrollContainer>
-          </Table>
-        </div>
-      </Card>
+      <ShipmentList 
+        shipments={shipments}
+        isLoading={isLoading}
+        onEdit={handleOpenEdit}
+        getShipmentStatusColor={getShipmentStatusColor}
+        STATUS_LABELS={STATUS_LABELS}
+      />
 
-      {/* Edit Shipment Modal */}
-      <Modal isOpen={showEditModal} onOpenChange={setShowEditModal}>
-        <Modal.Backdrop>
-          <Modal.Container>
-            <Modal.Dialog className="bg-[var(--surface)] border border-[var(--border)]">
-              <Modal.CloseTrigger className="text-[var(--muted)] hover:text-[var(--foreground)]" />
-              <Modal.Header>
-                <Modal.Heading className="text-xl font-bold text-[var(--foreground)]">
-                  Editar Envio
-                </Modal.Heading>
-                <p className="text-sm text-[var(--muted)] mt-1">Orden: {selectedShipment?.order_id}</p>
-              </Modal.Header>
-              <Modal.Body className="py-4 space-y-4">
-                <div className="space-y-1.5 flex flex-col">
-                  <Label className="text-sm font-medium text-[var(--muted)]">Transportista</Label>
-                  <Input
-                    placeholder="Ej. Chilexpress"
-                    value={editData.carrier}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditData({ ...editData, carrier: e.target.value })}
-                    className="bg-transparent border border-[var(--border)]"
-                  />
-                </div>
-                <div className="space-y-1.5 flex flex-col">
-                  <Label className="text-sm font-medium text-[var(--muted)]">Numero de Seguimiento</Label>
-                  <Input
-                    placeholder="Ej. CX-2026031201"
-                    value={editData.tracking_number}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditData({ ...editData, tracking_number: e.target.value })}
-                    className="bg-transparent border border-[var(--border)] font-mono"
-                  />
-                </div>
-                <div className="space-y-1.5 flex flex-col">
-                  <Label className="text-sm font-medium text-[var(--muted)]">Estado</Label>
-                  <Select
-                    selectedKey={editData.status}
-                    onSelectionChange={(key: unknown) => { if (key) setEditData({ ...editData, status: key as string }); }}
-                    className="w-full"
-                  >
-                    <Select.Trigger className="bg-transparent border border-[var(--border)]">
-                      <Select.Value />
-                      <Select.Indicator />
-                    </Select.Trigger>
-                    <Select.Popover className="bg-[var(--surface)] border border-[var(--border)]">
-                      <ListBox className="text-[var(--foreground)]">
-                        <ListBox.Item id="PENDING" textValue="Pendiente">
-                          Pendiente
-                          <ListBox.ItemIndicator />
-                        </ListBox.Item>
-                        <ListBox.Item id="IN_TRANSIT" textValue="En Transito">
-                          En Transito
-                          <ListBox.ItemIndicator />
-                        </ListBox.Item>
-                        <ListBox.Item id="DELIVERED" textValue="Entregado">
-                          Entregado
-                          <ListBox.ItemIndicator />
-                        </ListBox.Item>
-                        <ListBox.Item id="RETURNED" textValue="Devuelto">
-                          Devuelto
-                          <ListBox.ItemIndicator />
-                        </ListBox.Item>
-                        <ListBox.Item id="FAILED" textValue="Fallido">
-                          Fallido
-                          <ListBox.ItemIndicator />
-                        </ListBox.Item>
-                      </ListBox>
-                    </Select.Popover>
-                  </Select>
-                </div>
-                <div className="space-y-1.5 flex flex-col">
-                  <Label className="text-sm font-medium text-[var(--muted)]">Entrega Estimada</Label>
-                  <Input
-                    type="date"
-                    value={editData.estimated_delivery}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditData({ ...editData, estimated_delivery: e.target.value })}
-                    className="bg-transparent border border-[var(--border)]"
-                  />
-                </div>
-              </Modal.Body>
-              <Modal.Footer className="border-t border-[var(--border)]/40 p-4">
-                <Button variant="outline" onPress={() => setShowEditModal(false)}>
-                  Cancelar
-                </Button>
-                <Button variant="primary" isDisabled={saving} onPress={handleSaveShipment}>
-                  {saving ? "Guardando..." : "Guardar Cambios"}
-                </Button>
-              </Modal.Footer>
-            </Modal.Dialog>
-          </Modal.Container>
-        </Modal.Backdrop>
-      </Modal>
+      <ShipmentFormModal
+        open={showEditModal}
+        onOpenChange={setShowEditModal}
+        selectedShipment={selectedShipment}
+        editData={editData}
+        onEditChange={setEditData}
+        onSave={handleSaveShipment}
+        saving={saving}
+      />
     </div>
   );
 }

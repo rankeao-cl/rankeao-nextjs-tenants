@@ -10,6 +10,7 @@ export interface Order {
   id: string;
   order_number?: string;
   customer_name?: string;
+  customer_email?: string;
   total_amount: number;
   items?: OrderItem[];
   status: string;
@@ -17,7 +18,6 @@ export interface Order {
 }
 
 export interface OrderDetail extends Order {
-  customer_email?: string;
   customer_phone?: string;
   shipping_address?: string;
   internal_notes?: string;

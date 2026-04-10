@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, Button, Switch, Label, Skeleton, toast } from "@heroui/react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { Switch } from "@/components/ui/switch";
 import { getTenantSchedules, updateTenantSchedules } from "@/lib/api/tenant";
 import { getErrorMessage } from "@/lib/utils/error-message";
 import { Copy } from "lucide-react";
@@ -59,7 +64,7 @@ export function SchedulesConfig() {
       await updateTenantSchedules({ schedules });
       toast.success("Horarios actualizados correctamente");
     } catch (error: unknown) {
-      toast.danger(getErrorMessage(error, "Error al guardar horarios"));
+      toast.error(getErrorMessage(error, "Error al guardar horarios"));
     } finally {
       setSaving(false);
     }
@@ -67,12 +72,12 @@ export function SchedulesConfig() {
 
   if (loading) {
     return (
-      <Card className="bg-[var(--surface)] border border-[var(--border)] p-6">
+      <Card className="bg-[#ffffff] border border-[var(--c-gray-200)] p-6">
         <Skeleton className="h-6 w-48 rounded-lg mb-1" />
         <Skeleton className="h-4 w-3/4 max-w-md rounded-lg mb-6" />
         <div className="space-y-4">
           {Array.from({ length: 7 }).map((_, i) => (
-            <div key={i} className="flex flex-col sm:flex-row gap-4 items-start sm:items-center p-3 rounded-lg bg-[var(--surface-sunken)] border border-[var(--border)]">
+            <div key={i} className="flex flex-col sm:flex-row gap-4 items-start sm:items-center p-3 rounded-lg bg-[var(--c-gray-100)] border border-[var(--c-gray-200)]">
               <div className="w-[100px] flex-shrink-0">
                 <Skeleton className="h-5 w-20 rounded" />
               </div>
@@ -89,23 +94,23 @@ export function SchedulesConfig() {
     );
   }
 
-  const inputClass = "w-full bg-transparent focus:outline-none text-[var(--foreground)] border border-[var(--border)] bg-[var(--surface)] rounded-xl px-3 py-2";
+  const inputClass = "w-full bg-transparent focus:outline-none focus:ring-0 text-[var(--c-gray-800)] font-medium p-0 h-10 w-24 text-center border-0 bg-transparent min-w-[70px]";
 
   return (
-    <Card className="bg-[var(--surface)] border border-[var(--border)] p-6">
+    <Card className="bg-[#ffffff] border border-[var(--c-gray-200)] p-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
-          <h3 className="text-lg font-semibold text-[var(--foreground)] mb-1">Horarios de Atención</h3>
-          <p className="text-[var(--muted)] text-sm">Configura los días y horarios en los que tu tienda está abierta al público.</p>
+          <h3 className="text-lg font-semibold text-[var(--c-gray-800)] mb-1">Horarios de Atención</h3>
+          <p className="text-[var(--c-gray-500)] text-sm">Configura los días y horarios en los que tu tienda está abierta al público.</p>
         </div>
         <Button
           size="sm"
           variant="secondary"
           className="flex items-center gap-2 shrink-0"
-          onPress={() => {
+          onClick={() => {
             const firstOpen = schedules.find((s) => !s.is_closed);
             if (!firstOpen) {
-              toast.danger("No hay ningún día abierto para copiar");
+              toast.error("No hay ningún día abierto para copiar");
               return;
             }
             setSchedules((prev) =>
@@ -126,13 +131,13 @@ export function SchedulesConfig() {
 
       <div className="space-y-4">
         {schedules.map((schedule) => (
-          <div key={schedule.day_of_week} className="flex flex-col sm:flex-row gap-4 items-start sm:items-center p-3 rounded-lg bg-[var(--surface-sunken)] border border-[var(--border)] transition-colors hover:bg-[var(--surface-secondary)]">
+          <div key={schedule.day_of_week} className="flex flex-col sm:flex-row gap-4 items-start sm:items-center p-3 rounded-lg bg-[var(--c-gray-100)] border border-[var(--c-gray-200)] transition-colors hover:bg-[var(--c-gray-50)]">
             <div className="w-[100px] flex-shrink-0">
-              <Label className="text-sm font-medium text-[var(--foreground)]">{DAY_LABELS[schedule.day_of_week]}</Label>
+              <Label className="text-sm font-medium text-[var(--c-gray-800)]">{DAY_LABELS[schedule.day_of_week]}</Label>
             </div>
             <div className="flex items-center gap-4 flex-1">
               {schedule.is_closed ? (
-                <div className="text-sm text-[var(--muted)] italic flex-1">Cerrado</div>
+                <div className="text-sm text-[var(--c-gray-500)] italic flex-1">Cerrado</div>
               ) : (
                 <>
                   <div className="flex-1 max-w-[150px]">
@@ -143,7 +148,7 @@ export function SchedulesConfig() {
                       className={inputClass}
                     />
                   </div>
-                  <span className="text-[var(--muted)]">-</span>
+                  <span className="text-[var(--c-gray-500)]">-</span>
                   <div className="flex-1 max-w-[150px]">
                     <input
                       type="time"
@@ -156,22 +161,16 @@ export function SchedulesConfig() {
               )}
             </div>
             <div className="flex items-center gap-2 pt-2 sm:pt-0">
-              <Switch
-                isSelected={!schedule.is_closed}
-                onChange={(isOpen: boolean) => handleChange(schedule.day_of_week, "is_closed", !isOpen)}
-              >
-                <Switch.Control>
-                  <Switch.Thumb />
-                </Switch.Control>
-              </Switch>
-              <span className="text-xs w-[60px] text-[var(--muted)]">{!schedule.is_closed ? "Abierto" : "Cerrado"}</span>
+              <Switch checked={!schedule.is_closed}
+                onCheckedChange={(isOpen: boolean) => handleChange(schedule.day_of_week, "is_closed", !isOpen)} />
+              <span className="text-xs w-[60px] text-[var(--c-gray-500)]">{!schedule.is_closed ? "Abierto" : "Cerrado"}</span>
             </div>
           </div>
         ))}
       </div>
 
       <div className="mt-8 flex justify-end">
-        <Button variant="primary" onPress={handleSave} isDisabled={saving}>
+        <Button variant="default" onClick={handleSave} disabled={saving}>
           {saving ? "Guardando..." : "Guardar Horarios"}
         </Button>
       </div>

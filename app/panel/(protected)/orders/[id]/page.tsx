@@ -1,8 +1,15 @@
 "use client";
 
 import { use, useState } from "react";
-import { Card, Table, Button, Input, Label, TextArea, Skeleton, toast } from "@heroui/react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { Textarea } from "@/components/ui/textarea";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Link from "next/link";
+import { ChevronLeft, Package, User, CreditCard, Truck, AlertTriangle, CheckCircle2, Clock, History, FileText, Send } from "lucide-react";
 import { useOrderDetail } from "@/lib/hooks/use-orders";
 import {
   processOrder,
@@ -15,26 +22,29 @@ import {
 } from "@/lib/api/orders";
 import { getErrorMessage } from "@/lib/utils/error-message";
 import { useQueryClient } from "@tanstack/react-query";
+import { Badge } from "@/components/ui/badge";
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP" }).format(value);
 
-const getStatusColor = (status: string) => {
+const getStatusConfig = (status: string) => {
   switch (status) {
     case "COMPLETED":
+      return { label: "Completada", color: "bg-emerald-500 text-white", icon: CheckCircle2 };
     case "SHIPPED":
-      return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+      return { label: "Enviada", color: "bg-blue-500 text-white", icon: Truck };
     case "PAID":
     case "PROCESSING":
+      return { label: "En Proceso", color: "bg-indigo-500 text-white", icon: Clock };
     case "READY":
-      return "bg-blue-500/10 text-blue-400 border-blue-500/20";
+      return { label: "Listo para Envío", color: "bg-cyan-500 text-white", icon: Package };
     case "PENDING":
-      return "bg-amber-500/10 text-amber-400 border-amber-500/20";
+      return { label: "Pendiente", color: "bg-amber-500 text-white", icon: AlertTriangle };
     case "CANCELLED":
     case "REFUNDED":
-      return "bg-red-500/10 text-red-500 border-red-500/20";
+      return { label: "Cancelada", color: "bg-red-500 text-white", icon: AlertTriangle };
     default:
-      return "bg-[var(--surface-secondary)] text-[var(--muted)] border-[var(--border)]";
+      return { label: status, color: "bg-gray-500 text-white", icon: Clock };
   }
 };
 
@@ -62,60 +72,16 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
-        <div className="flex items-center gap-4">
-          <Skeleton className="h-8 w-20 rounded-lg" />
-          <div className="space-y-2">
-            <Skeleton className="h-8 w-64 rounded-lg" />
-            <Skeleton className="h-6 w-24 rounded-full" />
+      <div className="space-y-8 animate-pulse">
+        <Skeleton className="h-12 w-64 rounded-xl" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-8">
+            <Skeleton className="h-[400px] w-full rounded-3xl" />
+            <Skeleton className="h-48 w-full rounded-3xl" />
           </div>
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
-            <Card className="bg-[var(--surface)] border border-[var(--border)] overflow-hidden">
-              <div className="p-4 border-b border-[var(--border)]">
-                <Skeleton className="h-6 w-48 rounded-lg" />
-              </div>
-              <div className="p-4 space-y-4">
-                {Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="flex justify-between border-b border-[var(--border)] pb-4">
-                    <Skeleton className="h-5 w-48 rounded" />
-                    <Skeleton className="h-5 w-12 rounded" />
-                    <Skeleton className="h-5 w-24 rounded" />
-                    <Skeleton className="h-5 w-24 rounded" />
-                  </div>
-                ))}
-                <div className="flex justify-end pt-2">
-                  <Skeleton className="h-6 w-48 rounded-lg" />
-                </div>
-              </div>
-            </Card>
-            <Card className="bg-[var(--surface)] border border-[var(--border)] p-6">
-              <Skeleton className="h-6 w-32 rounded-lg mb-4" />
-              <div className="flex gap-2">
-                <Skeleton className="h-10 w-24 rounded-lg" />
-                <Skeleton className="h-10 w-32 rounded-lg" />
-                <Skeleton className="h-10 w-24 rounded-lg" />
-              </div>
-            </Card>
-          </div>
-          <div className="space-y-6">
-            <Card className="bg-[var(--surface)] border border-[var(--border)] p-6">
-              <Skeleton className="h-6 w-32 rounded-lg mb-4" />
-              <div className="space-y-3">
-                <Skeleton className="h-4 w-full rounded" />
-                <Skeleton className="h-4 w-3/4 rounded" />
-                <Skeleton className="h-4 w-4/5 rounded" />
-              </div>
-            </Card>
-            <Card className="bg-[var(--surface)] border border-[var(--border)] p-6">
-              <Skeleton className="h-6 w-32 rounded-lg mb-4" />
-              <div className="space-y-3">
-                <Skeleton className="h-4 w-1/2 rounded" />
-                <Skeleton className="h-4 w-3/4 rounded" />
-                <Skeleton className="h-4 w-1/3 rounded" />
-              </div>
-            </Card>
+          <div className="space-y-8">
+            <Skeleton className="h-64 w-full rounded-3xl" />
+            <Skeleton className="h-48 w-full rounded-3xl" />
           </div>
         </div>
       </div>
@@ -123,7 +89,18 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
   }
 
   if (!order) {
-    return <div className="text-center py-20 text-[var(--muted)]">Orden no encontrada.</div>;
+    return (
+      <div className="flex flex-col items-center justify-center py-24 text-center">
+        <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center text-red-500 mb-4">
+          <AlertTriangle className="w-8 h-8" />
+        </div>
+        <h2 className="text-xl font-bold text-[var(--c-gray-800)]">Orden no encontrada</h2>
+        <p className="text-[14px] text-[var(--c-gray-500)] mt-2">No pudimos localizar la información de este pedido.</p>
+        <Link href="/panel/orders" className="mt-6">
+          <Button variant="outline" className="rounded-xl px-6 font-bold">Volver al listado</Button>
+        </Link>
+      </div>
+    );
   }
 
   if (!notesInitialized && order.internal_notes) {
@@ -131,7 +108,8 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
     setNotesInitialized(true);
   }
 
-  const status = order.status || "UNKNOWN";
+  const statusConfig = getStatusConfig(order.status || "UNKNOWN");
+  const StatusIcon = statusConfig.icon;
   const items = (order.items as OrderItem[]) || [];
   const totalAmount = order.total_amount || 0;
 
@@ -144,7 +122,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
       toast.success(successMsg);
       invalidate();
     } catch (error: unknown) {
-      toast.danger(getErrorMessage(error, "Error al procesar la acción"));
+      toast.error(getErrorMessage(error, "Error al procesar la acción"));
     } finally {
       setActionLoading(false);
     }
@@ -171,182 +149,269 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
   );
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Link href="/panel/orders">
-          <Button variant="secondary" size="sm">Volver</Button>
-        </Link>
-        <div>
-          <h1 className="text-2xl font-bold text-[var(--foreground)]">
-            Orden {order.order_number || `#${id.split("-").pop()?.substring(0, 8)}`}
-          </h1>
-          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(status)}`}>
-            {status}
-          </span>
+    <div className="space-y-8 animate-in fade-in duration-500">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+        <div className="flex flex-col gap-3">
+          <Link href="/panel/orders" className="w-max">
+            <Button variant="ghost" size="sm" className="h-8 px-2 -ml-2 text-[var(--c-gray-400)] hover:text-[var(--c-cyan-600)] hover:bg-[var(--c-cyan-50)] rounded-lg font-bold">
+              <ChevronLeft className="w-4 h-4 mr-1" /> Volver a órdenes
+            </Button>
+          </Link>
+          <div className="flex items-center gap-4">
+            <h1 className="text-[26px] font-extrabold text-[var(--c-gray-800)] tracking-tight">
+              Orden {order.order_number || `#${id.split("-").pop()?.substring(0, 8)}`}
+            </h1>
+            <Badge className={`px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider border-none shadow-sm flex items-center gap-1.5 ${statusConfig.color}`}>
+              <StatusIcon className="w-3.5 h-3.5" />
+              {statusConfig.label}
+            </Badge>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+           <Button variant="outline" className="h-11 px-5 border-[var(--c-gray-200)] text-[var(--c-gray-600)] font-bold rounded-xl hover:bg-[var(--c-gray-50)]">
+              <FileText className="w-4 h-4 mr-2" /> Imprimir Boleta
+           </Button>
+           <Button className="h-11 px-5 bg-[var(--c-cyan-500)] hover:bg-[var(--c-cyan-600)] text-white font-bold rounded-xl shadow-lg shadow-[var(--c-cyan-500)]/10">
+              <Send className="w-4 h-4 mr-2" /> Enviar Correo
+           </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          <Card className="bg-[var(--surface)] border border-[var(--border)] overflow-hidden">
-            <div className="p-4 border-b border-[var(--border)] bg-[var(--surface-sunken)]">
-              <h3 className="font-semibold text-[var(--foreground)]">Productos del Pedido</h3>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left Column: Items & Actions */}
+        <div className="lg:col-span-2 space-y-8">
+          {/* Order Items Table */}
+          <div className="bg-white rounded-3xl border border-[var(--c-gray-200)] overflow-hidden shadow-sm">
+            <div className="px-6 py-5 border-b border-[var(--c-gray-100)] flex items-center justify-between bg-[var(--c-gray-50)]/50">
+              <h3 className="text-[15px] font-extrabold text-[var(--c-gray-800)] flex items-center gap-2">
+                <Package className="w-4 h-4 text-[var(--c-cyan-500)]" /> Productos del Pedido
+              </h3>
+              <span className="text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest">{items.length} items</span>
             </div>
             <div className="overflow-x-auto">
               <Table>
-                <Table.ScrollContainer>
-                  <Table.Content aria-label="Items de la orden" className="min-w-full">
-                    <Table.Header>
-                      <Table.Column isRowHeader className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase">Producto</Table.Column>
-                      <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase text-center">Cant.</Table.Column>
-                      <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase text-right">Precio Unit.</Table.Column>
-                      <Table.Column className="text-xs font-medium text-[var(--muted)] py-3 px-4 uppercase text-right">Subtotal</Table.Column>
-                    </Table.Header>
-                    <Table.Body>
-                      {items.length === 0 ? (
-                        <Table.Row>
-                          <Table.Cell colSpan={4} className="py-8 text-center text-[var(--muted)]">Sin items</Table.Cell>
-                        </Table.Row>
-                      ) : (
-                        items.map((item) => (
-                          <Table.Row key={item.id} className="border-b border-[var(--border)]">
-                            <Table.Cell className="py-3 px-4 text-sm text-[var(--foreground)]">{item.product_name || item.id}</Table.Cell>
-                            <Table.Cell className="py-3 px-4 text-sm text-center text-[var(--foreground)]">{item.quantity}</Table.Cell>
-                            <Table.Cell className="py-3 px-4 text-sm text-right text-[var(--muted)]">{formatCurrency(item.unit_price)}</Table.Cell>
-                            <Table.Cell className="py-3 px-4 text-sm text-right font-medium text-[var(--foreground)]">{formatCurrency(item.quantity * item.unit_price)}</Table.Cell>
-                          </Table.Row>
-                        ))
-                      )}
-                      <Table.Row className="bg-[var(--surface-sunken)]">
-                        <Table.Cell colSpan={3} className="py-3 px-4 text-sm font-semibold text-[var(--foreground)] text-right">Total</Table.Cell>
-                        <Table.Cell className="py-3 px-4 text-sm font-bold text-[var(--foreground)] text-right">{formatCurrency(totalAmount)}</Table.Cell>
-                      </Table.Row>
-                    </Table.Body>
-                  </Table.Content>
-                </Table.ScrollContainer>
+                <TableHeader className="hover:bg-transparent">
+                  <TableRow className="hover:bg-transparent border-b border-[var(--c-gray-100)]">
+                    <TableHead className="text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest py-4 px-6">Producto</TableHead>
+                    <TableHead className="text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest py-4 px-6 text-center">Cant.</TableHead>
+                    <TableHead className="text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest py-4 px-6 text-right">Precio Unit.</TableHead>
+                    <TableHead className="text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest py-4 px-6 text-right">Subtotal</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {items.map((item) => (
+                    <TableRow key={item.id} className="border-b border-[var(--c-gray-50)] last:border-0 hover:bg-[var(--c-gray-50)] transition-colors">
+                      <TableCell className="py-4 px-6">
+                        <p className="text-[14px] font-extrabold text-[var(--c-gray-800)] leading-tight">{item.product_name || item.id}</p>
+                        <p className="text-[11px] text-[var(--c-gray-400)] mt-1 font-medium">Categoría: General</p>
+                      </TableCell>
+                      <TableCell className="py-4 px-6 text-center text-[14px] font-bold text-[var(--c-gray-800)]">
+                        {item.quantity}
+                      </TableCell>
+                      <TableCell className="py-4 px-6 text-right text-[13px] font-medium text-[var(--c-gray-500)]">
+                        {formatCurrency(item.unit_price)}
+                      </TableCell>
+                      <TableCell className="py-4 px-6 text-right text-[14px] font-extrabold text-[var(--c-gray-800)]">
+                        {formatCurrency(item.quantity * item.unit_price)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
               </Table>
             </div>
-          </Card>
+            <div className="px-6 py-5 bg-[var(--c-gray-50)]/50 border-t border-[var(--c-gray-100)]">
+               <div className="flex flex-col items-end gap-2">
+                 <div className="flex justify-between w-[240px] text-[13px] font-medium text-[var(--c-gray-500)]">
+                    <span>Subtotal:</span>
+                    <span>{formatCurrency(totalAmount)}</span>
+                 </div>
+                 <div className="flex justify-between w-[240px] text-[13px] font-medium text-[var(--c-gray-500)]">
+                    <span>Envío:</span>
+                    <span className="text-emerald-500">Gratis</span>
+                 </div>
+                 <div className="flex justify-between w-[240px] pt-2 border-t border-[var(--c-gray-200)] text-[18px] font-extrabold text-[var(--c-navy-500)]">
+                    <span>Total:</span>
+                    <span>{formatCurrency(totalAmount)}</span>
+                 </div>
+               </div>
+            </div>
+          </div>
 
-          <Card className="bg-[var(--surface)] border border-[var(--border)]">
-            <Card.Content className="p-6 space-y-4">
-              <h3 className="font-semibold text-[var(--foreground)]">Acciones</h3>
-              <div className="flex flex-wrap gap-2">
-                {status === "PENDING" && (
-                  <Button variant="primary" isDisabled={actionLoading} onPress={() => handleAction(() => processOrder(id), "Orden en proceso")}>
-                    Procesar
-                  </Button>
-                )}
-                {status === "PROCESSING" && (
-                  <Button variant="primary" isDisabled={actionLoading} onPress={() => handleAction(() => readyOrder(id), "Orden lista")}>
-                    Lista para Envío
-                  </Button>
-                )}
-                {(status === "READY" || status === "PROCESSING") && (
-                  <Button variant="primary" isDisabled={actionLoading} onPress={() => setShowShipForm(!showShipForm)}>
-                    Enviar
-                  </Button>
-                )}
-                {status === "SHIPPED" && (
-                  <Button variant="primary" isDisabled={actionLoading} onPress={() => handleAction(() => completeOrder(id), "Orden completada")}>
-                    Completar
-                  </Button>
-                )}
-                {!["CANCELLED", "REFUNDED", "COMPLETED"].includes(status) && (
-                  <Button variant="danger" isDisabled={actionLoading} onPress={() => setShowCancelForm(!showCancelForm)}>
-                    Cancelar
-                  </Button>
-                )}
-                {["COMPLETED", "SHIPPED"].includes(status) && (
-                  <Button variant="danger" isDisabled={actionLoading} onPress={() => setShowRefundForm(!showRefundForm)}>
-                    Reembolsar
-                  </Button>
-                )}
-              </div>
-
-              {showShipForm && (
-                <div className="space-y-3 p-4 rounded-lg bg-[var(--surface-sunken)] border border-[var(--border)]">
-                  <div className="flex flex-col gap-1.5">
-                    <Label className="text-sm text-[var(--muted)]">Transportista</Label>
-                    <Input value={shipData.carrier} onChange={(e) => setShipData({ ...shipData, carrier: e.target.value })} placeholder="Ej: Chilexpress" className="bg-transparent border border-[var(--border)]" />
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    <Label className="text-sm text-[var(--muted)]">N° Seguimiento</Label>
-                    <Input value={shipData.tracking_number} onChange={(e) => setShipData({ ...shipData, tracking_number: e.target.value })} placeholder="Ej: CL123456789" className="bg-transparent border border-[var(--border)]" />
-                  </div>
-                  <Button variant="primary" isDisabled={actionLoading} onPress={handleShip}>Confirmar Envío</Button>
-                </div>
-              )}
-
-              {showCancelForm && (
-                <div className="space-y-3 p-4 rounded-lg bg-red-500/5 border border-red-500/20">
-                  <div className="flex flex-col gap-1.5">
-                    <Label className="text-sm text-[var(--muted)]">Motivo de Cancelación</Label>
-                    <Input value={cancelReason} onChange={(e) => setCancelReason(e.target.value)} placeholder="Ej: Solicitud del cliente" className="bg-transparent border border-[var(--border)]" />
-                  </div>
-                  <Button variant="danger" isDisabled={actionLoading} onPress={handleCancel}>Confirmar Cancelación</Button>
-                </div>
-              )}
-
-              {showRefundForm && (
-                <div className="space-y-3 p-4 rounded-lg bg-amber-500/5 border border-amber-500/20">
-                  <div className="flex flex-col gap-1.5">
-                    <Label className="text-sm text-[var(--muted)]">Monto a Reembolsar</Label>
-                    <Input type="number" value={refundData.amount} onChange={(e) => setRefundData({ ...refundData, amount: e.target.value })} placeholder="Ej: 15000" className="bg-transparent border border-[var(--border)]" />
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    <Label className="text-sm text-[var(--muted)]">Motivo del Reembolso</Label>
-                    <Input value={refundData.reason} onChange={(e) => setRefundData({ ...refundData, reason: e.target.value })} placeholder="Ej: Producto defectuoso" className="bg-transparent border border-[var(--border)]" />
-                  </div>
-                  <Button variant="danger" isDisabled={actionLoading} onPress={handleRefund}>Confirmar Reembolso</Button>
-                </div>
-              )}
-            </Card.Content>
-          </Card>
-
-          <Card className="bg-[var(--surface)] border border-[var(--border)]">
-            <Card.Content className="p-6 space-y-3">
-              <h3 className="font-semibold text-[var(--foreground)]">Notas Internas</h3>
-              <TextArea
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Agrega notas internas sobre esta orden..."
-                rows={3}
-                className="bg-transparent border border-[var(--border)] w-full resize-y"
-              />
-              <div className="flex justify-end">
-                <Button variant="primary" isDisabled={actionLoading} onPress={handleSaveNotes}>
-                  Guardar Notas
+          {/* Action Hub */}
+          <div className="bg-white rounded-3xl border border-[var(--c-gray-200)] p-8 shadow-sm space-y-6">
+            <h3 className="text-[15px] font-extrabold text-[var(--c-gray-800)] flex items-center gap-2">
+              <History className="w-4 h-4 text-[var(--c-cyan-500)]" /> Gestión de Flujo
+            </h3>
+            
+            <div className="flex flex-wrap gap-3">
+              {order.status === "PENDING" && (
+                <Button className="h-11 px-6 bg-[var(--c-navy-500)] text-white font-bold rounded-xl" disabled={actionLoading} onClick={() => handleAction(() => processOrder(id), "Orden en proceso")}>
+                  Procesar Orden
                 </Button>
-              </div>
-            </Card.Content>
-          </Card>
+              )}
+              {order.status === "PROCESSING" && (
+                <Button className="h-11 px-6 bg-cyan-500 text-white font-bold rounded-xl" disabled={actionLoading} onClick={() => handleAction(() => readyOrder(id), "Orden lista")}>
+                  Listo para Envío
+                </Button>
+              )}
+              {(order.status === "READY" || order.status === "PROCESSING") && (
+                <Button className="h-11 px-6 bg-indigo-500 text-white font-bold rounded-xl" disabled={actionLoading} onClick={() => setShowShipForm(!showShipForm)}>
+                  Enviar Pedido
+                </Button>
+              )}
+              {order.status === "SHIPPED" && (
+                <Button className="h-11 px-6 bg-emerald-500 text-white font-bold rounded-xl" disabled={actionLoading} onClick={() => handleAction(() => completeOrder(id), "Orden completada")}>
+                  Marcar como Completada
+                </Button>
+              )}
+              
+              {!["CANCELLED", "REFUNDED", "COMPLETED"].includes(order.status) && (
+                <Button variant="ghost" className="h-11 px-6 text-red-500 hover:bg-red-50 font-bold rounded-xl" disabled={actionLoading} onClick={() => setShowCancelForm(!showCancelForm)}>
+                  Cancelar Orden
+                </Button>
+              )}
+
+              {["COMPLETED", "SHIPPED"].includes(order.status) && (
+                <Button variant="ghost" className="h-11 px-6 text-amber-500 hover:bg-amber-50 font-bold rounded-xl" disabled={actionLoading} onClick={() => setShowRefundForm(!showRefundForm)}>
+                  Procesar Reembolso
+                </Button>
+              )}
+            </div>
+
+            {/* Inline Action Forms */}
+            {(showShipForm || showCancelForm || showRefundForm) && (
+               <div className="pt-6 border-t border-[var(--c-gray-100)] animate-in slide-in-from-top duration-300">
+                  {showShipForm && (
+                    <div className="space-y-4 max-w-lg bg-[var(--c-gray-50)] p-5 rounded-2xl border border-[var(--c-gray-100)]">
+                      <h4 className="text-[13px] font-bold text-[var(--c-gray-700)]">Datos del Envío</h4>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                          <Label className="text-[10px] uppercase font-bold text-[var(--c-gray-400)] tracking-widest">Transportista</Label>
+                          <Input value={shipData.carrier} onChange={(e) => setShipData({ ...shipData, carrier: e.target.value })} placeholder="Ej: Chilexpress" className="h-10 bg-white border-none rounded-lg" />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label className="text-[10px] uppercase font-bold text-[var(--c-gray-400)] tracking-widest">N° Seguimiento</Label>
+                          <Input value={shipData.tracking_number} onChange={(e) => setShipData({ ...shipData, tracking_number: e.target.value })} placeholder="CL-938392" className="h-10 bg-white border-none rounded-lg" />
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button className="h-10 px-6 bg-[var(--c-cyan-500)] text-white font-bold rounded-xl flex-1" disabled={actionLoading} onClick={handleShip}>Confirmar Envío</Button>
+                        <Button variant="ghost" className="h-10 px-4 font-bold rounded-xl" onClick={() => setShowShipForm(false)}>Cancelar</Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {showCancelForm && (
+                    <div className="space-y-4 max-w-lg bg-red-50 p-5 rounded-2xl border border-red-100">
+                      <h4 className="text-[13px] font-bold text-red-600">Cancelar Pedido</h4>
+                      <div className="space-y-1.5">
+                        <Label className="text-[10px] uppercase font-bold text-red-400 tracking-widest">Motivo de la cancelación</Label>
+                        <Input value={cancelReason} onChange={(e) => setCancelReason(e.target.value)} placeholder="Ej: Error en el stock" className="h-10 bg-white border-none rounded-lg" />
+                      </div>
+                      <div className="flex gap-2">
+                        <Button className="h-10 px-6 bg-red-500 text-white font-bold rounded-xl flex-1" disabled={actionLoading} onClick={handleCancel}>Anular Ahora</Button>
+                        <Button variant="ghost" className="h-10 px-4 font-bold rounded-xl text-red-400" onClick={() => setShowCancelForm(false)}>Descartar</Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {showRefundForm && (
+                    <div className="space-y-4 max-w-lg bg-amber-50 p-5 rounded-2xl border border-amber-100">
+                      <h4 className="text-[13px] font-bold text-amber-600">Reembolso Parcial o Total</h4>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                          <Label className="text-[10px] uppercase font-bold text-amber-400 tracking-widest">Monto</Label>
+                          <Input type="number" value={refundData.amount} onChange={(e) => setRefundData({ ...refundData, amount: e.target.value })} placeholder="0" className="h-10 bg-white border-none rounded-lg" />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label className="text-[10px] uppercase font-bold text-amber-400 tracking-widest">Razón</Label>
+                          <Input value={refundData.reason} onChange={(e) => setRefundData({ ...refundData, reason: e.target.value })} placeholder="Ej: Devolución" className="h-10 bg-white border-none rounded-lg" />
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button className="h-10 px-6 bg-amber-500 text-white font-bold rounded-xl flex-1" disabled={actionLoading} onClick={handleRefund}>Confirmar Reembolso</Button>
+                        <Button variant="ghost" className="h-10 px-4 font-bold rounded-xl text-amber-400" onClick={() => setShowRefundForm(false)}>Cerrar</Button>
+                      </div>
+                    </div>
+                  )}
+               </div>
+            )}
+          </div>
         </div>
 
-        <div className="space-y-6">
-          <Card className="bg-[var(--surface)] border border-[var(--border)]">
-            <Card.Content className="p-6 space-y-4">
-              <h3 className="font-semibold text-[var(--foreground)]">Cliente</h3>
-              <div className="space-y-2 text-sm">
-                <div><span className="text-[var(--muted)]">Nombre:</span> <span className="text-[var(--foreground)]">{order.customer_name || "Cliente Invitado"}</span></div>
-                {order.customer_email && <div><span className="text-[var(--muted)]">Email:</span> <span className="text-[var(--foreground)]">{order.customer_email}</span></div>}
-                {order.customer_phone && <div><span className="text-[var(--muted)]">Teléfono:</span> <span className="text-[var(--foreground)]">{order.customer_phone}</span></div>}
-                {order.shipping_address && <div><span className="text-[var(--muted)]">Dirección:</span> <span className="text-[var(--foreground)]">{order.shipping_address}</span></div>}
+        {/* Right Column: Customer & Details */}
+        <div className="space-y-8">
+           {/* Customer Card */}
+           <div className="bg-white rounded-3xl border border-[var(--c-gray-200)] p-7 shadow-sm space-y-6">
+              <h3 className="text-[14px] font-extrabold text-[var(--c-gray-800)] flex items-center gap-2">
+                <User className="w-4 h-4 text-[var(--c-cyan-500)]" /> Información del Cliente
+              </h3>
+              <div className="flex items-start gap-4 p-4 rounded-2xl bg-[var(--c-gray-50)]">
+                <div className="w-12 h-12 rounded-full bg-[var(--c-cyan-100)] text-[var(--c-cyan-600)] flex items-center justify-center font-bold text-lg">
+                  {order.customer_name?.charAt(0) || "C"}
+                </div>
+                <div>
+                   <p className="text-[15px] font-extrabold text-[var(--c-gray-800)] leading-none mt-1">{order.customer_name || "Cliente Invitado"}</p>
+                   {order.customer_email && <p className="text-[12px] text-[var(--c-gray-400)] mt-1.5 font-medium">{order.customer_email}</p>}
+                </div>
               </div>
-            </Card.Content>
-          </Card>
+              <div className="space-y-4 pt-2">
+                 <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--c-gray-400)]">Teléfono</span>
+                    <span className="text-[13px] font-bold text-[var(--c-gray-700)]">{order.customer_phone || "No proporcionado"}</span>
+                 </div>
+                 <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--c-gray-400)]">Dirección de Envío</span>
+                    <span className="text-[13px] font-bold text-[var(--c-gray-700)] leading-relaxed">{order.shipping_address || "Retiro en tienda"}</span>
+                 </div>
+              </div>
+           </div>
 
-          <Card className="bg-[var(--surface)] border border-[var(--border)]">
-            <Card.Content className="p-6 space-y-2">
-              <h3 className="font-semibold text-[var(--foreground)]">Detalle</h3>
-              <div className="text-sm space-y-2">
-                <div><span className="text-[var(--muted)]">Fecha:</span> <span className="text-[var(--foreground)]">{order.created_at ? new Date(order.created_at).toLocaleDateString() : "N/A"}</span></div>
-                <div><span className="text-[var(--muted)]">Total:</span> <span className="text-[var(--foreground)] font-bold">{formatCurrency(totalAmount)}</span></div>
-                {order.carrier && <div><span className="text-[var(--muted)]">Transportista:</span> <span className="text-[var(--foreground)]">{order.carrier}</span></div>}
-                {order.tracking_number && <div><span className="text-[var(--muted)]">Tracking:</span> <span className="text-[var(--foreground)] font-mono">{order.tracking_number}</span></div>}
+           {/* Payment Details */}
+           <div className="bg-white rounded-3xl border border-[var(--c-gray-200)] p-7 shadow-sm space-y-6">
+              <h3 className="text-[14px] font-extrabold text-[var(--c-gray-800)] flex items-center gap-2">
+                <CreditCard className="w-4 h-4 text-[var(--c-cyan-500)]" /> Detalle del Pago
+              </h3>
+              <div className="space-y-4">
+                 <div className="flex justify-between items-center bg-emerald-50 p-4 rounded-2xl border border-emerald-100">
+                    <span className="text-[12px] font-bold text-emerald-600 uppercase tracking-tight">Monto Total</span>
+                    <span className="text-[18px] font-extrabold text-emerald-700">{formatCurrency(totalAmount)}</span>
+                 </div>
+                 <div className="grid grid-cols-2 gap-4">
+                    <div className="flex flex-col gap-1">
+                       <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--c-gray-400)]">Fecha</span>
+                       <span className="text-[12px] font-bold text-[var(--c-gray-700)]">{order.created_at ? new Date(order.created_at).toLocaleDateString() : "N/A"}</span>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                       <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--c-gray-400)]">Transportista</span>
+                       <span className="text-[12px] font-bold text-[var(--c-gray-700)]">{order.carrier || "N/A"}</span>
+                    </div>
+                 </div>
+                 {order.tracking_number && (
+                    <div className="flex flex-col gap-1 p-3 bg-[var(--c-gray-50)] rounded-xl border border-[var(--c-gray-100)]">
+                       <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--c-gray-400)]">Tracking Code</span>
+                       <span className="text-[13px] font-mono font-bold text-[var(--c-navy-500)]">{order.tracking_number}</span>
+                    </div>
+                 )}
               </div>
-            </Card.Content>
-          </Card>
+           </div>
+
+           {/* Internal Notes */}
+           <div className="bg-white rounded-3xl border border-[var(--c-gray-200)] p-7 shadow-sm space-y-4">
+              <h3 className="text-[14px] font-extrabold text-[var(--c-gray-800)] flex items-center gap-2">
+                <FileText className="w-4 h-4 text-[var(--c-cyan-500)]" /> Notas Internas
+              </h3>
+              <Textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Solo visible para el personal..."
+                className="bg-[var(--c-gray-50)] border-none rounded-2xl focus-visible:ring-2 focus-visible:ring-[var(--c-cyan-500)] font-medium text-[13px] min-h-[100px] resize-none"
+              />
+              <Button onClick={handleSaveNotes} disabled={actionLoading} className="w-full h-10 bg-[var(--c-gray-100)] hover:bg-[var(--c-gray-200)] text-[var(--c-gray-600)] font-bold rounded-xl transition-all">
+                Actualizar Notas
+              </Button>
+           </div>
         </div>
       </div>
     </div>

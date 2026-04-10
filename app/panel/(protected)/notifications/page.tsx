@@ -1,6 +1,9 @@
 "use client";
 
-import { Card, Skeleton, Button, toast } from "@heroui/react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import { useTenantNotifications, useMarkNotificationRead, useMarkAllNotificationsRead } from "@/lib/hooks/use-tenant";
 import { getErrorMessage } from "@/lib/utils/error-message";
 import { Bell } from "lucide-react";
@@ -37,11 +40,11 @@ export default function NotificationsPage() {
         {items.length > 0 && (
           <Button
             variant="ghost"
-            isPending={markAllRead.isPending}
-            onPress={() => {
+            disabled={markAllRead.isPending}
+            onClick={() => {
               markAllRead.mutateAsync()
                 .then(() => toast.success("Todas marcadas como leídas"))
-                .catch((e: unknown) => toast.danger(getErrorMessage(e)));
+                .catch((e: unknown) => toast.error(getErrorMessage(e)));
             }}
           >
             Marcar todas como leídas
@@ -51,21 +54,21 @@ export default function NotificationsPage() {
 
       {items.length === 0 ? (
         <Card>
-          <Card.Content className="text-center py-12">
-            <Bell className="h-12 w-12 mx-auto text-[var(--muted)] mb-3 opacity-40" />
-            <p className="text-[var(--muted)]">No hay notificaciones</p>
-          </Card.Content>
+          <CardContent className="text-center py-12">
+            <Bell className="h-12 w-12 mx-auto text-[var(--c-gray-500)] mb-3 opacity-40" />
+            <p className="text-[var(--c-gray-500)]">No hay notificaciones</p>
+          </CardContent>
         </Card>
       ) : (
         <div className="space-y-3">
           {items.map((n) => (
             <Card key={n.id} className={n.is_read ? "opacity-50" : ""}>
-              <Card.Content>
+              <CardContent>
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       {n.type && (
-                        <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium bg-[var(--surface-secondary)] text-[var(--muted)] border-[var(--border)]">
+                        <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium bg-[var(--c-gray-50)] text-[var(--c-gray-500)] border-[var(--c-gray-200)]">
                           {n.type}
                         </span>
                       )}
@@ -76,9 +79,9 @@ export default function NotificationsPage() {
                       )}
                     </div>
                     {n.title && <h3 className="font-semibold">{n.title}</h3>}
-                    {n.message && <p className="text-sm text-[var(--muted)]">{n.message}</p>}
+                    {n.message && <p className="text-sm text-[var(--c-gray-500)]">{n.message}</p>}
                     {n.created_at && (
-                      <p className="text-xs text-[var(--muted)] mt-1 opacity-60">
+                      <p className="text-xs text-[var(--c-gray-500)] mt-1 opacity-60">
                         {new Date(n.created_at).toLocaleString("es-CL")}
                       </p>
                     )}
@@ -87,18 +90,18 @@ export default function NotificationsPage() {
                     <Button
                       size="sm"
                       variant="ghost"
-                      isPending={markRead.isPending}
-                      onPress={() => {
+                      disabled={markRead.isPending}
+                      onClick={() => {
                         markRead.mutateAsync(n.id)
                           .then(() => toast.success("Marcada como leída"))
-                          .catch((e: unknown) => toast.danger(getErrorMessage(e)));
+                          .catch((e: unknown) => toast.error(getErrorMessage(e)));
                       }}
                     >
                       Leída
                     </Button>
                   )}
                 </div>
-              </Card.Content>
+              </CardContent>
             </Card>
           ))}
         </div>

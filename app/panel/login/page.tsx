@@ -3,12 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import {
-  TextField, Label, InputGroup, InputGroupPrefix, InputGroupSuffix, Input,
-  Button, Card, Form
-} from "@heroui/react";
-import { toast } from "@heroui/react";
-import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { Eye, EyeOff, Mail, Lock, Loader2 } from "lucide-react";
 import { loginPanel } from "@/lib/api/auth";
 import { fetchMyMemberships, fetchMyPendingInvitations } from "@/lib/api/tenant";
 import { useAuthStore } from "@/lib/stores/auth-store";
@@ -24,7 +23,7 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) {
-      toast.danger("Ingresa email y contraseña");
+      toast.error("Ingresa email y contraseña");
       return;
     }
     setIsLoading(true);
@@ -40,7 +39,7 @@ export default function LoginPage() {
           return;
         }
         useAuthStore.getState().logout();
-        toast.danger("No tienes tiendas asociadas. Solicita una tienda primero.");
+        toast.error("No tienes tiendas asociadas. Solicita una tienda primero.");
         return;
       }
 
@@ -55,26 +54,31 @@ export default function LoginPage() {
 
       toast.success(`Bienvenido al panel de ${membership.tenant_name}!`);
       const redirect =
-        new URLSearchParams(window.location.search).get("redirect") ||
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("redirect")) ||
         "/panel/dashboard";
-      router.push(redirect);
+      router.push(redirect as string);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Error al iniciar sesión";
-      toast.danger(message);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4" style={{ background: "linear-gradient(135deg, #f7f9fa 0%, #e6eaef 100%)" }}>
+    <div
+      className="flex min-h-screen items-center justify-center px-4"
+      style={{ background: "linear-gradient(145deg, var(--c-gray-50) 0%, var(--c-navy-50) 50%, var(--c-gray-100) 100%)" }}
+    >
+      <div className="w-full max-w-[420px]">
+        {/* Subtle top accent line */}
+        <div className="h-1 w-16 mx-auto mb-6 rounded-full bg-gradient-to-r from-[var(--c-navy-400)] to-[var(--c-navy-500)]" />
 
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl border border-[var(--border)] shadow-[0_4px_24px_rgba(0,0,0,0.06)] p-8">
-          
+        <div className="bg-white rounded-2xl border border-[var(--c-gray-200)] shadow-elevated p-8">
           {/* Logo */}
           <div className="flex flex-col items-center mb-8">
-            <div className="relative flex h-10 w-48 items-center justify-center overflow-hidden mb-5">
+            <div className="relative flex h-10 w-48 items-center justify-center overflow-hidden mb-4">
               <Image
                 src="/logo.svg"
                 alt="Rankeao"
@@ -84,87 +88,73 @@ export default function LoginPage() {
                 priority
               />
             </div>
-            <h1 className="text-[22px] font-bold text-[#2d3748] tracking-tight">
+            <h1 className="text-xl font-bold text-[var(--c-gray-800)] tracking-tight">
               Panel Administrativo
             </h1>
-            <p className="text-[14px] text-[#64748b] mt-1">
+            <p className="text-[13px] text-[var(--c-gray-400)] mt-1">
               Ingresa al entorno de gestión de tu tienda
             </p>
           </div>
 
           {/* Form */}
-          <Form onSubmit={handleSubmit} className="space-y-5">
-            <TextField name="email" className="space-y-1.5 flex flex-col w-full">
-              <Label className="text-sm font-medium" style={{ color: "var(--c-dark-gray)" }}>Email</Label>
-              <InputGroup className="flex items-center gap-2 border border-[var(--border)] bg-[#f9fafb] rounded-xl px-3 py-2 focus-within:border-[var(--c-cyan)] focus-within:ring-2 focus-within:ring-[var(--c-cyan)]/10 hover:border-[#c0c5cc] transition-all">
-                <InputGroupPrefix>
-                  <Mail className="h-4 w-4 pointer-events-none" style={{ color: "var(--c-gray)" }} />
-                </InputGroupPrefix>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-1.5 flex flex-col w-full">
+              <Label className="text-sm font-medium text-[var(--c-gray-600)]">Email</Label>
+              <div className="flex items-center gap-2.5 border border-[var(--c-gray-200)] bg-[var(--c-gray-50)] rounded-xl px-3 py-0.5 focus-within:border-[var(--c-navy-400)] focus-within:ring-2 focus-within:ring-[var(--c-navy-500)]/10 hover:border-[var(--c-gray-300)] transition-all">
+                <Mail className="h-4 w-4 pointer-events-none shrink-0 text-[var(--c-gray-400)]" />
                 <Input
                   type="email"
                   placeholder="tienda@rankeao.cl"
                   value={email}
                   onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setEmail(e.target.value)}
-                  className="w-full bg-transparent placeholder:text-[#a0aec0] focus:outline-none text-sm"
-                  style={{ color: "var(--c-dark-gray)" }}
+                  className="w-full bg-transparent border-0 ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-0 h-10 placeholder:text-[var(--c-gray-400)] text-sm text-[var(--c-gray-800)]"
                   required
                 />
-              </InputGroup>
-            </TextField>
+              </div>
+            </div>
 
-            <TextField name="password" className="space-y-1.5 flex flex-col w-full">
-              <Label className="text-sm font-medium" style={{ color: "var(--c-dark-gray)" }}>Contraseña</Label>
-              <InputGroup className="flex items-center gap-2 border border-[var(--border)] bg-[#f9fafb] rounded-xl px-3 py-2 focus-within:border-[var(--c-cyan)] focus-within:ring-2 focus-within:ring-[var(--c-cyan)]/10 hover:border-[#c0c5cc] transition-all">
-                <InputGroupPrefix>
-                  <Lock className="h-4 w-4 pointer-events-none" style={{ color: "var(--c-gray)" }} />
-                </InputGroupPrefix>
+            <div className="space-y-1.5 flex flex-col w-full">
+              <Label className="text-sm font-medium text-[var(--c-gray-600)]">Contraseña</Label>
+              <div className="flex items-center gap-2.5 border border-[var(--c-gray-200)] bg-[var(--c-gray-50)] rounded-xl px-3 py-0.5 focus-within:border-[var(--c-navy-400)] focus-within:ring-2 focus-within:ring-[var(--c-navy-500)]/10 hover:border-[var(--c-gray-300)] transition-all">
+                <Lock className="h-4 w-4 pointer-events-none shrink-0 text-[var(--c-gray-400)]" />
                 <Input
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
                   value={password}
                   onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setPassword(e.target.value)}
-                  className="w-full bg-transparent placeholder:text-[#a0aec0] focus:outline-none text-sm"
-                  style={{ color: "var(--c-dark-gray)" }}
+                  className="w-full bg-transparent border-0 ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-0 h-10 placeholder:text-[var(--c-gray-400)] text-sm text-[var(--c-gray-800)]"
                   required
                 />
-                <InputGroupSuffix>
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="transition-colors p-0.5 hover:opacity-70"
-                    style={{ color: "var(--c-gray)" }}
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </InputGroupSuffix>
-              </InputGroup>
-            </TextField>
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="transition-colors p-0.5 hover:opacity-70 shrink-0 text-[var(--c-gray-400)]"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
 
             <Button
               type="submit"
-              className="w-full text-white font-semibold shadow-sm transition-all py-2.5 rounded-xl mt-2 text-sm hover:opacity-90"
-              style={{ backgroundColor: "var(--c-cyan)" }}
-              isPending={isLoading}
+              className="w-full text-white font-semibold transition-all py-2.5 rounded-xl mt-1 text-sm hover:opacity-90 flex gap-2 bg-[var(--c-navy-500)] hover:bg-[var(--c-navy-800)] shadow-brand-sm"
+              disabled={isLoading}
             >
+              {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
               Iniciar Sesión
             </Button>
 
-            <div className="relative flex items-center py-2">
-              <div className="flex-grow border-t border-[var(--border)]"></div>
-              <span className="flex-shrink-0 mx-4 text-xs" style={{ color: "var(--c-gray)" }}>o</span>
-              <div className="flex-grow border-t border-[var(--border)]"></div>
+            <div className="relative flex items-center py-1">
+              <div className="flex-grow border-t border-[var(--c-gray-200)]" />
+              <span className="flex-shrink-0 mx-4 text-xs text-[var(--c-gray-400)]">o</span>
+              <div className="flex-grow border-t border-[var(--c-gray-200)]" />
             </div>
 
             <Button
               type="button"
-              variant="secondary"
-              className="w-full border transition-all font-medium py-2.5 rounded-xl text-sm"
-              style={{ 
-                backgroundColor: "var(--surface-secondary)", 
-                color: "var(--c-orange)", 
-                borderColor: "var(--border)" 
-              }}
-              onPress={() => {
+              variant="outline"
+              className="w-full transition-all font-medium py-2.5 rounded-xl text-sm text-[var(--c-gray-600)] border-[var(--c-gray-200)] hover:bg-[var(--c-gray-50)]"
+              onClick={() => {
                 setEmail("demo@rankeao.cl");
                 setPassword("demo123");
                 toast.info("Credenciales demo cargadas. Haz clic en Iniciar Sesión.");
@@ -172,9 +162,9 @@ export default function LoginPage() {
             >
               Usar Cuenta Demo
             </Button>
-          </Form>
+          </form>
 
-          <p className="mt-6 text-center text-xs" style={{ color: "var(--c-gray)" }}>
+          <p className="mt-6 text-center text-xs text-[var(--c-gray-400)]">
             Panel exclusivo para tiendas de Rankeao.cl
           </p>
         </div>
