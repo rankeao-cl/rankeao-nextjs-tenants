@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { getMyTenant, updateMyTenant, setTenantSlug, tenantGoPublic, tenantGoPrivate, setTenantLogo, setTenantBanner } from "@/lib/api/tenant";
 import { ImageUploader } from "@/components/ui/ImageUploader";
-import { Globe, MapPin, Store, Palette, Eye, Save } from "lucide-react";
+import { Globe, MapPin, Store, Palette, Eye, Save, ImageIcon } from "lucide-react";
 
 export function StoreConfig() {
   const [tenant, setTenant] = useState<Record<string, unknown> | null>(null);
