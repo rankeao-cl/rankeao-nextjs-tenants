@@ -3,11 +3,14 @@
 import { useAuthStore } from "@/lib/stores/auth-store";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Store, Clock, Share2, CreditCard, Sparkles } from "lucide-react";
+import { Store, Clock, Share2, CreditCard, Sparkles, LayoutTemplate, FileText, Phone } from "lucide-react";
 import { StoreConfig } from "./components/StoreConfig";
 import { SchedulesConfig } from "./components/SchedulesConfig";
 import { SocialLinksConfig } from "./components/SocialLinksConfig";
 import { PaymentMethodsConfig } from "./components/PaymentMethodsConfig";
+import { StorefrontConfig } from "./components/StorefrontConfig";
+import { ContentConfig } from "./components/ContentConfig";
+import { ContactConfig } from "./components/ContactConfig";
 
 // Modular Components
 import { StoreHeader } from "./components/StoreHeader";
@@ -35,7 +38,7 @@ export default function TiendaConfigPage() {
       <StoreHeader />
 
       <Tabs defaultValue="store" className="flex flex-col md:flex-row gap-10 items-start">
-        
+
         {/* Left Sidebar Menu */}
         <div className="w-full md:w-72 shrink-0 space-y-6">
            <TabsList className="w-full flex flex-row md:flex-col items-stretch justify-start bg-white border border-[var(--c-gray-100)] p-2 h-auto gap-2 rounded-[32px] shadow-sm overflow-x-auto scrollbar-hide md:overflow-visible">
@@ -43,17 +46,32 @@ export default function TiendaConfigPage() {
                <Store className="w-4 h-4 group-data-[state=active]:animate-pulse" />
                <span>Datos Generales</span>
              </TabsTrigger>
-             
+
+             <TabsTrigger value="storefront" className={triggerClass}>
+               <LayoutTemplate className="w-4 h-4 group-data-[state=active]:animate-pulse" />
+               <span>Mi Vitrina</span>
+             </TabsTrigger>
+
+             <TabsTrigger value="content" className={triggerClass}>
+               <FileText className="w-4 h-4 group-data-[state=active]:animate-pulse" />
+               <span>Contenido</span>
+             </TabsTrigger>
+
+             <TabsTrigger value="contact" className={triggerClass}>
+               <Phone className="w-4 h-4 group-data-[state=active]:animate-pulse" />
+               <span>Contacto</span>
+             </TabsTrigger>
+
              <TabsTrigger value="schedules" className={triggerClass}>
                <Clock className="w-4 h-4 group-data-[state=active]:animate-pulse" />
                <span>Horarios</span>
              </TabsTrigger>
-             
+
              <TabsTrigger value="social" className={triggerClass}>
                <Share2 className="w-4 h-4 group-data-[state=active]:animate-pulse" />
                <span>Redes Sociales</span>
              </TabsTrigger>
-             
+
              <TabsTrigger value="payments" className={triggerClass}>
                <CreditCard className="w-4 h-4 group-data-[state=active]:animate-pulse" />
                <span>Cobranza</span>
@@ -75,6 +93,18 @@ export default function TiendaConfigPage() {
         <div className="flex-1 w-full min-w-0">
           <TabsContent value="store" className="mt-0 focus-visible:outline-none focus-visible:ring-0">
             <StoreConfig />
+          </TabsContent>
+
+          <TabsContent value="storefront" className="mt-0 focus-visible:outline-none focus-visible:ring-0">
+            <StorefrontConfig />
+          </TabsContent>
+
+          <TabsContent value="content" className="mt-0 focus-visible:outline-none focus-visible:ring-0">
+            <ContentConfig />
+          </TabsContent>
+
+          <TabsContent value="contact" className="mt-0 focus-visible:outline-none focus-visible:ring-0">
+            <ContactConfig />
           </TabsContent>
 
           <TabsContent value="schedules" className="mt-0 focus-visible:outline-none focus-visible:ring-0">

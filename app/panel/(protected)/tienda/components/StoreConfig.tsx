@@ -9,7 +9,8 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { getMyTenant, updateMyTenant, setTenantSlug, tenantGoPublic, tenantGoPrivate, setTenantLogo, setTenantBanner } from "@/lib/api/tenant";
-import { ImageIcon, Globe, MapPin, Store, Palette, Eye, Save } from "lucide-react";
+import { ImageUploader } from "@/components/ui/ImageUploader";
+import { Globe, MapPin, Store, Palette, Eye, Save } from "lucide-react";
 
 export function StoreConfig() {
   const [tenant, setTenant] = useState<Record<string, unknown> | null>(null);
@@ -60,12 +61,6 @@ export function StoreConfig() {
       if (tenant && formData.slug !== tenant.slug) {
         await setTenantSlug(formData.slug);
       }
-      if (tenant && formData.logoUrl !== (tenant.logo_url || tenant.logo)) {
-        await setTenantLogo(formData.logoUrl);
-      }
-      if (tenant && formData.bannerUrl !== (tenant.banner_url || tenant.banner)) {
-        await setTenantBanner(formData.bannerUrl);
-      }
       toast.success("Configuración actualizada exitosamente");
       const newTenant = await getMyTenant();
       setTenant(newTenant);
@@ -109,12 +104,30 @@ export function StoreConfig() {
            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
               <div className="space-y-6">
                  <div className="space-y-2 flex flex-col">
-                    <Label className={labelClass}>Enlace Logotipo (URL)</Label>
-                    <Input name="logoUrl" type="url" value={formData.logoUrl} onChange={handleChange} className={inputClass} placeholder="https://..." />
+                    <Label className={labelClass}>Logotipo</Label>
+                    <ImageUploader
+                      entityType="store_logo"
+                      entityId={(tenant?.id as string) || ""}
+                      currentUrl={formData.logoUrl}
+                      variant="logo"
+                      onUploaded={async ({ public_url }) => {
+                        setFormData((prev) => ({ ...prev, logoUrl: public_url }));
+                        await setTenantLogo(public_url);
+                      }}
+                    />
                  </div>
                  <div className="space-y-2 flex flex-col">
-                    <Label className={labelClass}>Enlace Portada (URL)</Label>
-                    <Input name="bannerUrl" type="url" value={formData.bannerUrl} onChange={handleChange} className={inputClass} placeholder="https://..." />
+                    <Label className={labelClass}>Portada / Banner</Label>
+                    <ImageUploader
+                      entityType="store_cover"
+                      entityId={(tenant?.id as string) || ""}
+                      currentUrl={formData.bannerUrl}
+                      variant="banner"
+                      onUploaded={async ({ public_url }) => {
+                        setFormData((prev) => ({ ...prev, bannerUrl: public_url }));
+                        await setTenantBanner(public_url);
+                      }}
+                    />
                  </div>
               </div>
 
