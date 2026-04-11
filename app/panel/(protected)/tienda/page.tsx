@@ -41,7 +41,8 @@ export default function TiendaConfigPage() {
 
         {/* Left Sidebar Menu */}
         <div className="w-full md:w-72 shrink-0 space-y-6">
-           <TabsList className="w-full flex flex-row md:flex-col items-stretch justify-start bg-white border border-[var(--c-gray-100)] p-2 h-auto gap-2 rounded-[32px] shadow-sm overflow-x-auto scrollbar-hide md:overflow-visible">
+           <div className="overflow-x-auto scrollbar-hide md:overflow-visible rounded-[32px]">
+           <TabsList className="w-full flex flex-row md:flex-col items-stretch justify-start bg-white border border-[var(--c-gray-100)] p-2 h-auto gap-2 rounded-[32px] shadow-sm overflow-visible">
              <TabsTrigger value="store" className={triggerClass}>
                <Store className="w-4 h-4 group-data-[state=active]:animate-pulse" />
                <span>Datos Generales</span>
@@ -77,6 +78,7 @@ export default function TiendaConfigPage() {
                <span>Cobranza</span>
              </TabsTrigger>
            </TabsList>
+           </div>
 
            <div className="hidden md:block p-6 rounded-[32px] bg-[var(--c-navy-500)]/5 border border-[var(--c-navy-500)]/10">
               <div className="flex items-center gap-2 mb-3 text-[var(--c-navy-500)]">
