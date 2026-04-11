@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useSalesAnalytics } from "@/lib/hooks/use-analytics";
 import { BarChart3, PieChart, Info } from "lucide-react";
 
+
 // Modular Components
 import { AnalyticsHeader } from "./components/AnalyticsHeader";
 import { AnalyticsSummary } from "./components/AnalyticsSummary";
@@ -56,24 +57,30 @@ export default function AnalyticsPage() {
            <Card className="bg-white border border-[var(--c-gray-100)] rounded-[32px] shadow-sm">
               <div className="p-6 border-b border-[var(--c-gray-50)]">
                  <h3 className="font-extrabold text-[14px] text-[var(--c-navy-500)] uppercase tracking-wider flex items-center gap-2">
-                    <Info className="h-4 w-4" /> Insight del Mes
+                    <Info className="h-4 w-4" /> Resumen del Período
                  </h3>
               </div>
               <CardContent className="p-8">
-                 <div className="space-y-6">
-                    <div>
-                       <p className="text-[13px] font-medium text-[var(--c-gray-500)] leading-relaxed">
-                          Tus ingresos han aumentado un <span className="text-emerald-500 font-bold">12.5%</span> respecto al mes anterior. El producto más vendido ha sido <span className="text-[var(--c-gray-800)] font-bold italic">"Elite Trainer Box: Scarlet & Violet"</span>.
-                       </p>
-                    </div>
-                    <div className="h-px bg-[var(--c-gray-50)]" />
-                    <div className="space-y-3">
-                       <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--c-gray-400)]">Sugerencia de Inventario</p>
-                       <p className="text-[12px] font-medium text-[var(--c-gray-600)] bg-amber-50 p-4 rounded-2xl border border-amber-100">
-                          Considera reponer stock de accesorios, el ticket promedio es más alto cuando se combinan con juegos de mesa.
-                       </p>
-                    </div>
-                 </div>
+                 {stats ? (
+                   <div className="space-y-4">
+                     <div className="flex justify-between items-center py-2 border-b border-[var(--c-gray-50)]">
+                       <span className="text-[12px] font-medium text-[var(--c-gray-500)]">Total Ventas</span>
+                       <span className="text-[13px] font-bold text-[var(--c-gray-800)]">{formatCurrency((stats as Record<string, unknown>).total_revenue as number)}</span>
+                     </div>
+                     <div className="flex justify-between items-center py-2 border-b border-[var(--c-gray-50)]">
+                       <span className="text-[12px] font-medium text-[var(--c-gray-500)]">Órdenes</span>
+                       <span className="text-[13px] font-bold text-[var(--c-gray-800)]">{String((stats as Record<string, unknown>).total_orders ?? 0)}</span>
+                     </div>
+                     <div className="flex justify-between items-center py-2">
+                       <span className="text-[12px] font-medium text-[var(--c-gray-500)]">Ticket Promedio</span>
+                       <span className="text-[13px] font-bold text-[var(--c-gray-800)]">{formatCurrency((stats as Record<string, unknown>).avg_order_value as number)}</span>
+                     </div>
+                   </div>
+                 ) : (
+                   <p className="text-[13px] text-[var(--c-gray-400)] font-medium text-center py-4">
+                     Los insights estarán disponibles cuando tengas historial de ventas.
+                   </p>
+                 )}
               </CardContent>
            </Card>
 

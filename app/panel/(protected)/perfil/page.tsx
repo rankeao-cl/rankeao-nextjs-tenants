@@ -41,11 +41,11 @@ export default function PerfilPage() {
              <div className="relative z-10">
                 <div className="flex items-center gap-2 mb-3 text-[var(--c-cyan-400)]">
                    <Sparkles className="h-4 w-4" />
-                   <span className="text-[10px] font-black uppercase tracking-widest">Estado Premium</span>
+                   <span className="text-[10px] font-black uppercase tracking-widest">Tu Plan</span>
                 </div>
-                <h4 className="text-white font-black text-lg mb-2 leading-tight">Tu ecosistema está al máximo rendimiento</h4>
+                <h4 className="text-white font-black text-lg mb-2 leading-tight">Gestiona tu suscripción</h4>
                 <p className="text-white/70 text-xs font-medium leading-relaxed">
-                   Tienes activadas todas las integraciones de logística y analítica avanzada.
+                   Revisa tu plan actual, historial de pagos y opciones de upgrade desde la sección Suscripción.
                 </p>
              </div>
              <div className="absolute -bottom-6 -right-6 h-24 w-24 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
