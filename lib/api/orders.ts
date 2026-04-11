@@ -24,7 +24,16 @@ export async function readyOrder(orderId: string) {
   return apiFetch(`/store/panel/orders/${orderId}/ready`, { method: "POST" });
 }
 
-export async function shipOrder(orderId: string, data: { carrier: string; tracking_number: string }) {
+export async function shipOrder(
+  orderId: string,
+  data: {
+    carrier: string;
+    tracking_number?: string;
+    carrier_name?: string;
+    estimated_delivery?: string;
+    notes?: string;
+  }
+) {
   return apiFetch(`/store/panel/orders/${orderId}/ship`, { method: "POST", body: data });
 }
 

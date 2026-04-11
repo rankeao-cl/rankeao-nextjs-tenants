@@ -80,11 +80,11 @@ export function OrderList({ orders, isLoading, getStatusColor }: OrderListProps)
                   <TableCell className="py-4 px-5">
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 rounded-full bg-[var(--c-gray-100)] flex items-center justify-center text-[var(--c-gray-400)] text-[10px] font-bold">
-                        {order.customer_name?.charAt(0) || "C"}
+                        {order.buyer_username?.charAt(0)?.toUpperCase() || "C"}
                       </div>
                       <div>
-                        <p className="text-[13px] font-bold text-[var(--c-gray-800)] leading-none">{order.customer_name || "Cliente Invitado"}</p>
-                        <p className="text-[11px] text-[var(--c-gray-400)] mt-1 font-medium">{order.customer_email || "No registrado"}</p>
+                        <p className="text-[13px] font-bold text-[var(--c-gray-800)] leading-none">@{order.buyer_username || "—"}</p>
+                        {order.item_summary && <p className="text-[11px] text-[var(--c-gray-400)] mt-1 font-medium truncate max-w-[160px]">{order.item_summary}</p>}
                       </div>
                     </div>
                   </TableCell>
@@ -100,7 +100,7 @@ export function OrderList({ orders, isLoading, getStatusColor }: OrderListProps)
                     <div className="flex items-center gap-1.5">
                        <CreditCard className="w-3.5 h-3.5 text-[var(--c-gray-400)]" />
                        <span className="text-[14px] font-extrabold text-[var(--c-navy-500)] tracking-tight">
-                         {formatCurrency(order.total_amount)}
+                         {formatCurrency(order.total)}
                        </span>
                     </div>
                   </TableCell>
