@@ -12,6 +12,7 @@ import {
   Store,
   Tag,
   PieChart,
+  Trophy,
   type LucideIcon,
 } from "lucide-react";
 
@@ -102,6 +103,19 @@ export const NAV_GROUPS: NavMainGroup[] = [
         title: "Campañas",
         items: [
           { label: "Eventos Especiales", href: "/panel/events" },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Torneos",
+    icon: Trophy,
+    sections: [
+      {
+        title: "Gestión",
+        items: [
+          { label: "Mis Torneos", href: "/panel/torneos" },
+          { label: "Nuevo Torneo", href: "/panel/torneos/nuevo" },
         ],
       },
     ],

@@ -12,10 +12,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
-import { Menu, LogOut, User, Settings, HelpCircle } from "lucide-react";
+import { Menu, LogOut, User, Settings, HelpCircle, Bell } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { NAV_GROUPS, type NavItem } from "@/lib/constants/nav-items";
 import { RankeaoLogo } from "@/components/icons/RankeaoLogo";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getTenantNotifications, markAllNotificationsRead } from "@/lib/api/tenant";
+import { useState } from "react";
 
 interface HeaderProps {
   onMenuToggle: () => void;
@@ -26,6 +29,24 @@ export function Header({ onMenuToggle }: HeaderProps) {
   const logout = useAuthStore((st) => st.logout);
   const router = useRouter();
   const pathname = usePathname();
+  const qc = useQueryClient();
+  const [notifOpen, setNotifOpen] = useState(false);
+
+  const { data: notifications = [] } = useQuery({
+    queryKey: ["tenant-notifications"],
+    queryFn: getTenantNotifications,
+    refetchInterval: 60_000,
+    retry: false,
+  });
+
+  const unreadCount = (notifications as Array<{ is_read?: boolean; read_at?: string }>).filter(
+    (n) => !n.is_read && !n.read_at
+  ).length;
+
+  const markAllMut = useMutation({
+    mutationFn: markAllNotificationsRead,
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["tenant-notifications"] }),
+  });
 
   const handleLogout = () => {
     logout();
@@ -99,6 +120,62 @@ export function Header({ onMenuToggle }: HeaderProps) {
           <HelpCircle className="h-4 w-4" />
           <span>Ayuda</span>
         </button>
+
+        {/* Notification bell */}
+        <div className="relative">
+          <button
+            className="relative text-[var(--c-gray-400)] hover:text-[var(--c-gray-700)] transition-colors p-1.5 rounded-lg hover:bg-[var(--c-gray-50)]"
+            onClick={() => setNotifOpen((v) => !v)}
+            aria-label="Notificaciones"
+          >
+            <Bell className="h-[18px] w-[18px]" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center leading-none">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
+          </button>
+
+          <AnimatePresence>
+            {notifOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                transition={{ duration: 0.15 }}
+                className="absolute right-0 top-full mt-2 w-80 bg-white border border-[var(--c-gray-200)] rounded-xl shadow-elevated z-50 overflow-hidden"
+                onMouseLeave={() => setNotifOpen(false)}
+              >
+                <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--c-gray-100)]">
+                  <span className="text-[13px] font-semibold text-[var(--c-gray-800)]">Notificaciones</span>
+                  {unreadCount > 0 && (
+                    <button
+                      onClick={() => markAllMut.mutate()}
+                      className="text-[11px] text-[var(--c-navy-500)] font-medium hover:underline"
+                    >
+                      Marcar todas como leídas
+                    </button>
+                  )}
+                </div>
+                <div className="max-h-72 overflow-y-auto divide-y divide-[var(--c-gray-50)]">
+                  {(notifications as Array<{ id: string; title?: string; message?: string; body?: string; is_read?: boolean; read_at?: string; created_at?: string }>).length === 0 ? (
+                    <p className="text-center text-[12px] text-[var(--c-gray-400)] py-8">Sin notificaciones</p>
+                  ) : (
+                    (notifications as Array<{ id: string; title?: string; message?: string; body?: string; is_read?: boolean; read_at?: string; created_at?: string }>).map((n) => (
+                      <div
+                        key={n.id}
+                        className={`px-4 py-3 text-[12px] ${!n.is_read && !n.read_at ? "bg-[var(--c-navy-50)]" : ""}`}
+                      >
+                        {n.title && <p className="font-semibold text-[var(--c-gray-800)] mb-0.5">{n.title}</p>}
+                        <p className="text-[var(--c-gray-500)]">{n.message || n.body}</p>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
         {/* Settings */}
         <button
