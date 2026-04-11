@@ -5,16 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Package, Truck, Calendar, MapPin, ChevronRight, Hash } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-
-interface Shipment {
-  id: string;
-  order_id: string;
-  carrier: string;
-  tracking_number: string;
-  status: string;
-  shipped_at: string;
-  estimated_delivery: string;
-}
+import type { Shipment } from "@/lib/api/shipments";
 
 interface ShipmentListProps {
   shipments: Shipment[];
@@ -90,7 +81,7 @@ export function ShipmentList({
                 <TableRow key={shipment.id} className="hover:bg-[var(--c-gray-50)] transition-colors border-b border-[var(--c-gray-100)] last:border-0 group/row">
                   <TableCell className="py-5 px-6">
                     <div className="flex flex-col">
-                       <span className="text-[14px] font-bold text-[var(--c-gray-800)]">{shipment.order_id}</span>
+                       <span className="text-[14px] font-bold text-[var(--c-gray-800)]">{shipment.order_number || shipment.order_id}</span>
                        <span className="text-[10px] text-[var(--c-gray-400)] font-medium mt-1 uppercase tracking-tight">Guía: #{shipment.id}</span>
                     </div>
                   </TableCell>
@@ -117,7 +108,7 @@ export function ShipmentList({
                     <div className="flex flex-col gap-1.5">
                        <div className="flex items-center gap-1.5 text-[var(--c-gray-600)]">
                           <Calendar className="h-3.5 w-3.5 text-[var(--c-navy-500)]" />
-                          <span className="text-[12px] font-bold">{shipment.shipped_at || "Pendiente"}</span>
+                          <span className="text-[12px] font-bold">{shipment.created_at ? new Date(shipment.created_at).toLocaleDateString("es-CL") : "Pendiente"}</span>
                        </div>
                        {shipment.estimated_delivery && (
                          <div className="flex items-center gap-1.5 text-[var(--c-gray-400)]">

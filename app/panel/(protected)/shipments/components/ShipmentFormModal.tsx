@@ -5,18 +5,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Truck, Hash, MapPin, CheckCircle2 } from "lucide-react";
+import type { Shipment } from "@/lib/api/shipments";
+
+interface EditData {
+  carrier: string;
+  tracking_number: string;
+  status: string;
+  estimated_delivery: string;
+}
 
 interface ShipmentFormModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  selectedShipment: any;
-  editData: {
-    carrier: string;
-    tracking_number: string;
-    status: string;
-    estimated_delivery: string;
-  };
-  onEditChange: (data: any) => void;
+  selectedShipment: Shipment | null;
+  editData: EditData;
+  onEditChange: (data: EditData) => void;
   onSave: () => void;
   saving: boolean;
 }
@@ -42,7 +45,7 @@ export function ShipmentFormModal({
               Gestionar Envío
             </DialogTitle>
             <p className="text-sm text-[var(--c-gray-500)] font-medium">
-              Orden: {selectedShipment?.order_id}
+              Orden: {selectedShipment?.order_number ?? selectedShipment?.order_id}
             </p>
           </DialogHeader>
         </div>
