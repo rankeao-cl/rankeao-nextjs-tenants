@@ -1,32 +1,23 @@
 "use client";
 
-import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/utils/error-message";
 import { ArrowUpRight, ShieldCheck, CheckCircle2, AlertCircle } from "lucide-react";
+import {
+  useSubscription,
+  useInvoices,
+  useCancelSubscription,
+  useReactivateSubscription,
+} from "@/lib/hooks/use-subscriptions";
+import { AVAILABLE_PLANS } from "@/lib/constants/plans";
 
 // Modular Components
 import { SubscriptionHeader } from "./components/SubscriptionHeader";
 import { SubscriptionPlanCard } from "./components/SubscriptionPlanCard";
 import { SubscriptionInvoiceList } from "./components/SubscriptionInvoiceList";
-
-interface Plan {
-  id: string;
-  name: string;
-  price: number;
-  features: string[];
-  is_popular?: boolean;
-}
-
-interface Invoice {
-  id: string;
-  date: string;
-  amount: number;
-  status: string;
-}
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP" }).format(value);
@@ -47,67 +38,34 @@ const getStatusStyles = (status: string) => {
   }
 };
 
-const AVAILABLE_PLANS: Plan[] = [
-  {
-    id: "free",
-    name: "Gratis",
-    price: 0,
-    features: ["Hasta 50 productos", "1 miembro del equipo", "Reportes básicos", "Soporte comunitario"],
-  },
-  {
-    id: "starter",
-    name: "Starter",
-    price: 9990,
-    features: ["Hasta 500 productos", "3 miembros", "Cupones y descuentos", "Reportes avanzados"],
-    is_popular: true,
-  },
-  {
-    id: "pro",
-    name: "Pro",
-    price: 24990,
-    features: ["Productos ilimitados", "10 miembros", "API completa", "Soporte prioritario 24/7", "Dominio personalizado"],
-  },
-];
-
-const MOCK_INVOICES: Invoice[] = [
-  { id: "INV-2026-003", date: "2026-03-01", amount: 9990, status: "PAID" },
-  { id: "INV-2026-002", date: "2026-02-01", amount: 9990, status: "PAID" },
-  { id: "INV-2026-001", date: "2026-01-01", amount: 9990, status: "PAID" },
-];
-
 export default function SubscriptionsPage() {
-  const [isLoading] = useState(false);
-  const [currentPlanId, setCurrentPlanId] = useState("starter");
-  const [subscriptionStatus, setSubscriptionStatus] = useState("ACTIVE");
-  const [invoices] = useState<Invoice[]>(MOCK_INVOICES);
-  const [actionLoading, setActionLoading] = useState(false);
+  const { data: subscription, isLoading: loadingSubscription } = useSubscription();
+  const { data: invoices = [], isLoading: loadingInvoices } = useInvoices();
+  const cancelMutation = useCancelSubscription();
+  const reactivateMutation = useReactivateSubscription();
+
+  const currentPlanId = subscription?.plan_slug ?? "free";
+  const subscriptionStatus = subscription?.status ?? "ACTIVE";
+  const isLoading = loadingSubscription || loadingInvoices;
 
   const currentPlan = AVAILABLE_PLANS.find((p) => p.id === currentPlanId);
+  const actionLoading = cancelMutation.isPending || reactivateMutation.isPending;
 
   const handleCancelSubscription = async () => {
-    setActionLoading(true);
     try {
-      // Simulation
-      await new Promise(r => setTimeout(r, 800));
-      setSubscriptionStatus("CANCELLED");
+      await cancelMutation.mutateAsync(undefined);
       toast.success("Suscripción cancelada exitosamente");
     } catch (error: unknown) {
       toast.error(getErrorMessage(error, "Error al cancelar suscripción"));
-    } finally {
-      setActionLoading(false);
     }
   };
 
   const handleReactivate = async () => {
-    setActionLoading(true);
     try {
-      await new Promise(r => setTimeout(r, 800));
-      setSubscriptionStatus("ACTIVE");
+      await reactivateMutation.mutateAsync();
       toast.success("Suscripción reactivada");
     } catch (error: unknown) {
       toast.error(getErrorMessage(error, "Error al reactivar suscripción"));
-    } finally {
-      setActionLoading(false);
     }
   };
 
@@ -154,7 +112,11 @@ export default function SubscriptionsPage() {
                         <><AlertCircle className="h-3 w-3 mr-1.5" /> Cancelado</>
                       )}
                     </span>
-                    <p className="text-[11px] font-medium text-[var(--c-gray-500)] italic">Prox. Cobro: 01 Abr 2026</p>
+                    {subscription?.current_period_end && (
+                      <p className="text-[11px] font-medium text-[var(--c-gray-500)] italic">
+                        Prox. Cobro: {new Date(subscription.current_period_end).toLocaleDateString("es-CL", { day: "numeric", month: "short", year: "numeric" })}
+                      </p>
+                    )}
                  </div>
               </div>
 
@@ -166,8 +128,8 @@ export default function SubscriptionsPage() {
                        <span className="text-[15px] font-bold text-[var(--c-gray-800)]">{currentPlan?.price === 0 ? "Sin costo" : formatCurrency(currentPlan?.price || 0)}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                       <span className="text-[13px] font-medium text-[var(--c-gray-500)]">Método de Pago</span>
-                       <span className="text-[13px] font-bold text-[var(--c-gray-800)]">Visa •••• 4242</span>
+                       <span className="text-[13px] font-medium text-[var(--c-gray-500)]">Plan</span>
+                       <span className="text-[13px] font-bold text-[var(--c-gray-800)]">{subscription?.plan_name ?? currentPlan?.name ?? "—"}</span>
                     </div>
                  </div>
               </div>
@@ -214,10 +176,8 @@ export default function SubscriptionsPage() {
               key={plan.id}
               plan={plan}
               isCurrent={plan.id === currentPlanId}
-              onSelect={(id) => {
-                setCurrentPlanId(id);
-                setSubscriptionStatus("ACTIVE");
-                toast.success(`Plan actualizado a ${plan.name}`);
+              onSelect={() => {
+                toast.info("Cambio de plan disponible próximamente");
               }}
               formatCurrency={formatCurrency}
             />
