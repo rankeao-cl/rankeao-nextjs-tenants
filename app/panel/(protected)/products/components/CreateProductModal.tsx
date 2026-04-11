@@ -21,7 +21,7 @@ export function CreateProductModal({ isOpen, onClose }: CreateProductModalProps)
     name: "",
     sku: "",
     price: "",
-    stock_quantity: "",
+    stock: "",
     description: "",
   });
 
@@ -41,12 +41,12 @@ export function CreateProductModal({ isOpen, onClose }: CreateProductModalProps)
         name: formData.name,
         sku: formData.sku,
         price: priceNum,
-        stock_quantity: formData.stock_quantity ? Number(formData.stock_quantity) : 0,
+        stock: formData.stock ? Number(formData.stock) : 0,
         description: formData.description,
       });
       toast.success("Producto creado exitosamente");
       onClose();
-      setFormData({ name: "", sku: "", price: "", stock_quantity: "", description: "" });
+      setFormData({ name: "", sku: "", price: "", stock: "", description: "" });
     } catch (error: unknown) {
       toast.error(getErrorMessage(error, "Error al crear producto"));
     }
@@ -102,8 +102,8 @@ export function CreateProductModal({ isOpen, onClose }: CreateProductModalProps)
                 <Label className="text-[11px] font-bold uppercase tracking-widest text-[var(--c-gray-400)]">Stock Inicial</Label>
                 <Input
                   type="number"
-                  value={formData.stock_quantity}
-                  onChange={(e) => setFormData({ ...formData, stock_quantity: e.target.value })}
+                  value={formData.stock}
+                  onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
                   placeholder="0"
                   className="h-11 bg-[var(--c-gray-50)] border-none rounded-xl focus-visible:ring-2 focus-visible:ring-[var(--c-cyan-500)] font-medium"
                 />

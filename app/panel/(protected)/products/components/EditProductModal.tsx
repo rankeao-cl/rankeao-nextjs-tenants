@@ -46,7 +46,7 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  const [form, setForm] = useState({ name: "", sku: "", price: "", stock_quantity: "", description: "" });
+  const [form, setForm] = useState({ name: "", sku: "", price: "", stock: "", description: "" });
   const [images, setImages] = useState<ProductImage[]>([]);
   const [variants, setVariants] = useState<ProductVariant[]>([]);
 
@@ -59,7 +59,7 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
         name: data.name || "",
         sku: data.sku || "",
         price: data.price?.toString() || "",
-        stock_quantity: data.stock_quantity?.toString() || "",
+        stock: data.stock?.toString() || "",
         description: data.description || "",
       });
       setImages(data.images || []);
@@ -92,7 +92,7 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
     const name = formData.get("name") as string;
     const sku = formData.get("sku") as string;
     const priceStr = formData.get("price") as string;
-    const stockStr = formData.get("stock_quantity") as string;
+    const stockStr = formData.get("stock") as string;
     const description = formData.get("description") as string;
 
     if (!name || !priceStr) {
@@ -112,7 +112,7 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
         name,
         sku,
         price: priceNum,
-        stock_quantity: stockStr ? Number(stockStr) : 0,
+        stock: stockStr ? Number(stockStr) : 0,
         description,
       });
       toast.success("Detalles actualizados");
@@ -264,7 +264,7 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
                     </div>
                     <div className="space-y-2">
                       <Label className="text-[11px] font-bold uppercase tracking-widest text-[var(--c-gray-400)]">Stock Actual</Label>
-                      <Input name="stock_quantity" type="number" defaultValue={form.stock_quantity} className="h-11 bg-[var(--c-gray-100)] border-none rounded-xl focus-visible:ring-2 focus-visible:ring-[var(--c-cyan-500)] font-medium" readOnly />
+                      <Input name="stock" type="number" defaultValue={form.stock} className="h-11 bg-[var(--c-gray-100)] border-none rounded-xl focus-visible:ring-2 focus-visible:ring-[var(--c-cyan-500)] font-medium" readOnly />
                     </div>
                     <div className="md:col-span-2 space-y-2">
                       <Label className="text-[11px] font-bold uppercase tracking-widest text-[var(--c-gray-400)]">Descripción</Label>
@@ -300,7 +300,7 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
                         <div key={img.id} className="group relative aspect-square rounded-2xl overflow-hidden border border-[var(--c-gray-200)] bg-[var(--c-gray-100)] shadow-sm">
                           <img src={getImageUrl(img.url)} alt="" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
                           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                             <Button variant="ghost" size="icon" className="h-10 w-10 bg-white/20 hover:bg-red-500 text-white rounded-xl backdrop-blur-md" onClick={() => handleDeleteImage(img.id)}>
+                             <Button variant="ghost" size="icon" className="h-10 w-10 bg-white/20 hover:bg-red-500 text-white rounded-xl backdrop-blur-md" onClick={() => handleDeleteImage(String(img.id))}>
                                <Trash2 className="w-4 h-4" />
                              </Button>
                           </div>
@@ -355,7 +355,7 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
                             <p className="text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-tighter">Stock: {v.stock || 0}</p>
                           </div>
                           <div className="flex gap-1 pl-2 border-l border-[var(--c-gray-100)]">
-                             <Button size="icon" variant="ghost" className="h-9 w-9 text-red-400 hover:text-red-500 hover:bg-red-50 rounded-lg" onClick={() => handleDeleteVariant(v.id)}>
+                             <Button size="icon" variant="ghost" className="h-9 w-9 text-red-400 hover:text-red-500 hover:bg-red-50 rounded-lg" onClick={() => handleDeleteVariant(String(v.id))}>
                                <X className="w-4 h-4" />
                              </Button>
                           </div>

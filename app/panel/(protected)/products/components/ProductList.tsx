@@ -112,8 +112,8 @@ export function ProductList({ products, isLoading, onEdit, onDelete, getImageUrl
                   </TableCell>
                   <TableCell className="py-3.5 px-5 text-center">
                     <div className="flex flex-col items-center">
-                      <span className={`text-[14px] font-extrabold ${product.stock_quantity <= 5 ? 'text-red-500' : 'text-[var(--c-gray-800)]'}`}>
-                        {product.stock_quantity}
+                      <span className={`text-[14px] font-extrabold ${product.stock <= 5 ? 'text-red-500' : 'text-[var(--c-gray-800)]'}`}>
+                        {product.stock}
                       </span>
                       <span className="text-[9px] font-bold text-[var(--c-gray-400)] uppercase tracking-tighter">UNID</span>
                     </div>

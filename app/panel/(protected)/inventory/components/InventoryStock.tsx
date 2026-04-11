@@ -80,13 +80,13 @@ export function InventoryStock() {
                         {product.sku && <div className="text-xs text-[var(--c-gray-500)] mt-0.5">SKU: {product.sku}</div>}
                       </TableCell>
                       <TableCell className="py-4 px-4 text-center text-sm font-semibold text-[var(--c-gray-800)]">
-                        {product.stock_quantity ?? 0}
+                        {product.stock ?? 0}
                       </TableCell>
                       <TableCell className="py-4 px-4 text-center text-sm text-[var(--c-gray-500)]">
                         0
                       </TableCell>
                       <TableCell className="py-4 px-4 text-center text-sm font-semibold text-[var(--c-gray-800)]">
-                        {product.stock_quantity ?? 0}
+                        {product.stock ?? 0}
                       </TableCell>
                       <TableCell className="py-4 px-4 text-right text-sm text-[var(--c-gray-600)] whitespace-nowrap">
                         $ {(product.price || 0).toLocaleString("es-CL")}
