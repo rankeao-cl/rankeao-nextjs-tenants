@@ -13,6 +13,7 @@ import {
   Tag,
   PieChart,
   Trophy,
+  Bell,
   type LucideIcon,
 } from "lucide-react";
 
@@ -137,6 +138,11 @@ export const NAV_GROUPS: NavMainGroup[] = [
         ],
       },
     ],
+  },
+  {
+    label: "Notificaciones",
+    icon: Bell,
+    href: "/panel/notifications",
   },
   {
     label: "Ajustes",

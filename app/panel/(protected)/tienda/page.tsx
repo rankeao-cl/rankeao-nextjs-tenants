@@ -42,7 +42,7 @@ export default function TiendaConfigPage() {
         {/* Left Sidebar Menu */}
         <div className="w-full md:w-72 shrink-0 space-y-6">
            <div className="overflow-x-auto scrollbar-hide md:overflow-visible rounded-[32px]">
-           <TabsList className="w-full flex flex-row md:flex-col items-stretch justify-start bg-white border border-[var(--c-gray-100)] p-2 h-auto gap-2 rounded-[32px] shadow-sm overflow-visible">
+           <TabsList className="w-full flex flex-row md:flex-col items-stretch justify-start bg-white border border-[var(--c-gray-100)] p-2 !h-auto gap-2 rounded-[32px] shadow-sm overflow-visible">
              <TabsTrigger value="store" className={triggerClass}>
                <Store className="w-4 h-4 group-data-[state=active]:animate-pulse" />
                <span>Datos Generales</span>
