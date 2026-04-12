@@ -72,7 +72,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
       <div className="flex items-center">
         {/* Mobile menu button */}
         <button
-          className="md:hidden mr-3 text-[var(--c-gray-400)] hover:text-[var(--c-gray-700)] transition-colors"
+          className="md:hidden mr-3 text-[var(--c-gray-500)] hover:text-[var(--c-gray-700)] transition-colors"
           onClick={onMenuToggle}
           aria-label="Menu"
         >
@@ -100,8 +100,8 @@ export function Header({ onMenuToggle }: HeaderProps) {
                 onClick={() => router.push(item.href)}
                 className={`text-[13px] font-medium transition-all px-3.5 py-1.5 rounded-lg ${
                   isItemActive
-                    ? "bg-[var(--c-navy-50)] text-[var(--c-navy-800)] font-semibold"
-                    : "text-[var(--c-gray-500)] hover:bg-[var(--c-gray-50)] hover:text-[var(--c-gray-700)]"
+                    ? "bg-[var(--c-navy-50)] text-[var(--c-navy-700)] border-b-2 border-[var(--c-navy-500)] font-semibold"
+                    : "text-[var(--c-gray-600)] hover:bg-[var(--c-gray-100)] hover:text-[var(--c-gray-700)]"
                 }`}
               >
                 {item.label}
@@ -114,7 +114,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
       <div className="flex items-center gap-3">
         {/* Help button */}
         <button
-          className="hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-[13px] font-medium text-[var(--c-gray-500)] hover:bg-[var(--c-gray-50)] hover:text-[var(--c-gray-700)] transition-colors"
+          className="hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-[13px] font-medium text-[var(--c-gray-600)] hover:bg-[var(--c-gray-50)] hover:text-[var(--c-gray-700)] transition-colors"
           type="button"
         >
           <HelpCircle className="h-4 w-4" />
@@ -124,7 +124,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
         {/* Notification bell */}
         <div className="relative">
           <button
-            className="relative text-[var(--c-gray-400)] hover:text-[var(--c-gray-700)] transition-colors p-1.5 rounded-lg hover:bg-[var(--c-gray-50)]"
+            className="relative text-[var(--c-gray-500)] hover:text-[var(--c-gray-700)] transition-colors p-1.5 rounded-lg hover:bg-[var(--c-gray-50)]"
             onClick={() => setNotifOpen((v) => !v)}
             aria-label="Notificaciones"
           >
@@ -159,7 +159,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
                 </div>
                 <div className="max-h-72 overflow-y-auto divide-y divide-[var(--c-gray-50)]">
                   {(notifications as Array<{ id: string; title?: string; message?: string; body?: string; is_read?: boolean; read_at?: string; created_at?: string }>).length === 0 ? (
-                    <p className="text-center text-[12px] text-[var(--c-gray-400)] py-8">Sin notificaciones</p>
+                    <p className="text-center text-[12px] text-[var(--c-gray-500)] py-8">Sin notificaciones</p>
                   ) : (
                     (notifications as Array<{ id: string; title?: string; message?: string; body?: string; is_read?: boolean; read_at?: string; created_at?: string }>).map((n) => (
                       <div
@@ -179,7 +179,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
 
         {/* Settings */}
         <button
-          className="text-[var(--c-gray-400)] hover:text-[var(--c-gray-700)] transition-colors p-1.5 rounded-lg hover:bg-[var(--c-gray-50)]"
+          className="text-[var(--c-gray-500)] hover:text-[var(--c-gray-700)] transition-colors p-1.5 rounded-lg hover:bg-[var(--c-gray-50)]"
           onClick={() => router.push("/panel/perfil")}
           aria-label="Settings"
         >
@@ -189,10 +189,10 @@ export function Header({ onMenuToggle }: HeaderProps) {
         {/* User profile dropdown */}
         <div className="ml-1">
           <DropdownMenu>
-            <DropdownMenuTrigger className="rounded-full cursor-pointer flex border-2 border-transparent hover:border-[var(--c-navy-200)] transition-colors outline-none">
+            <DropdownMenuTrigger className="rounded-full cursor-pointer flex border-2 border-transparent hover:border-[var(--c-navy-400)] transition-colors outline-none">
               <Avatar className="h-8 w-8">
                 {user?.avatar_url && <AvatarImage src={user.avatar_url} alt="Avatar" />}
-                <AvatarFallback className="bg-[var(--c-navy-50)] text-[var(--c-navy-800)] text-xs font-semibold">
+                <AvatarFallback className="bg-[var(--c-navy-800)] text-white text-xs font-semibold">
                   {user?.username?.[0]?.toUpperCase() || "A"}
                 </AvatarFallback>
               </Avatar>
@@ -200,17 +200,17 @@ export function Header({ onMenuToggle }: HeaderProps) {
             <DropdownMenuContent align="end" className="w-[256px] p-0 overflow-hidden bg-white border border-[var(--c-gray-200)] shadow-elevated rounded-xl">
               {/* User Info Header */}
               <div className="relative">
-                <div className="absolute top-0 inset-x-0 h-[3px] bg-gradient-to-r from-[var(--c-navy-400)] to-[var(--c-navy-500)]" />
+                <div className="absolute top-0 inset-x-0 h-[3px] bg-gradient-to-r from-[var(--c-navy-700)] to-[var(--c-navy-500)]" />
                 <div className="flex items-center gap-3 px-4 py-4 pt-5">
                   <Avatar className="ring-2 ring-[var(--c-navy-100)]">
                     {user?.avatar_url && <AvatarImage src={user.avatar_url} alt="Avatar" />}
-                    <AvatarFallback className="bg-[var(--c-navy-50)] text-[var(--c-navy-800)] font-semibold">
+                    <AvatarFallback className="bg-[var(--c-navy-800)] text-white font-semibold">
                       {user?.username?.[0]?.toUpperCase() || "A"}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col min-w-0">
                     <p className="text-sm font-semibold text-[var(--c-gray-800)] truncate">{user?.username || "Usuario Admin"}</p>
-                    <p className="text-[11px] text-[var(--c-gray-400)] truncate">{user?.email || "admin@rutten.cl"}</p>
+                    <p className="text-[11px] text-[var(--c-gray-500)] truncate">{user?.email || "admin@rutten.cl"}</p>
                   </div>
                 </div>
               </div>
@@ -218,21 +218,21 @@ export function Header({ onMenuToggle }: HeaderProps) {
               <DropdownMenuSeparator className="bg-[var(--c-gray-100)] m-0" />
 
               <DropdownMenuGroup className="p-1.5">
-                <DropdownMenuLabel className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--c-gray-400)]">
+                <DropdownMenuLabel className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--c-gray-500)]">
                   Mi cuenta
                 </DropdownMenuLabel>
                 <DropdownMenuItem
                   onClick={() => router.push("/panel/perfil")}
                   className="rounded-lg hover:bg-[var(--c-gray-50)] focus:bg-[var(--c-gray-50)] cursor-pointer"
                 >
-                  <User className="mr-3 h-4 w-4 text-[var(--c-gray-400)]" />
+                  <User className="mr-3 h-4 w-4 text-[var(--c-gray-500)]" />
                   <span className="text-sm text-[var(--c-gray-700)]">Mi Perfil</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => router.push("/panel/tienda")}
                   className="rounded-lg hover:bg-[var(--c-gray-50)] focus:bg-[var(--c-gray-50)] cursor-pointer"
                 >
-                  <Settings className="mr-3 h-4 w-4 text-[var(--c-gray-400)]" />
+                  <Settings className="mr-3 h-4 w-4 text-[var(--c-gray-500)]" />
                   <span className="text-sm text-[var(--c-gray-700)]">Configuración Tienda</span>
                 </DropdownMenuItem>
               </DropdownMenuGroup>

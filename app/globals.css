@@ -4,52 +4,48 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* ═══════════════════════════════════════════════════════════
-   RANKEAO PANEL — DESIGN SYSTEM
-   Palette extracted from brand guidelines:
-   - Default: White surfaces, dark text (#2b2b2b), blue links (#0055ff)
-   - Info: Navy surface (#0c3d6e), cyan icons (#1e9fd6), sky fills (#a4d8ec)
-   - Brand: Charcoal surface (#4a4a4a), white on-fill
-   ═══════════════════════════════════════════════════════════ */
-
 :root {
-  /* ── Core Brand Colors (from palette image) ── */
+  --c-navy-900: #0c1633;
+  --c-navy-800: #0f1f4d;
+  --c-navy-700: #142c6e;
+  --c-navy-600: #1940a8;
+  --c-navy-500: #1A55E3;
+  --c-navy-400: #4B7AEB;
+  --c-navy-300: #7C9FF2;
+  --c-navy-200: #ADC4F7;
+  --c-navy-100: #D6E2FB;
+  --c-navy-50:  #EBF0FD;
 
-  /* Navy Blue — primary action color */
-  --c-navy-900: #0a2540;
-  --c-navy-800: #0c3150;
-  --c-navy-700: #0c3d6e;
-  --c-navy-600: #0f4c81;
-  --c-navy-500: #145da0;
-  --c-navy-400: #1e9fd6;
-  --c-navy-300: #4abce8;
-  --c-navy-200: #a4d8ec;
-  --c-navy-100: #d0ecf6;
-  --c-navy-50:  #e8f4fa;
+  --c-indigo:       #5E6EED;
+  --c-indigo-light: #8B97F2;
 
-  /* Vivid Blue (links / accent) */
-  --c-blue:       #0055ff;
-  --c-blue-hover: #0044cc;
+  --c-gray-50:  #f8fafc;
+  --c-gray-100: #f1f5f9;
+  --c-gray-200: #e2e8f0;
+  --c-gray-300: #cbd5e1;
+  --c-gray-400: #94a3b8;
+  --c-gray-500: #64748b;
+  --c-gray-600: #475569;
+  --c-gray-700: #334155;
+  --c-gray-800: #1e293b;
+  --c-gray-900: #0f172a;
 
-  /* Neutral Gray Scale */
-  --c-gray-50:  #f5f5f7;
-  --c-gray-100: #ebebed;
-  --c-gray-200: #d6d6d8;
-  --c-gray-300: #b8b8bc;
-  --c-gray-400: #8c8c92;
-  --c-gray-500: #6b6b72;
-  --c-gray-600: #52525a;
-  --c-gray-700: #3a3a42;
-  --c-gray-800: #2b2b30;
-  --c-gray-900: #1a1a1e;
+  --c-cyan-50:  #ecfeff;
+  --c-cyan-100: #cffafe;
+  --c-cyan-200: #a5f3fc;
+  --c-cyan-300: #67e8f9;
+  --c-cyan-400: #22d3ee;
+  --c-cyan-500: #0DCAF0;
+  --c-cyan-600: #0891b2;
+  --c-cyan-700: #0e7490;
+  --c-cyan-800: #155e75;
+  --c-cyan-900: #164e63;
 
-  /* Orange (sparingly for warnings / accent) */
   --c-orange:       #ff6200;
   --c-orange-light: #ff8a42;
 
-  /* ── Semantic Tokens ── */
-  --brand:            var(--c-navy-700);
-  --brand-hover:      var(--c-navy-800);
+  --brand:            var(--c-navy-500);
+  --brand-hover:      var(--c-navy-600);
   --brand-light:      var(--c-navy-50);
   --brand-foreground: #ffffff;
 
@@ -73,17 +69,17 @@
 
   --field-background: #ffffff;
   --field-foreground: var(--c-gray-800);
-  --field-placeholder: var(--c-gray-400);
+  --field-placeholder: var(--c-gray-500);
 
-  --danger:           #ef4444;
+  --danger:           #FF0854;
   --danger-foreground: #ffffff;
-  --success:          #10b981;
+  --success:          #00D284;
   --success-foreground: #ffffff;
   --warning:          #f59e0b;
   --warning-foreground: #ffffff;
-  --info:             var(--c-navy-400);
+  --info:             #0DCAF0;
 
-  --focus:            var(--c-navy-400);
+  --focus:            var(--c-navy-500);
   --scrollbar:        var(--c-gray-300);
 
   --radius:           0.625rem;
@@ -92,7 +88,6 @@
   --font-heading:     var(--font-poppins);
   --font-body:        var(--font-poppins);
 
-  /* ── Shadcn Tokens ── */
   --background:           var(--c-gray-50);
   --foreground:           var(--c-gray-900);
 
@@ -102,64 +97,51 @@
   --popover:              #ffffff;
   --popover-foreground:   var(--c-gray-900);
 
-  /* Primary = Navy blue (main action) */
-  --primary:              var(--c-navy-700);
+  --primary:              var(--c-navy-500);
   --primary-foreground:   #ffffff;
 
   --secondary:            var(--c-gray-100);
   --secondary-foreground: var(--c-gray-700);
 
   --muted:                var(--c-gray-100);
-  --muted-foreground:     var(--c-gray-500);
+  --muted-foreground:     var(--c-gray-600);
 
-  --destructive:          #ef4444;
+  --destructive:          #FF0854;
   --input:                var(--c-gray-200);
-  --ring:                 var(--c-navy-400);
+  --ring:                 var(--c-navy-500);
 
-  /* Charts */
-  --chart-1: var(--c-navy-700);
-  --chart-2: var(--c-navy-400);
-  --chart-3: #8b5cf6;
-  --chart-4: #f59e0b;
-  --chart-5: var(--c-orange);
+  --chart-1: var(--c-navy-500);
+  --chart-2: var(--c-indigo);
+  --chart-3: #00D284;
+  --chart-4: #0DCAF0;
+  --chart-5: #FF0854;
 
-  /* Sidebar */
-  --sidebar:                    #ffffff;
-  --sidebar-foreground:         var(--c-gray-800);
-  --sidebar-primary:            var(--c-navy-700);
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent:             var(--c-navy-50);
-  --sidebar-accent-foreground:  var(--c-navy-700);
-  --sidebar-border:             var(--c-gray-200);
-  --sidebar-ring:               var(--c-navy-400);
+  --sidebar:                    var(--c-navy-900);
+  --sidebar-foreground:         var(--c-gray-300);
+  --sidebar-primary:            #ffffff;
+  --sidebar-primary-foreground: var(--c-navy-900);
+  --sidebar-accent:             rgba(255, 255, 255, 0.12);
+  --sidebar-accent-foreground:  #ffffff;
+  --sidebar-border:             var(--c-navy-800);
+  --sidebar-ring:               var(--c-navy-500);
 }
-
-
-/* ═══════════════════════════════════════════════
-   BRAND IDENTITY UTILITIES
-   ═══════════════════════════════════════════════ */
 
 .text-brand { color: var(--brand); }
 .bg-brand   { background-color: var(--brand); }
 
 .text-gradient-brand {
-  background: linear-gradient(135deg, var(--c-navy-700) 0%, var(--c-navy-400) 100%);
+  background: linear-gradient(135deg, var(--c-navy-500) 0%, var(--c-indigo) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .text-gradient-accent {
-  background: linear-gradient(135deg, var(--c-navy-400) 0%, var(--c-navy-300) 100%);
+  background: linear-gradient(135deg, var(--c-indigo) 0%, var(--c-navy-400) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
-
-
-/* ═══════════════════════════════════════════════
-   SHADOWS
-   ═══════════════════════════════════════════════ */
 
 .shadow-card {
   box-shadow:
@@ -173,37 +155,27 @@
 }
 .shadow-brand-sm {
   box-shadow:
-    0 1px 3px rgba(12, 61, 110, 0.1),
-    0 0 0 1px rgba(12, 61, 110, 0.04);
+    0 1px 3px rgba(26, 85, 227, 0.12),
+    0 0 0 1px rgba(26, 85, 227, 0.04);
 }
 .shadow-brand {
   box-shadow:
-    0 4px 20px -4px rgba(12, 61, 110, 0.18),
-    0 0 0 1px rgba(12, 61, 110, 0.06);
+    0 4px 20px -4px rgba(26, 85, 227, 0.2),
+    0 0 0 1px rgba(26, 85, 227, 0.06);
 }
 
-
-/* ═══════════════════════════════════════════════
-   STATUS CHIPS
-   ═══════════════════════════════════════════════ */
-
 .chip-active, .chip-recurrente {
-  background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0;
+  background: #e6fbf2; color: #00a86b; border: 1px solid #80e9c0;
 }
 .chip-pending, .chip-pendiente {
   background: #fffbeb; color: #d97706; border: 1px solid #fde68a;
 }
 .chip-suspended, .chip-vencida {
-  background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;
+  background: #fff0f3; color: #e0074a; border: 1px solid #ff9db5;
 }
 .chip-neutral {
-  background: var(--c-gray-100); color: var(--c-gray-500); border: 1px solid var(--c-gray-200);
+  background: var(--c-gray-100); color: var(--c-gray-600); border: 1px solid var(--c-gray-200);
 }
-
-
-/* ═══════════════════════════════════════════════
-   SCROLLBAR
-   ═══════════════════════════════════════════════ */
 
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -213,42 +185,27 @@
 }
 ::-webkit-scrollbar-thumb:hover { background: var(--c-gray-400); }
 
-
-/* ═══════════════════════════════════════════════
-   FOCUS & SELECTION
-   ═══════════════════════════════════════════════ */
-
 *:focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 2px;
 }
 ::selection {
-  background: rgba(12, 61, 110, 0.12);
+  background: rgba(26, 85, 227, 0.14);
   color: var(--foreground);
 }
-
-
-/* ═══════════════════════════════════════════════
-   TABLE STYLES
-   ═══════════════════════════════════════════════ */
 
 .table-header {
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--c-gray-400);
+  color: var(--c-gray-500);
 }
 .table-row {
   border-bottom: 1px solid var(--c-gray-200);
   transition: background 0.12s ease;
 }
 .table-row:hover { background: var(--c-gray-50); }
-
-
-/* ═══════════════════════════════════════════════
-   HELP BUTTON
-   ═══════════════════════════════════════════════ */
 
 .btn-help {
   display: inline-flex;
@@ -269,28 +226,18 @@
   color: white;
 }
 
-
-/* ═══════════════════════════════════════════════
-   NATIVE <select> STYLING
-   ═══════════════════════════════════════════════ */
-
 select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238c8c92' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
   padding-right: 2rem;
 }
 select:focus {
-  border-color: var(--c-navy-400);
-  box-shadow: 0 0 0 3px rgba(30, 159, 214, 0.12);
+  border-color: var(--c-navy-500);
+  box-shadow: 0 0 0 3px rgba(26, 85, 227, 0.12);
   outline: none;
 }
-
-
-/* ═══════════════════════════════════════════════
-   TAILWIND THEME MAPPINGS
-   ═══════════════════════════════════════════════ */
 
 @theme inline {
   --font-heading: var(--font-sans);
@@ -347,10 +294,103 @@ select:focus {
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+.login-scene {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #000;
+}
 
-/* ═══════════════════════════════════════════════
-   BASE LAYER
-   ═══════════════════════════════════════════════ */
+.login-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.login-bg__image {
+  position: absolute;
+  inset: 0;
+}
+
+.login-bg__image img {
+  opacity: 0.30;
+}
+
+.login-bg__vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 35%, rgba(0,0,0,0.25) 65%, rgba(0,0,0,0.15) 100%);
+}
+
+.login-ember {
+  position: absolute;
+  bottom: -10px;
+  z-index: 2;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,160,40,0.95) 0%, rgba(255,80,20,0.6) 40%, transparent 70%);
+  box-shadow: 0 0 6px 1px rgba(255,120,30,0.4);
+  pointer-events: none;
+  animation: login-ember-rise linear infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes login-ember-rise {
+  0% {
+    transform: translateY(0) translateX(0) scale(1);
+    opacity: 0;
+  }
+  5% {
+    opacity: var(--glow, 0.5);
+  }
+  40% {
+    opacity: var(--glow, 0.5);
+  }
+  70% {
+    opacity: calc(var(--glow, 0.5) * 0.4);
+    transform: translateY(-60vh) translateX(var(--drift, 20px)) scale(0.6);
+  }
+  100% {
+    transform: translateY(-105vh) translateX(var(--drift, 20px)) scale(0.2);
+    opacity: 0;
+  }
+}
+
+.login-card {
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.login-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.login-card input {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #fff !important;
+}
+
+.login-card input::placeholder {
+  color: rgba(255, 255, 255, 0.45) !important;
+}
+
+.login-card input:focus {
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1) !important;
+}
 
 @layer base {
   * {

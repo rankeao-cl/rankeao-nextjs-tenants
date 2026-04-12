@@ -3,14 +3,15 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Eye, EyeOff, Mail, Lock, Loader2 } from "lucide-react";
 import { loginPanel } from "@/lib/api/auth";
 import { fetchMyMemberships, fetchMyPendingInvitations } from "@/lib/api/tenant";
 import { useAuthStore } from "@/lib/stores/auth-store";
+import LoginBackground from "./LoginBackground";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -54,8 +55,7 @@ export default function LoginPage() {
 
       toast.success(`Bienvenido al panel de ${membership.tenant_name}!`);
       const redirect =
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("redirect")) ||
+        new URLSearchParams(window.location.search).get("redirect") ||
         "/panel/dashboard";
       router.push(redirect as string);
     } catch (err: unknown) {
@@ -67,107 +67,90 @@ export default function LoginPage() {
   };
 
   return (
-    <div
-      className="flex min-h-screen items-center justify-center px-4"
-      style={{ background: "linear-gradient(145deg, var(--c-gray-50) 0%, var(--c-navy-50) 50%, var(--c-gray-100) 100%)" }}
-    >
-      <div className="w-full max-w-[420px]">
-        {/* Subtle top accent line */}
-        <div className="h-1 w-16 mx-auto mb-6 rounded-full bg-gradient-to-r from-[var(--c-navy-400)] to-[var(--c-navy-500)]" />
+    <div className="login-scene">
+      <LoginBackground />
 
-        <div className="bg-white rounded-2xl border border-[var(--c-gray-200)] shadow-elevated p-8">
-          {/* Logo */}
-          <div className="flex flex-col items-center mb-8">
-            <div className="relative flex h-10 w-48 items-center justify-center overflow-hidden mb-4">
-              <Image
-                src="/logo.svg"
-                alt="Rankeao"
-                fill
-                sizes="192px"
-                className="object-contain"
-                priority
-              />
+      <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-12">
+        <motion.div
+          className="w-full max-w-[400px] space-y-8"
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div className="flex flex-col items-center gap-4">
+            <div className="relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-white/10 backdrop-blur-sm">
+              <Image src="/logo.png" alt="Rankeao" fill sizes="56px" className="object-contain p-2" priority />
             </div>
-            <h1 className="text-xl font-bold text-[var(--c-gray-800)] tracking-tight">
-              Panel Administrativo
-            </h1>
-            <p className="text-[13px] text-[var(--c-gray-400)] mt-1">
-              Ingresa al entorno de gestión de tu tienda
-            </p>
+            <div className="text-center">
+              <h1 className="text-3xl font-bold text-white tracking-tight">
+                Panel Tienda
+              </h1>
+              <p className="text-sm text-white/50 mt-1.5">
+                Gestiona tu tienda en Rankeao.cl
+              </p>
+            </div>
           </div>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-1.5 flex flex-col w-full">
-              <Label className="text-sm font-medium text-[var(--c-gray-600)]">Email</Label>
-              <div className="flex items-center gap-2.5 border border-[var(--c-gray-200)] bg-[var(--c-gray-50)] rounded-xl px-3 py-0.5 focus-within:border-[var(--c-navy-400)] focus-within:ring-2 focus-within:ring-[var(--c-navy-500)]/10 hover:border-[var(--c-gray-300)] transition-all">
-                <Mail className="h-4 w-4 pointer-events-none shrink-0 text-[var(--c-gray-400)]" />
-                <Input
-                  type="email"
-                  placeholder="tienda@rankeao.cl"
-                  value={email}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setEmail(e.target.value)}
-                  className="w-full bg-transparent border-0 ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-0 h-10 placeholder:text-[var(--c-gray-400)] text-sm text-[var(--c-gray-800)]"
-                  required
-                />
+          <div className="login-card p-6 sm:p-8 space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-1.5 flex flex-col">
+                <label className="text-xs font-medium text-white/50 uppercase tracking-wider">
+                  Email
+                </label>
+                <div className="flex items-center gap-2.5 border border-white/8 bg-white/6 rounded-xl px-3 py-0.5 focus-within:border-white/30 focus-within:ring-1 focus-within:ring-white/10 transition-all">
+                  <Mail className="h-4 w-4 pointer-events-none shrink-0 text-white/40" />
+                  <Input
+                    type="email"
+                    placeholder="tienda@rankeao.cl"
+                    value={email}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setEmail(e.target.value)}
+                    className="w-full bg-transparent border-0 ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-0 h-10 text-sm text-white placeholder:text-white/40"
+                    required
+                  />
+                </div>
               </div>
-            </div>
 
-            <div className="space-y-1.5 flex flex-col w-full">
-              <Label className="text-sm font-medium text-[var(--c-gray-600)]">Contraseña</Label>
-              <div className="flex items-center gap-2.5 border border-[var(--c-gray-200)] bg-[var(--c-gray-50)] rounded-xl px-3 py-0.5 focus-within:border-[var(--c-navy-400)] focus-within:ring-2 focus-within:ring-[var(--c-navy-500)]/10 hover:border-[var(--c-gray-300)] transition-all">
-                <Lock className="h-4 w-4 pointer-events-none shrink-0 text-[var(--c-gray-400)]" />
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setPassword(e.target.value)}
-                  className="w-full bg-transparent border-0 ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-0 h-10 placeholder:text-[var(--c-gray-400)] text-sm text-[var(--c-gray-800)]"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="transition-colors p-0.5 hover:opacity-70 shrink-0 text-[var(--c-gray-400)]"
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
+              <div className="space-y-1.5 flex flex-col">
+                <label className="text-xs font-medium text-white/50 uppercase tracking-wider">
+                  Contraseña
+                </label>
+                <div className="flex items-center gap-2.5 border border-white/8 bg-white/6 rounded-xl px-3 py-0.5 focus-within:border-white/30 focus-within:ring-1 focus-within:ring-white/10 transition-all">
+                  <Lock className="h-4 w-4 pointer-events-none shrink-0 text-white/40" />
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setPassword(e.target.value)}
+                    className="w-full bg-transparent border-0 ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-0 h-10 text-sm text-white placeholder:text-white/40"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                    className="text-white/40 hover:text-white transition-colors shrink-0"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <Button
-              type="submit"
-              className="w-full text-white font-semibold transition-all py-2.5 rounded-xl mt-1 text-sm hover:opacity-90 flex gap-2 bg-[var(--c-navy-500)] hover:bg-[var(--c-navy-800)] shadow-brand-sm"
-              disabled={isLoading}
-            >
-              {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
-              Iniciar Sesión
-            </Button>
+              <Button
+                type="submit"
+                className="w-full text-white font-semibold py-2.5 rounded-xl mt-2 text-sm transition-all shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30"
+                style={{ background: "linear-gradient(135deg, var(--c-navy-500), var(--c-indigo))" }}
+                disabled={isLoading}
+              >
+                {isLoading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                {isLoading ? "Iniciando..." : "Iniciar Sesión"}
+              </Button>
+            </form>
 
-            <div className="relative flex items-center py-1">
-              <div className="flex-grow border-t border-[var(--c-gray-200)]" />
-              <span className="flex-shrink-0 mx-4 text-xs text-[var(--c-gray-400)]">o</span>
-              <div className="flex-grow border-t border-[var(--c-gray-200)]" />
-            </div>
-
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full transition-all font-medium py-2.5 rounded-xl text-sm text-[var(--c-gray-600)] border-[var(--c-gray-200)] hover:bg-[var(--c-gray-50)]"
-              onClick={() => {
-                setEmail("demo@rankeao.cl");
-                setPassword("demo123");
-                toast.info("Credenciales demo cargadas. Haz clic en Iniciar Sesión.");
-              }}
-            >
-              Usar Cuenta Demo
-            </Button>
-          </form>
-
-          <p className="mt-6 text-center text-xs text-[var(--c-gray-400)]">
-            Panel exclusivo para tiendas de Rankeao.cl
-          </p>
-        </div>
+            <p className="text-center text-[11px] text-white/30 tracking-wide">
+              Panel exclusivo para tiendas de Rankeao.cl
+            </p>
+          </div>
+        </motion.div>
       </div>
     </div>
   );
