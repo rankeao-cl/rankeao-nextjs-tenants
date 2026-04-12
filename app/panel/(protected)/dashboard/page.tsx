@@ -1,6 +1,7 @@
 "use client";
 
 import { useDashboardSummary } from "@/lib/hooks/use-dashboard";
+import { Button } from "@/components/ui/button";
 import { DashboardStats } from "./components/DashboardStats";
 import { QuickAccess } from "./components/QuickAccess";
 import { RecentActivity } from "./components/RecentActivity";
@@ -13,21 +14,21 @@ export default function DashboardPage() {
       {/* Page Title & Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-[26px] font-extrabold text-[var(--c-gray-800)] tracking-tight">
+          <h1 className="text-[26px] font-extrabold text-[var(--foreground)] tracking-tight">
             Panel de Control
           </h1>
           <div className="flex items-center gap-2 mt-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <p className="text-[13px] text-[var(--c-gray-400)] font-medium">Resumen en vivo · {new Date().toLocaleDateString("es-CL", { day: 'numeric', month: 'long' })}</p>
+            <p className="text-[13px] text-[var(--muted-foreground)] font-medium">Resumen en vivo · {new Date().toLocaleDateString("es-CL", { day: 'numeric', month: 'long' })}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <button className="h-10 px-5 text-[13px] font-bold text-[var(--c-gray-600)] bg-white border border-[var(--c-gray-200)] rounded-xl hover:bg-[var(--c-gray-50)] transition-all">
+          <Button variant="secondary" className="h-10 px-5 text-[13px] font-bold transition-all">
             Exportar reporte
-          </button>
-          <button className="h-10 px-5 text-[13px] font-bold text-white bg-[var(--c-cyan-500)] rounded-xl hover:bg-[var(--c-cyan-600)] shadow-sm shadow-[var(--c-cyan-500)]/20 transition-all">
+          </Button>
+          <Button variant="default" className="h-10 px-5 text-[13px] font-bold shadow-sm shadow-[var(--brand)]/20 transition-all">
             Nueva Venta
-          </button>
+          </Button>
         </div>
       </div>
 

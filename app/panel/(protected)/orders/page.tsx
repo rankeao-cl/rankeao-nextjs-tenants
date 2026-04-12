@@ -12,18 +12,18 @@ const getStatusColor = (status: string) => {
   switch (status) {
     case "COMPLETED":
     case "SHIPPED":
-      return "bg-emerald-50 text-emerald-600 border-emerald-100";
+      return "bg-emerald-500/10 text-emerald-600 border-emerald-500/20";
     case "PAID":
     case "PROCESSING":
     case "READY":
-      return "bg-blue-50 text-blue-600 border-blue-100";
+      return "bg-blue-500/10 text-blue-600 border-blue-500/20";
     case "PENDING_PAYMENT":
-      return "bg-amber-50 text-amber-600 border-amber-100";
+      return "bg-amber-500/10 text-amber-600 border-amber-500/20";
     case "CANCELLED":
     case "REFUNDED":
-      return "bg-red-50 text-red-600 border-red-100";
+      return "bg-red-500/10 text-red-600 border-red-500/20";
     default:
-      return "bg-[var(--c-gray-50)] text-[var(--c-gray-500)] border-[var(--c-gray-200)]";
+      return "bg-[var(--surface)] text-[var(--muted-foreground)] border-[var(--border)]";
   }
 };
 
@@ -49,9 +49,9 @@ export default function OrdersPage() {
 
         {/* Pagination Section */}
         {meta && meta.total_pages > 1 && (
-          <div className="flex items-center justify-between px-6 py-4 bg-white border border-[var(--c-gray-200)] rounded-2xl shadow-sm">
-            <p className="text-[13px] text-[var(--c-gray-500)] font-semibold">
-              Página <span className="text-[var(--c-gray-800)]">{meta.page}</span> de <span className="text-[var(--c-gray-800)]">{meta.total_pages}</span> · {meta.total} órdenes
+          <div className="flex items-center justify-between px-6 py-4 bg-[var(--card)] border border-[var(--border)] rounded-2xl shadow-sm">
+            <p className="text-[13px] text-[var(--muted-foreground)] font-semibold">
+              Página <span className="text-[var(--foreground)]">{meta.page}</span> de <span className="text-[var(--foreground)]">{meta.total_pages}</span> · {meta.total} órdenes
             </p>
             <div className="flex gap-2">
               <Button
@@ -59,7 +59,7 @@ export default function OrdersPage() {
                 variant="outline"
                 disabled={page <= 1}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
-                className="h-10 px-4 text-[13px] font-bold border-[var(--c-gray-200)] text-[var(--c-gray-600)] rounded-xl hover:bg-[var(--c-gray-50)]"
+                className="h-10 px-4 text-[13px] font-bold border-[var(--border)] text-[var(--muted-foreground)] hover:bg-[var(--surface)]"
               >
                 <ChevronLeft className="h-4 w-4 mr-1.5" /> Anterior
               </Button>
@@ -68,7 +68,7 @@ export default function OrdersPage() {
                 variant="outline"
                 disabled={page >= meta.total_pages}
                 onClick={() => setPage((p) => p + 1)}
-                className="h-10 px-4 text-[13px] font-bold border-[var(--c-gray-200)] text-[var(--c-gray-600)] rounded-xl hover:bg-[var(--c-gray-50)]"
+                className="h-10 px-4 text-[13px] font-bold border-[var(--border)] text-[var(--muted-foreground)] hover:bg-[var(--surface)]"
               >
                 Siguiente <ChevronRight className="h-4 w-4 ml-1.5" />
               </Button>

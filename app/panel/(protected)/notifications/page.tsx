@@ -26,7 +26,7 @@ export default function NotificationsPage() {
     return (
       <div className="space-y-4">
         <Skeleton className="h-8 w-48 rounded-lg" />
-        <Skeleton className="h-64 rounded-xl" />
+        <Skeleton className="h-64" />
       </div>
     );
   }
@@ -55,8 +55,8 @@ export default function NotificationsPage() {
       {items.length === 0 ? (
         <Card>
           <CardContent className="text-center py-12">
-            <Bell className="h-12 w-12 mx-auto text-[var(--c-gray-500)] mb-3 opacity-40" />
-            <p className="text-[var(--c-gray-500)]">No hay notificaciones</p>
+            <Bell className="h-12 w-12 mx-auto text-[var(--muted-foreground)] mb-3 opacity-40" />
+            <p className="text-[var(--muted-foreground)]">No hay notificaciones</p>
           </CardContent>
         </Card>
       ) : (
@@ -68,7 +68,7 @@ export default function NotificationsPage() {
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       {n.type && (
-                        <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium bg-[var(--c-gray-50)] text-[var(--c-gray-500)] border-[var(--c-gray-200)]">
+                        <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium bg-[var(--surface)] text-[var(--muted-foreground)] border-[var(--border)]">
                           {n.type}
                         </span>
                       )}
@@ -79,9 +79,9 @@ export default function NotificationsPage() {
                       )}
                     </div>
                     {n.title && <h3 className="font-semibold">{n.title}</h3>}
-                    {n.message && <p className="text-sm text-[var(--c-gray-500)]">{n.message}</p>}
+                    {n.message && <p className="text-sm text-[var(--muted-foreground)]">{n.message}</p>}
                     {n.created_at && (
-                      <p className="text-xs text-[var(--c-gray-500)] mt-1 opacity-60">
+                      <p className="text-xs text-[var(--muted-foreground)] mt-1 opacity-60">
                         {new Date(n.created_at).toLocaleString("es-CL")}
                       </p>
                     )}

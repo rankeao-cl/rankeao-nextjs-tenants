@@ -122,7 +122,7 @@ export function SocialLinksConfig() {
 
   if (loading) {
     return (
-      <Card className="bg-[#ffffff] border border-[var(--c-gray-200)] p-6">
+      <Card className="bg-[var(--card)] border border-[var(--border)] p-6">
         <Skeleton className="h-6 w-48 rounded-lg mb-1" />
         <Skeleton className="h-4 w-3/4 max-w-md rounded-lg mb-6" />
         <div className="space-y-4">
@@ -131,7 +131,7 @@ export function SocialLinksConfig() {
               <div className="w-[120px] flex-shrink-0">
                 <Skeleton className="h-5 w-24 rounded" />
               </div>
-              <Skeleton className="h-10 w-full rounded-xl flex-1" />
+              <Skeleton className="h-10 w-full flex-1" />
               <div className="flex items-center gap-2 pl-1 pt-2 sm:pt-0">
                 <Skeleton className="h-6 w-10 rounded-full" />
                 <Skeleton className="h-4 w-12 rounded" />
@@ -143,12 +143,12 @@ export function SocialLinksConfig() {
     );
   }
 
-    const inputClass = "flex h-10 w-full rounded-xl border border-[var(--c-gray-200)] bg-white px-3 py-2 text-sm text-[var(--c-gray-800)] placeholder:text-[var(--c-gray-400)] focus:outline-none focus:border-[var(--c-navy-400)] transition-colors";
+    const inputClass = "flex h-10 w-full border border-[var(--border)] bg-[var(--card)] rounded-xl px-3 py-2 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--brand)] transition-colors";
 
   return (
-    <Card className="bg-[#ffffff] border border-[var(--c-gray-200)] p-6">
-      <h3 className="text-lg font-semibold text-[var(--c-gray-800)] mb-1">Redes Sociales</h3>
-      <p className="text-[var(--c-gray-500)] text-sm mb-6">Administra los enlaces a tus perfiles sociales. Estos aparecerán en tu tienda pública.</p>
+    <Card className="bg-[var(--card)] border border-[var(--border)] p-6">
+      <h3 className="text-lg font-semibold text-[var(--foreground)] mb-1">Redes Sociales</h3>
+      <p className="text-[var(--muted-foreground)] text-sm mb-6">Administra los enlaces a tus perfiles sociales. Estos aparecerán en tu tienda pública.</p>
 
       <div className="space-y-4">
         {PLATFORMS.map((platform) => {
@@ -156,7 +156,7 @@ export function SocialLinksConfig() {
           return (
             <div
               key={platform.id}
-              className="flex flex-col sm:flex-row gap-4 items-start sm:items-center p-3 rounded-xl border border-[var(--c-gray-200)] bg-[var(--c-gray-100)] transition-all hover:border-[var(--border-hover)]"
+              className="flex flex-col sm:flex-row gap-4 items-start sm:items-center p-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] transition-all hover:border-[var(--border-hover)]"
             >
               <div className="flex items-center gap-3 w-[140px] flex-shrink-0">
                 <div
@@ -165,7 +165,7 @@ export function SocialLinksConfig() {
                 >
                   {platform.icon}
                 </div>
-                <Label className="text-sm font-medium text-[var(--c-gray-800)]">{platform.name}</Label>
+                <Label className="text-sm font-medium text-[var(--foreground)]">{platform.name}</Label>
               </div>
               <div className="flex flex-col space-y-1.5 flex-1">
                 <div>
@@ -182,7 +182,7 @@ export function SocialLinksConfig() {
                 <Switch checked={linkData.is_active as boolean}
                   onCheckedChange={(isSelected: boolean) => handleToggleActive(platform.id, isSelected)}
                   disabled={!linkData.url} />
-                <span className={`text-xs font-medium ${linkData.is_active ? "text-emerald-400" : "text-[var(--c-gray-500)]"}`}>
+                <span className={`text-xs font-medium ${linkData.is_active ? "text-emerald-400" : "text-[var(--muted-foreground)]"}`}>
                   {linkData.is_active ? "Visible" : "Oculto"}
                 </span>
               </div>

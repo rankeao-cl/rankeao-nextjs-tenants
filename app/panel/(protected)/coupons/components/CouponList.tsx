@@ -31,7 +31,7 @@ const getStatusColor = (status: string) => {
       return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
     case "INACTIVE":
     case "EXPIRED":
-      return "bg-[var(--c-gray-50)] text-[var(--c-gray-500)] border-[var(--c-gray-200)]";
+      return "bg-[var(--surface)] text-[var(--muted-foreground)] border-[var(--border)]";
     default:
       return "bg-amber-500/10 text-amber-400 border-amber-500/20";
   }
@@ -53,35 +53,35 @@ export function CouponList({
   return (
     <div className="space-y-4">
       {/* Search Bar - Compact BSale Style */}
-      <Card className="bg-[#ffffff] border border-[var(--c-gray-200)] p-4 rounded-xl shadow-sm">
+      <Card className="bg-[var(--card)] border border-[var(--border)] p-4 shadow-sm">
         <div className="relative max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--c-gray-400)]" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--muted-foreground)]" />
           <Input
             placeholder="Buscar por código..."
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}
-            className="pl-9 bg-transparent border-[var(--c-gray-200)] focus:ring-[var(--c-navy-500)] focus:border-[var(--c-navy-500)] rounded-xl h-10"
+            className="pl-9 bg-transparent border-[var(--border)] focus:ring-[var(--brand)] focus:border-[var(--brand)] h-10"
           />
         </div>
       </Card>
 
       {/* Table Container */}
-      <Card className="bg-[#ffffff] border border-[var(--c-gray-200)] rounded-2xl overflow-hidden shadow-sm">
+      <Card className="bg-[var(--card)] border border-[var(--border)] rounded-2xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto min-h-[400px]">
           <Table>
-            <TableHeader className="bg-[var(--c-gray-50)]">
-              <TableRow className="border-b border-[var(--c-gray-100)]">
-                <TableHead className="text-[11px] font-bold text-[var(--c-gray-500)] uppercase tracking-wider py-4 px-6">Código</TableHead>
-                <TableHead className="text-[11px] font-bold text-[var(--c-gray-500)] uppercase tracking-wider py-4 px-6">Descuento</TableHead>
-                <TableHead className="text-[11px] font-bold text-[var(--c-gray-500)] uppercase tracking-wider py-4 px-6">Mínimo</TableHead>
-                <TableHead className="text-[11px] font-bold text-[var(--c-gray-500)] uppercase tracking-wider py-4 px-6">Estado</TableHead>
-                <TableHead className="text-[11px] font-bold text-[var(--c-gray-500)] uppercase tracking-wider py-4 px-6 text-right">Acciones</TableHead>
+            <TableHeader className="bg-[var(--surface)]">
+              <TableRow className="border-b border-[var(--surface)]">
+                <TableHead className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-wider py-4 px-6">Código</TableHead>
+                <TableHead className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-wider py-4 px-6">Descuento</TableHead>
+                <TableHead className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-wider py-4 px-6">Mínimo</TableHead>
+                <TableHead className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-wider py-4 px-6">Estado</TableHead>
+                <TableHead className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-wider py-4 px-6 text-right">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 Array(6).fill(0).map((_, i) => (
-                  <TableRow key={i} className="border-b border-[var(--c-gray-50)]">
+                  <TableRow key={i} className="border-b border-[var(--surface)]">
                     <TableCell className="py-4 px-6"><Skeleton className="h-5 w-24 rounded" /></TableCell>
                     <TableCell className="py-4 px-6"><Skeleton className="h-5 w-20 rounded" /></TableCell>
                     <TableCell className="py-4 px-6"><Skeleton className="h-5 w-20 rounded" /></TableCell>
@@ -93,27 +93,27 @@ export function CouponList({
                 <TableRow>
                   <TableCell colSpan={5} className="py-20 text-center">
                     <div className="flex flex-col items-center gap-3">
-                      <div className="p-4 rounded-full bg-[var(--c-gray-50)]">
-                        <Search className="h-8 w-8 text-[var(--c-gray-300)]" />
+                      <div className="p-4 rounded-full bg-[var(--surface)]">
+                        <Search className="h-8 w-8 text-[var(--border-hover)]" />
                       </div>
-                      <p className="text-[var(--c-gray-500)] font-medium">No se encontraron cupones</p>
+                      <p className="text-[var(--muted-foreground)] font-medium">No se encontraron cupones</p>
                     </div>
                   </TableCell>
                 </TableRow>
               ) : (
                 coupons.map((coupon) => (
-                  <TableRow key={coupon.id} className="border-b border-[var(--c-gray-50)] last:border-0 hover:bg-[var(--c-gray-50)]/80 transition-colors group">
+                  <TableRow key={coupon.id} className="border-b border-[var(--surface)] last:border-0 hover:bg-[var(--surface)]/80 transition-colors group">
                     <TableCell className="py-4 px-6">
-                      <span className="text-[var(--c-cyan-500)] font-mono font-bold text-sm bg-[var(--c-cyan-500)]/5 px-2 py-1 rounded-md border border-[var(--c-cyan-500)]/10">
+                      <span className="text-[var(--brand)] font-mono font-bold text-sm bg-[var(--brand)]/5 px-2 py-1 rounded-md border border-[var(--brand)]/10">
                         {coupon.code}
                       </span>
                     </TableCell>
-                    <TableCell className="py-4 px-6 text-sm font-semibold text-[var(--c-gray-800)]">
+                    <TableCell className="py-4 px-6 text-sm font-semibold text-[var(--foreground)]">
                       {coupon.discount_type === "PERCENTAGE"
                         ? `${coupon.discount_value}%`
                         : formatCurrency(coupon.discount_value)}
                     </TableCell>
-                    <TableCell className="py-4 px-6 text-sm text-[var(--c-gray-500)]">
+                    <TableCell className="py-4 px-6 text-sm text-[var(--muted-foreground)]">
                       {coupon.min_purchase ? formatCurrency(coupon.min_purchase) : "Sin mínimo"}
                     </TableCell>
                     <TableCell className="py-4 px-6">
@@ -127,7 +127,7 @@ export function CouponList({
                           size="xs" 
                           variant="outline" 
                           onClick={() => onViewUsages(coupon.id, coupon.code)}
-                          className="h-8 px-3 rounded-lg border-[var(--c-gray-200)] text-[var(--c-gray-600)]"
+                          className="h-8 px-3 rounded-lg border-[var(--border)] text-[var(--muted-foreground)]"
                         >
                           Usos
                         </Button>
@@ -135,7 +135,7 @@ export function CouponList({
                           size="xs" 
                           variant="secondary" 
                           onClick={() => onEdit(coupon)}
-                          className="h-8 px-3 rounded-lg bg-[var(--c-navy-500)]/5 text-[var(--c-navy-500)] border-none hover:bg-[var(--c-navy-500)]/10"
+                          className="h-8 px-3 rounded-lg bg-[var(--brand)]/5 text-[var(--brand)] border-none hover:bg-[var(--brand)]/10"
                         >
                           Editar
                         </Button>
@@ -143,7 +143,7 @@ export function CouponList({
                           size="xs" 
                           variant="destructive" 
                           onClick={() => onDelete(coupon.id)}
-                          className="h-8 px-3 rounded-lg bg-red-50 text-red-500 border-none hover:bg-red-100"
+                          className="h-8 px-3 rounded-lg bg-red-500/10 text-red-500 border-none hover:bg-red-500/15"
                         >
                           Borrar
                         </Button>
@@ -158,9 +158,9 @@ export function CouponList({
 
         {/* Pagination - BSale Style */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t border-[var(--c-gray-100)] bg-[var(--c-gray-50)]/50">
-            <p className="text-[12px] text-[var(--c-gray-500)] font-medium">
-              Página <span className="text-[var(--c-gray-800)]">{page}</span> de <span className="text-[var(--c-gray-800)]">{totalPages}</span> · {totalItems} cupones
+          <div className="flex items-center justify-between px-6 py-4 border-t border-[var(--surface)] bg-[var(--surface)]/50">
+            <p className="text-[12px] text-[var(--muted-foreground)] font-medium">
+              Página <span className="text-[var(--foreground)]">{page}</span> de <span className="text-[var(--foreground)]">{totalPages}</span> · {totalItems} cupones
             </p>
             <div className="flex gap-2">
               <Button
@@ -168,7 +168,7 @@ export function CouponList({
                 variant="outline"
                 disabled={page <= 1}
                 onClick={() => onPageChange(page - 1)}
-                className="h-8 px-4 text-xs border-[var(--c-gray-200)] rounded-xl bg-white hover:bg-[var(--c-gray-50)]"
+                className="h-8 px-4 text-xs border-[var(--border)] bg-[var(--card)] hover:bg-[var(--surface)]"
               >
                 <ChevronLeft className="h-3.5 w-3.5 mr-1" /> Anterior
               </Button>
@@ -177,7 +177,7 @@ export function CouponList({
                 variant="outline"
                 disabled={page >= totalPages}
                 onClick={() => onPageChange(page + 1)}
-                className="h-8 px-4 text-xs border-[var(--c-gray-200)] rounded-xl bg-white hover:bg-[var(--c-gray-50)]"
+                className="h-8 px-4 text-xs border-[var(--border)] bg-[var(--card)] hover:bg-[var(--surface)]"
               >
                 Siguiente <ChevronRight className="h-3.5 w-3.5 ml-1" />
               </Button>

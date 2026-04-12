@@ -16,7 +16,7 @@ export function QuickAccess() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-[12px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest px-1">
+        <h2 className="text-[12px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest px-1">
           Acceso Directo
         </h2>
       </div>
@@ -25,19 +25,19 @@ export function QuickAccess() {
           const Icon = link.icon;
           return (
             <Link key={link.href} href={link.href} className="group">
-              <div className="h-full bg-white rounded-2xl border border-[var(--c-gray-200)] p-5 flex flex-col items-start gap-4 transition-all duration-300 hover:border-[var(--c-cyan-500)] hover:shadow-md hover:-translate-y-1 relative overflow-hidden">
+              <div className="h-full bg-[var(--card)] rounded-2xl border border-[var(--border)] p-5 flex flex-col items-start gap-4 transition-all duration-300 hover:border-[var(--brand)] hover:shadow-md hover:-translate-y-1 relative overflow-hidden">
                 {/* Subtle background decoration */}
                 <div className="absolute top-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <ArrowUpRight className="w-4 h-4 text-[var(--c-cyan-500)]" />
+                  <ArrowUpRight className="w-4 h-4 text-[var(--brand)]" />
                 </div>
-                
-                <div className="w-12 h-12 rounded-xl bg-[var(--c-gray-50)] flex items-center justify-center transition-colors duration-300 group-hover:bg-[var(--c-cyan-50)] group-hover:text-[var(--c-cyan-600)] shadow-inner">
-                  <Icon className="h-5 w-5 text-[var(--c-gray-400)] group-hover:text-[var(--c-cyan-600)] transition-colors duration-300" />
+
+                <div className="w-12 h-12 rounded-xl bg-[var(--surface)] flex items-center justify-center transition-colors duration-300 group-hover:bg-[var(--accent-subtle)] group-hover:text-[var(--brand-hover)] shadow-inner">
+                  <Icon className="h-5 w-5 text-[var(--muted-foreground)] group-hover:text-[var(--brand-hover)] transition-colors duration-300" />
                 </div>
-                
+
                 <div>
-                  <p className="text-[14px] font-bold text-[var(--c-gray-800)] group-hover:text-[var(--c-cyan-700)] transition-colors">{link.label}</p>
-                  <p className="text-[11px] text-[var(--c-gray-400)] mt-1 font-medium leading-tight">{link.desc}</p>
+                  <p className="text-[14px] font-bold text-[var(--foreground)] group-hover:text-[var(--brand)] transition-colors">{link.label}</p>
+                  <p className="text-[11px] text-[var(--muted-foreground)] mt-1 font-medium leading-tight">{link.desc}</p>
                 </div>
               </div>
             </Link>

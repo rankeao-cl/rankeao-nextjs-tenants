@@ -1,16 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
-import { getMyTenant, updateMyTenant, setTenantSlug, tenantGoPublic, tenantGoPrivate, setTenantLogo, setTenantBanner } from "@/lib/api/tenant";
+import {
+  getMyTenant,
+  updateMyTenant,
+  setTenantSlug,
+  tenantGoPublic,
+  tenantGoPrivate,
+  setTenantLogo,
+  setTenantBanner,
+} from "@/lib/api/tenant";
 import { ImageUploader } from "@/components/ui/ImageUploader";
-import { Globe, MapPin, Store, Palette, Eye, Save, ImageIcon } from "lucide-react";
+import { Globe, MapPin, Store, Palette, Eye } from "lucide-react";
 
 export function StoreConfig() {
   const [tenant, setTenant] = useState<Record<string, unknown> | null>(null);
@@ -74,185 +81,263 @@ export function StoreConfig() {
 
   if (loading) {
     return (
-      <div className="space-y-8">
-        <Skeleton className="h-[300px] w-full rounded-[32px]" />
-        <Skeleton className="h-[250px] w-full rounded-[32px]" />
+      <div className="space-y-6">
+        <Skeleton className="h-[280px] w-full rounded-xl" />
+        <Skeleton className="h-[220px] w-full rounded-xl" />
+        <Skeleton className="h-[80px] w-full rounded-xl" />
       </div>
     );
   }
 
-  if (!tenant) return <p className="text-red-500 font-bold">Error crítico: No se pudo cargar la información de la tienda.</p>;
-
-  const labelClass = "text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest mb-2 flex items-center gap-2";
-  const inputClass = "h-11 rounded-xl border-[var(--c-gray-200)] bg-white px-4 text-sm text-[var(--c-gray-800)] font-bold focus:ring-[var(--c-navy-500)]/10 transition-all shadow-sm";
+  if (!tenant) {
+    return (
+      <p className="text-red-500 font-semibold">
+        Error: No se pudo cargar la información de la tienda.
+      </p>
+    );
+  }
 
   return (
-    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      
-      {/* SECCIÓN: IDENTIDAD DE MARCA */}
-      <Card className="bg-white border border-[var(--c-gray-100)] rounded-[32px] shadow-sm overflow-hidden">
-        <div className="p-8 border-b border-[var(--c-gray-50)] bg-[var(--c-gray-50)]/30 flex items-center gap-4">
-           <div className="p-3 rounded-2xl bg-[var(--c-navy-500)]/5 text-[var(--c-navy-500)]">
-              <Palette className="h-6 w-6" />
-           </div>
-           <div>
-              <h3 className="text-lg font-black text-[var(--c-gray-800)] tracking-tight">Identidad Visual</h3>
-              <p className="text-xs text-[var(--c-gray-400)] font-medium">Personaliza el aspecto público de tu sucursal</p>
-           </div>
+    <div className="space-y-6 animate-in fade-in duration-300">
+      {/* Identidad Visual */}
+      <section className="bg-[var(--card)] border border-[var(--border)] rounded-xl overflow-hidden">
+        <div className="flex items-center gap-3 p-5 border-b border-[var(--border)]">
+          <div className="p-2 rounded-lg bg-primary/10 text-primary">
+            <Palette className="h-5 w-5" />
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-[var(--foreground)]">
+              Identidad Visual
+            </h3>
+            <p className="text-xs text-[var(--muted-foreground)]">
+              Logo, banner y vista previa pública
+            </p>
+          </div>
         </div>
-        <CardContent className="p-8 space-y-10">
-           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-              <div className="space-y-6">
-                 <div className="space-y-2 flex flex-col">
-                    <Label className={labelClass}>Logotipo</Label>
-                    <ImageUploader
-                      entityType="store_logo"
-                      entityId={(tenant?.id as string) || ""}
-                      currentUrl={formData.logoUrl}
-                      variant="logo"
-                      onUploaded={async ({ public_url }) => {
-                        setFormData((prev) => ({ ...prev, logoUrl: public_url }));
-                        await setTenantLogo(public_url);
-                      }}
-                    />
-                 </div>
-                 <div className="space-y-2 flex flex-col">
-                    <Label className={labelClass}>Portada / Banner</Label>
-                    <ImageUploader
-                      entityType="store_cover"
-                      entityId={(tenant?.id as string) || ""}
-                      currentUrl={formData.bannerUrl}
-                      variant="banner"
-                      onUploaded={async ({ public_url }) => {
-                        setFormData((prev) => ({ ...prev, bannerUrl: public_url }));
-                        await setTenantBanner(public_url);
-                      }}
-                    />
-                 </div>
+        <div className="p-5">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="space-y-5">
+              <div className="space-y-2">
+                <Label className="text-xs font-medium text-[var(--muted-foreground)]">
+                  Logotipo
+                </Label>
+                <ImageUploader
+                  entityType="store_logo"
+                  entityId={(tenant?.id as string) || ""}
+                  currentUrl={formData.logoUrl}
+                  variant="logo"
+                  onUploaded={async ({ public_url }) => {
+                    setFormData((prev) => ({ ...prev, logoUrl: public_url }));
+                    await setTenantLogo(public_url);
+                  }}
+                />
               </div>
-
-              <div className="relative group rounded-[24px] overflow-hidden border border-[var(--c-gray-100)] shadow-inner bg-[var(--c-gray-50)] min-h-[180px]">
-                 {/* Banner Preview */}
-                 <div className="absolute inset-0">
-                    {formData.bannerUrl ? (
-                      <img src={formData.bannerUrl} alt="" className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-1000" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                         <ImageIcon className="h-10 w-10 text-[var(--c-gray-200)]" />
-                      </div>
-                    )}
-                 </div>
-                 {/* Logo Preview Overlay */}
-                 <div className="absolute inset-x-0 bottom-0 p-6 flex items-end gap-4 bg-gradient-to-t from-black/20 to-transparent">
-                    <div className="w-16 h-16 rounded-2xl bg-white p-1.5 shadow-xl border border-white/20">
-                       {formData.logoUrl ? (
-                         <img src={formData.logoUrl} alt="" className="w-full h-full object-contain" />
-                       ) : (
-                         <div className="w-full h-full flex items-center justify-center bg-[var(--c-navy-500)]/5">
-                            <Store className="h-6 w-6 text-[var(--c-navy-500)]" />
-                         </div>
-                       )}
-                    </div>
-                    <div className="text-white drop-shadow-md pb-1">
-                       <p className="text-[10px] font-black uppercase tracking-widest opacity-80">Vista Previa</p>
-                       <h4 className="text-sm font-black tracking-tight">{formData.name || "Nombre de Tienda"}</h4>
-                    </div>
-                 </div>
+              <div className="space-y-2">
+                <Label className="text-xs font-medium text-[var(--muted-foreground)]">
+                  Portada / Banner
+                </Label>
+                <ImageUploader
+                  entityType="store_cover"
+                  entityId={(tenant?.id as string) || ""}
+                  currentUrl={formData.bannerUrl}
+                  variant="banner"
+                  onUploaded={async ({ public_url }) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      bannerUrl: public_url,
+                    }));
+                    await setTenantBanner(public_url);
+                  }}
+                />
               </div>
-           </div>
-        </CardContent>
-      </Card>
+            </div>
 
-      {/* SECCIÓN: INFORMACIÓN GENERAL */}
-      <Card className="bg-white border border-[var(--c-gray-100)] rounded-[32px] shadow-sm overflow-hidden">
-        <div className="p-8 border-b border-[var(--c-gray-50)] bg-[var(--c-gray-50)]/30 flex items-center gap-4">
-           <div className="p-3 rounded-2xl bg-[var(--c-cyan-500)]/5 text-[var(--c-cyan-500)]">
-              <Globe className="h-6 w-6" />
-           </div>
-           <div>
-              <h3 className="text-lg font-black text-[var(--c-gray-800)] tracking-tight">Ubicación y Dominio</h3>
-              <p className="text-xs text-[var(--c-gray-400)] font-medium">Configura cómo te encuentran y dónde operas</p>
-           </div>
+            {/* Preview */}
+            <div className="relative rounded-xl overflow-hidden border border-[var(--border)] bg-[var(--surface)] min-h-[180px]">
+              <div className="absolute inset-0">
+                {formData.bannerUrl ? (
+                  <img
+                    src={formData.bannerUrl}
+                    alt=""
+                    className="w-full h-full object-cover opacity-60"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <Store className="h-10 w-10 text-[var(--border)]" />
+                  </div>
+                )}
+              </div>
+              <div className="absolute inset-x-0 bottom-0 p-5 flex items-end gap-3 bg-gradient-to-t from-black/30 to-transparent">
+                <div className="w-14 h-14 rounded-xl bg-[var(--card)] p-1.5 shadow-lg border border-white/20">
+                  {formData.logoUrl ? (
+                    <img
+                      src={formData.logoUrl}
+                      alt=""
+                      className="w-full h-full object-contain"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-primary/10">
+                      <Store className="h-5 w-5 text-primary" />
+                    </div>
+                  )}
+                </div>
+                <div className="text-white drop-shadow-md pb-0.5">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider opacity-80">
+                    Vista previa
+                  </p>
+                  <h4 className="text-sm font-bold tracking-tight">
+                    {formData.name || "Nombre de Tienda"}
+                  </h4>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <CardContent className="p-8">
-           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
-              <div className="space-y-2 flex flex-col">
-                 <Label className={labelClass}>Nombre Comercial</Label>
-                 <Input name="name" value={formData.name} onChange={handleChange} className={inputClass} />
-              </div>
+      </section>
 
-              <div className="space-y-2 flex flex-col">
-                 <Label className={labelClass}>Subdominio Rankeao</Label>
-                 <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[12px] font-bold text-[var(--c-gray-400)]">rankeao.cl /</span>
-                    <Input name="slug" value={formData.slug} onChange={handleChange} className={`${inputClass} pl-[88px] font-mono lowercase`} />
-                 </div>
+      {/* Ubicación y Dominio */}
+      <section className="bg-[var(--card)] border border-[var(--border)] rounded-xl overflow-hidden">
+        <div className="flex items-center gap-3 p-5 border-b border-[var(--border)]">
+          <div className="p-2 rounded-lg bg-primary/10 text-primary">
+            <Globe className="h-5 w-5" />
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-[var(--foreground)]">
+              Ubicación y Dominio
+            </h3>
+            <p className="text-xs text-[var(--muted-foreground)]">
+              Cómo te encuentran y dónde operas
+            </p>
+          </div>
+        </div>
+        <div className="p-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium text-[var(--muted-foreground)]">
+                Nombre Comercial
+              </Label>
+              <Input
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="h-10 bg-[var(--surface)] border-[var(--border)]"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium text-[var(--muted-foreground)]">
+                Subdominio Rankeao
+              </Label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-medium text-[var(--muted-foreground)]">
+                  rankeao.cl/
+                </span>
+                <Input
+                  name="slug"
+                  value={formData.slug}
+                  onChange={handleChange}
+                  className="h-10 bg-[var(--surface)] border-[var(--border)] pl-[80px] font-mono lowercase"
+                />
               </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-[var(--muted-foreground)]">
+                  País
+                </Label>
+                <Input
+                  name="country"
+                  value={formData.country}
+                  onChange={handleChange}
+                  className="h-10 bg-[var(--surface)] border-[var(--border)]"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-[var(--muted-foreground)]">
+                  Ciudad
+                </Label>
+                <Input
+                  name="city"
+                  value={formData.city}
+                  onChange={handleChange}
+                  className="h-10 bg-[var(--surface)] border-[var(--border)]"
+                />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium text-[var(--muted-foreground)] flex items-center gap-1.5">
+                <MapPin className="h-3 w-3" /> Región / Estado
+              </Label>
+              <Input
+                name="region"
+                value={formData.region}
+                onChange={handleChange}
+                className="h-10 bg-[var(--surface)] border-[var(--border)]"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
 
-              <div className="grid grid-cols-2 gap-6">
-                 <div className="space-y-2 flex flex-col">
-                    <Label className={labelClass}>País</Label>
-                    <Input name="country" value={formData.country} onChange={handleChange} className={inputClass} />
-                 </div>
-                 <div className="space-y-2 flex flex-col">
-                    <Label className={labelClass}>Ciudad</Label>
-                    <Input name="city" value={formData.city} onChange={handleChange} className={inputClass} />
-                 </div>
-              </div>
+      {/* Visibilidad */}
+      <section className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
+        <div className="flex flex-col sm:flex-row gap-5 justify-between sm:items-center">
+          <div className="flex items-center gap-4">
+            <div
+              className={`p-3 rounded-xl transition-colors ${
+                tenant.is_public
+                  ? "bg-emerald-500/10 text-emerald-500"
+                  : "bg-red-500/10 text-red-500"
+              }`}
+            >
+              <Eye className="h-5 w-5" />
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-[var(--foreground)]">
+                Presencia en el Directorio
+              </h3>
+              <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
+                Define si tu tienda es visible en las búsquedas globales
+              </p>
+            </div>
+          </div>
+          <div
+            className={`flex items-center gap-4 px-4 py-3 rounded-xl border transition-colors ${
+              tenant.is_public
+                ? "bg-emerald-500/5 border-emerald-500/20"
+                : "bg-red-500/5 border-red-500/20"
+            }`}
+          >
+            <span
+              className={`text-xs font-semibold ${
+                tenant.is_public ? "text-emerald-500" : "text-red-500"
+              }`}
+            >
+              {tenant.is_public ? "Pública" : "Privada"}
+            </span>
+            <Switch
+              checked={!!tenant.is_public}
+              onCheckedChange={async (isSelected: boolean) => {
+                try {
+                  if (isSelected) await tenantGoPublic();
+                  else await tenantGoPrivate();
+                  setTenant({ ...tenant, is_public: isSelected });
+                  toast.success(
+                    `La tienda ahora es ${isSelected ? "pública" : "privada"}`
+                  );
+                } catch (err: unknown) {
+                  const error = err as Error;
+                  toast.error(error.message || "Error al cambiar estado");
+                }
+              }}
+            />
+          </div>
+        </div>
+      </section>
 
-              <div className="space-y-2 flex flex-col">
-                 <Label className={labelClass}><MapPin className="h-3 w-3" /> Región / Estado</Label>
-                 <Input name="region" value={formData.region} onChange={handleChange} className={inputClass} />
-              </div>
-           </div>
-        </CardContent>
-      </Card>
-
-      {/* SECCIÓN: VISIBILIDAD */}
-      <Card className="bg-white border border-[var(--c-gray-100)] rounded-[32px] shadow-sm overflow-hidden">
-        <CardContent className="p-8">
-           <div className="flex flex-col sm:flex-row gap-8 justify-between sm:items-center">
-              <div className="flex items-center gap-6">
-                 <div className={`p-4 rounded-full transition-all duration-500 ${tenant.is_public ? 'bg-emerald-50 text-emerald-500' : 'bg-red-50 text-red-500'}`}>
-                    <Eye className="h-6 w-6" />
-                 </div>
-                 <div>
-                    <h3 className="text-base font-black text-[var(--c-gray-800)] tracking-tight">Presencia en el Directorio</h3>
-                    <p className="text-sm text-[var(--c-gray-500)] font-medium mt-1">Define si tu tienda es visible para los algoritmos de búsqueda globale.</p>
-                 </div>
-              </div>
-              
-              <div className={`flex items-center gap-6 px-6 py-4 rounded-2xl border transition-all ${tenant.is_public ? 'bg-emerald-50/30 border-emerald-100' : 'bg-red-50/30 border-red-100'}`}>
-                 <span className={`text-xs font-black uppercase tracking-widest ${tenant.is_public ? 'text-emerald-600' : 'text-red-600'}`}>
-                    {tenant.is_public ? 'Sucursal Pública' : 'Modo Privado'}
-                 </span>
-                 <Switch 
-                   checked={!!tenant.is_public}
-                   onCheckedChange={async (isSelected: boolean) => {
-                     try {
-                       if (isSelected) await tenantGoPublic();
-                       else await tenantGoPrivate();
-                       setTenant({ ...tenant, is_public: isSelected });
-                       toast.success(`La tienda ahora es ${isSelected ? 'pública' : 'privada'}`);
-                     } catch (err: unknown) {
-                       const error = err as Error;
-                       toast.error(error.message || "Error al cambiar estado");
-                     }
-                   }} 
-                 />
-              </div>
-           </div>
-        </CardContent>
-      </Card>
-
-      <div className="flex justify-end pt-4">
-        <Button 
-          onClick={handleSave} 
-          disabled={saving}
-          className="bg-[var(--c-navy-500)] hover:bg-[var(--c-navy-600)] text-white shadow-xl shadow-[var(--c-navy-500)]/20 rounded-2xl px-12 h-14 w-full sm:w-auto font-black text-sm uppercase tracking-widest transition-all"
-        >
-          {saving ? "Guardando Configuración..." : "Sincronizar Cambios"}
-          <Save className="h-4 w-4 ml-3" />
+      {/* Save */}
+      <div className="flex justify-end">
+        <Button variant="default" onClick={handleSave} disabled={saving} size="lg">
+          {saving ? "Guardando..." : "Guardar cambios"}
         </Button>
       </div>
     </div>

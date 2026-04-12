@@ -55,33 +55,33 @@ export default function ExpensesPage() {
 
       {/* Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="bg-white border border-[var(--c-gray-100)] rounded-[32px] shadow-sm overflow-hidden group">
+        <Card className="bg-[var(--card)] border border-[var(--surface)] rounded-[32px] shadow-sm overflow-hidden group">
           <CardContent className="p-8">
              <div className="flex items-center gap-4">
-                <div className="p-4 rounded-2xl bg-red-50 text-red-500 transition-colors group-hover:bg-red-500 group-hover:text-white">
+                <div className="p-4 rounded-2xl bg-red-500/10 text-red-500 transition-colors group-hover:bg-red-500 group-hover:text-white">
                   <TrendingDown className="h-6 w-6" />
                 </div>
                 <div>
-                  <p className="text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest mb-1">Gasto Total Acumulado</p>
-                  <p className="text-3xl font-black text-red-500 tracking-tight">
+                  <p className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest mb-1">Gasto Total Acumulado</p>
+                  <div className="text-3xl font-black text-red-500 tracking-tight">
                     {isLoading ? <Skeleton className="h-8 w-32" /> : formatCurrency(totalExpenses)}
-                  </p>
+                  </div>
                 </div>
              </div>
-             <div className="mt-6 flex items-center gap-2 text-[12px] font-medium text-[var(--c-gray-500)] bg-[var(--c-gray-50)] p-3 rounded-xl">
+             <div className="mt-6 flex items-center gap-2 text-[12px] font-medium text-[var(--muted-foreground)] bg-[var(--surface)] p-3">
                 <ArrowDownRight className="h-4 w-4 text-emerald-500" />
                 <span>Dentro del margen operativo proyectado</span>
              </div>
           </CardContent>
         </Card>
 
-        <Card className="md:col-span-2 bg-[var(--c-navy-500)] border-none rounded-[32px] shadow-lg shadow-[var(--c-navy-500)]/20 relative overflow-hidden">
+        <Card className="md:col-span-2 bg-[var(--brand)] border-none rounded-[32px] shadow-lg shadow-[var(--brand)]/20 relative overflow-hidden">
            <div className="absolute top-0 right-0 p-8 opacity-10">
               <Wallet className="h-32 w-32 text-white" />
            </div>
            <CardContent className="p-8 flex flex-col justify-center h-full relative z-10">
               <h3 className="text-white font-bold text-lg mb-2">Control de Presupuesto</h3>
-              <p className="text-[var(--c-cyan-500)] text-sm font-medium max-w-md leading-relaxed">
+              <p className="text-[var(--brand)] text-sm font-medium max-w-md leading-relaxed">
                  Mantén tus finanzas saludables registrando cada egreso. Un buen control de gastos permite una mejor planificación de inventario y marketing.
               </p>
            </CardContent>

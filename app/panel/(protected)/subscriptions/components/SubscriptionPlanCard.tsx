@@ -30,9 +30,9 @@ const getPlanIcon = (id: string) => {
 
 const getPlanGradient = (id: string) => {
   switch (id) {
-    case "pro": return "from-[var(--c-navy-600)] to-[var(--c-navy-800)] text-white";
-    case "starter": return "from-white to-[var(--c-gray-50)] text-[var(--c-gray-800)]";
-    default: return "from-white to-white text-[var(--c-gray-800)]";
+    case "pro": return "from-[var(--brand-hover)] to-[var(--brand)] text-white";
+    case "starter": return "from-[var(--card)] to-[var(--surface)] text-[var(--foreground)]";
+    default: return "from-[var(--card)] to-[var(--card)] text-[var(--foreground)]";
   }
 };
 
@@ -48,50 +48,50 @@ export function SubscriptionPlanCard({
     <Card 
       className={`relative overflow-hidden rounded-[24px] border transition-all duration-300 ${
         isCurrent 
-          ? "border-[var(--c-navy-500)] shadow-xl ring-1 ring-[var(--c-navy-500)]/20 scale-[1.02] z-10" 
-          : "border-[var(--c-gray-200)] hover:border-[var(--c-navy-300)] hover:shadow-lg"
+          ? "border-[var(--brand)] shadow-xl ring-1 ring-[var(--brand)]/20 scale-[1.02] z-10" 
+          : "border-[var(--border)] hover:border-[var(--brand)] hover:shadow-lg"
       }`}
     >
       <div className={`h-full bg-gradient-to-br ${getPlanGradient(plan.id)}`}>
         <CardContent className="p-8 flex flex-col h-full">
           <div className="flex items-start justify-between mb-6">
-            <div className={`p-3 rounded-2xl ${isPremium ? 'bg-white/10 text-white' : 'bg-[var(--c-navy-500)]/10 text-[var(--c-navy-500)]'}`}>
+            <div className={`p-3 rounded-2xl ${isPremium ? 'bg-[var(--card)]/10 text-white' : 'bg-[var(--brand)]/10 text-[var(--brand)]'}`}>
               {getPlanIcon(plan.id)}
             </div>
             {plan.is_popular && !isCurrent && (
-              <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-[var(--c-cyan-500)] text-white shadow-sm">
+              <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-[var(--brand)] text-white shadow-sm">
                 Más Popular
               </span>
             )}
             {isCurrent && (
-              <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${isPremium ? 'bg-white/20 text-white' : 'bg-emerald-500 text-white animate-pulse shadow-sm'}`}>
+              <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${isPremium ? 'bg-[var(--card)]/20 text-white' : 'bg-emerald-500 text-white animate-pulse shadow-sm'}`}>
                 Plan Actual
               </span>
             )}
           </div>
 
-          <h3 className={`text-xl font-extrabold tracking-tight mb-2 ${isPremium ? 'text-white' : 'text-[var(--c-gray-800)]'}`}>
+          <h3 className={`text-xl font-extrabold tracking-tight mb-2 ${isPremium ? 'text-white' : 'text-[var(--foreground)]'}`}>
             {plan.name}
           </h3>
           
           <div className="mb-8 flex items-baseline gap-1">
-            <span className={`text-3xl font-black ${isPremium ? 'text-white' : 'text-[var(--c-navy-500)]'}`}>
+            <span className={`text-3xl font-black ${isPremium ? 'text-white' : 'text-[var(--brand)]'}`}>
               {plan.price === 0 ? "Gratis" : formatCurrency(plan.price)}
             </span>
-            {plan.price > 0 && <span className={`text-xs font-bold ${isPremium ? 'text-white/60' : 'text-[var(--c-gray-400)]'}`}>/ mes</span>}
+            {plan.price > 0 && <span className={`text-xs font-bold ${isPremium ? 'text-white/60' : 'text-[var(--muted-foreground)]'}`}>/ mes</span>}
           </div>
 
           <div className="space-y-4 flex-grow mb-8">
-            <p className={`text-[10px] font-bold uppercase tracking-[0.2em] ${isPremium ? 'text-[var(--c-cyan-400)]' : 'text-[var(--c-gray-400)]'}`}>
+            <p className={`text-[10px] font-bold uppercase tracking-[0.2em] ${isPremium ? 'text-[var(--brand)]' : 'text-[var(--muted-foreground)]'}`}>
               Incluye:
             </p>
             <ul className="space-y-3">
               {plan.features.map((feature, idx) => (
                 <li key={idx} className="flex items-center gap-3">
-                  <div className={`p-1 rounded-full ${isPremium ? 'bg-[var(--c-cyan-400)]/20 text-[var(--c-cyan-400)]' : 'bg-emerald-500/10 text-emerald-500'}`}>
+                  <div className={`p-1 rounded-full ${isPremium ? 'bg-[var(--brand)]/20 text-[var(--brand)]' : 'bg-emerald-500/10 text-emerald-500'}`}>
                     <Check className="h-3 w-3" strokeWidth={3} />
                   </div>
-                  <span className={`text-[13px] font-medium leading-tight ${isPremium ? 'text-white/90' : 'text-[var(--c-gray-600)]'}`}>
+                  <span className={`text-[13px] font-medium leading-tight ${isPremium ? 'text-white/90' : 'text-[var(--muted-foreground)]'}`}>
                     {feature}
                   </span>
                 </li>
@@ -100,15 +100,15 @@ export function SubscriptionPlanCard({
           </div>
 
           <Button
-            variant={isPremium ? "secondary" : isCurrent ? "outline" : "default"}
+            variant={isCurrent ? "outline" : "default"}
             disabled={isCurrent}
             onClick={() => onSelect(plan.id)}
-            className={`w-full h-12 rounded-xl font-bold transition-all shadow-sm ${
-              isCurrent 
-                ? "border-[var(--c-gray-200)] text-[var(--c-gray-400)] cursor-not-allowed" 
-                : isPremium 
-                  ? "bg-[var(--c-cyan-500)] hover:bg-[var(--c-cyan-400)] text-white border-none shadow-[var(--c-cyan-500)]/30 hover:shadow-[var(--c-cyan-500)]/50" 
-                  : "bg-[var(--c-navy-500)] hover:bg-[var(--c-navy-600)] text-white"
+            className={`w-full h-12 font-bold transition-all shadow-sm ${
+              isCurrent
+                ? "border-[var(--border)] text-[var(--muted-foreground)] cursor-not-allowed"
+                : isPremium
+                  ? "border-none shadow-[var(--brand)]/30 hover:shadow-[var(--brand)]/50"
+                  : ""
             }`}
           >
             {isCurrent ? "Plan en Uso" : plan.price > 0 ? "Seleccionar Plan" : "Obtener Ahora"}

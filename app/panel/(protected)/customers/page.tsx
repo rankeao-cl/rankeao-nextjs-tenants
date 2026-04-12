@@ -18,15 +18,15 @@ const getSegmentColor = (segment: string) => {
   switch (segment?.toUpperCase()) {
     case "VIP":
     case "PREMIUM":
-      return "bg-amber-50 text-amber-600 border-amber-100";
+      return "bg-amber-500/10 text-amber-600 border-amber-500/20";
     case "FREQUENT":
-      return "bg-purple-50 text-purple-600 border-purple-100";
+      return "bg-purple-500/10 text-purple-600 border-purple-500/20";
     case "NEW":
-      return "bg-sky-50 text-sky-600 border-sky-100";
+      return "bg-sky-500/10 text-sky-600 border-sky-500/20";
     case "INACTIVE":
-      return "bg-[var(--c-gray-50)] text-[var(--c-gray-500)] border-[var(--c-gray-200)]";
+      return "bg-[var(--surface)] text-[var(--muted-foreground)] border-[var(--border)]";
     default:
-      return "bg-emerald-50 text-emerald-600 border-emerald-100";
+      return "bg-emerald-500/10 text-emerald-600 border-emerald-500/20";
   }
 };
 

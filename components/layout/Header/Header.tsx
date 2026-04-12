@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuthStore } from "@/lib/stores/auth-store";
+import { useThemeStore } from "@/lib/stores/theme-store";
 import { usePathname, useRouter } from "next/navigation";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -12,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
-import { Menu, LogOut, User, Settings, HelpCircle, Bell } from "lucide-react";
+import { Menu, LogOut, User, Settings, HelpCircle, Bell, Sun, Moon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { NAV_GROUPS, type NavItem } from "@/lib/constants/nav-items";
 import { RankeaoLogo } from "@/components/icons/RankeaoLogo";
@@ -31,6 +32,8 @@ export function Header({ onMenuToggle }: HeaderProps) {
   const pathname = usePathname();
   const qc = useQueryClient();
   const [notifOpen, setNotifOpen] = useState(false);
+  const theme = useThemeStore((s) => s.theme);
+  const toggleTheme = useThemeStore((s) => s.toggleTheme);
 
   const { data: notifications = [] } = useQuery({
     queryKey: ["tenant-notifications"],
@@ -68,53 +71,57 @@ export function Header({ onMenuToggle }: HeaderProps) {
     : [];
 
   return (
-    <header className="sticky top-0 z-50 h-14 border-b border-[var(--c-gray-200)] bg-white flex items-center justify-between px-4 lg:px-6 shrink-0">
+    <header className="sticky top-0 z-50 h-14 border-b border-[var(--border)] bg-[var(--background)] flex items-center justify-between px-4 lg:px-6 shrink-0">
       <div className="flex items-center">
-        {/* Mobile menu button */}
         <button
-          className="md:hidden mr-3 text-[var(--c-gray-500)] hover:text-[var(--c-gray-700)] transition-colors"
+          className="md:hidden mr-3 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
           onClick={onMenuToggle}
           aria-label="Menu"
         >
           <Menu className="h-5 w-5" />
         </button>
 
-        {/* Logo */}
         <div className="flex items-center mr-4 md:mr-6">
-          <RankeaoLogo className="h-6 w-auto text-[var(--c-gray-800)]" />
+          <RankeaoLogo className="h-6 w-auto text-[var(--foreground)]" />
         </div>
       </div>
 
-      {/* Horizontal Sub-Navigation */}
-      <nav className="hidden lg:flex absolute left-1/2 -translate-x-1/2 items-center gap-0.5">
-        <AnimatePresence mode="popLayout">
-          {headerNavItems.map((item, idx) => {
-            const isItemActive = pathname === item.href || pathname.startsWith(item.href + "/");
-            return (
-              <motion.button
-                key={item.href}
-                initial={{ opacity: 0, y: -8, scale: 0.96 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 8, scale: 0.96, transition: { duration: 0.1 } }}
-                transition={{ duration: 0.2, delay: idx * 0.03, ease: "easeOut" }}
-                onClick={() => router.push(item.href)}
-                className={`text-[13px] font-medium transition-all px-3.5 py-1.5 rounded-lg ${
-                  isItemActive
-                    ? "bg-[var(--c-navy-50)] text-[var(--c-navy-700)] border-b-2 border-[var(--c-navy-500)] font-semibold"
-                    : "text-[var(--c-gray-600)] hover:bg-[var(--c-gray-100)] hover:text-[var(--c-gray-700)]"
-                }`}
-              >
-                {item.label}
-              </motion.button>
-            );
-          })}
-        </AnimatePresence>
-      </nav>
+      {headerNavItems.length > 0 && (
+        <nav
+          className="hidden lg:flex absolute left-1/2 -translate-x-1/2 items-center gap-0.5 rounded-full px-1 py-1"
+          style={{ background: "var(--sidebar)", boxShadow: "var(--shadow-popover)", border: "1px solid var(--border)" }}
+        >
+          <AnimatePresence mode="popLayout">
+            {headerNavItems.map((item, idx) => {
+              const isItemActive = pathname === item.href || pathname.startsWith(item.href + "/");
+              return (
+                <motion.button
+                  key={item.href}
+                  initial={{ opacity: 0, scale: 0.92 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.92, transition: { duration: 0.1 } }}
+                  transition={{ duration: 0.18, delay: idx * 0.02, ease: "easeOut" }}
+                  onClick={() => router.push(item.href)}
+                  className="text-[13px] font-medium transition-all px-4 py-1.5 rounded-full"
+                  style={{
+                    background: isItemActive ? "var(--sidebar-accent)" : "transparent",
+                    color: isItemActive ? "var(--sidebar-primary)" : "var(--sidebar-foreground)",
+                    fontWeight: isItemActive ? 600 : 500,
+                    border: isItemActive ? "1px solid transparent" : "1px solid transparent",
+                  }}
+                >
+                  {item.label}
+                </motion.button>
+              );
+            })}
+          </AnimatePresence>
+        </nav>
+      )}
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-1.5">
         {/* Help button */}
         <button
-          className="hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-[13px] font-medium text-[var(--c-gray-600)] hover:bg-[var(--c-gray-50)] hover:text-[var(--c-gray-700)] transition-colors"
+          className="hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-[13px] font-medium text-[var(--muted-foreground)] hover:bg-[var(--surface-secondary)] hover:text-[var(--foreground)] transition-colors"
           type="button"
         >
           <HelpCircle className="h-4 w-4" />
@@ -124,7 +131,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
         {/* Notification bell */}
         <div className="relative">
           <button
-            className="relative text-[var(--c-gray-500)] hover:text-[var(--c-gray-700)] transition-colors p-1.5 rounded-lg hover:bg-[var(--c-gray-50)]"
+            className="relative text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors p-1.5 rounded-lg hover:bg-[var(--surface-secondary)]"
             onClick={() => setNotifOpen((v) => !v)}
             aria-label="Notificaciones"
           >
@@ -143,31 +150,31 @@ export function Header({ onMenuToggle }: HeaderProps) {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -6, scale: 0.97 }}
                 transition={{ duration: 0.15 }}
-                className="absolute right-0 top-full mt-2 w-80 bg-white border border-[var(--c-gray-200)] rounded-xl shadow-elevated z-50 overflow-hidden"
+                className="absolute right-0 top-full mt-2 w-80 bg-[var(--card)] border border-[var(--border)] rounded-xl shadow-elevated z-50 overflow-hidden"
                 onMouseLeave={() => setNotifOpen(false)}
               >
-                <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--c-gray-100)]">
-                  <span className="text-[13px] font-semibold text-[var(--c-gray-800)]">Notificaciones</span>
+                <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)]">
+                  <span className="text-[13px] font-semibold text-[var(--foreground)]">Notificaciones</span>
                   {unreadCount > 0 && (
                     <button
                       onClick={() => markAllMut.mutate()}
-                      className="text-[11px] text-[var(--c-navy-500)] font-medium hover:underline"
+                      className="text-[11px] text-[var(--brand)] font-medium hover:underline"
                     >
-                      Marcar todas como leídas
+                      Marcar todas como leidas
                     </button>
                   )}
                 </div>
-                <div className="max-h-72 overflow-y-auto divide-y divide-[var(--c-gray-50)]">
+                <div className="max-h-72 overflow-y-auto divide-y divide-[var(--separator)]">
                   {(notifications as Array<{ id: string; title?: string; message?: string; body?: string; is_read?: boolean; read_at?: string; created_at?: string }>).length === 0 ? (
-                    <p className="text-center text-[12px] text-[var(--c-gray-500)] py-8">Sin notificaciones</p>
+                    <p className="text-center text-[12px] text-[var(--muted-foreground)] py-8">Sin notificaciones</p>
                   ) : (
                     (notifications as Array<{ id: string; title?: string; message?: string; body?: string; is_read?: boolean; read_at?: string; created_at?: string }>).map((n) => (
                       <div
                         key={n.id}
-                        className={`px-4 py-3 text-[12px] ${!n.is_read && !n.read_at ? "bg-[var(--c-navy-50)]" : ""}`}
+                        className={`px-4 py-3 text-[12px] ${!n.is_read && !n.read_at ? "bg-[var(--accent-subtle)]" : ""}`}
                       >
-                        {n.title && <p className="font-semibold text-[var(--c-gray-800)] mb-0.5">{n.title}</p>}
-                        <p className="text-[var(--c-gray-500)]">{n.message || n.body}</p>
+                        {n.title && <p className="font-semibold text-[var(--foreground)] mb-0.5">{n.title}</p>}
+                        <p className="text-[var(--muted-foreground)]">{n.message || n.body}</p>
                       </div>
                     ))
                   )}
@@ -177,9 +184,18 @@ export function Header({ onMenuToggle }: HeaderProps) {
           </AnimatePresence>
         </div>
 
+        {/* Theme toggle */}
+        <button
+          className="text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors p-1.5 rounded-lg hover:bg-[var(--surface-secondary)]"
+          onClick={toggleTheme}
+          aria-label="Cambiar tema"
+        >
+          {theme === "light" ? <Moon className="h-[18px] w-[18px]" /> : <Sun className="h-[18px] w-[18px]" />}
+        </button>
+
         {/* Settings */}
         <button
-          className="text-[var(--c-gray-500)] hover:text-[var(--c-gray-700)] transition-colors p-1.5 rounded-lg hover:bg-[var(--c-gray-50)]"
+          className="text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors p-1.5 rounded-lg hover:bg-[var(--surface-secondary)]"
           onClick={() => router.push("/panel/perfil")}
           aria-label="Settings"
         >
@@ -189,63 +205,62 @@ export function Header({ onMenuToggle }: HeaderProps) {
         {/* User profile dropdown */}
         <div className="ml-1">
           <DropdownMenu>
-            <DropdownMenuTrigger className="rounded-full cursor-pointer flex border-2 border-transparent hover:border-[var(--c-navy-400)] transition-colors outline-none">
+            <DropdownMenuTrigger className="rounded-full cursor-pointer flex border-2 border-transparent hover:border-[var(--accent)] transition-colors outline-none">
               <Avatar className="h-8 w-8">
                 {user?.avatar_url && <AvatarImage src={user.avatar_url} alt="Avatar" />}
-                <AvatarFallback className="bg-[var(--c-navy-800)] text-white text-xs font-semibold">
+                <AvatarFallback className="bg-[var(--sidebar)] text-white text-xs font-semibold">
                   {user?.username?.[0]?.toUpperCase() || "A"}
                 </AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[256px] p-0 overflow-hidden bg-white border border-[var(--c-gray-200)] shadow-elevated rounded-xl">
-              {/* User Info Header */}
+            <DropdownMenuContent align="end" className="w-[256px] p-0 overflow-hidden bg-[var(--card)] border border-[var(--border)] shadow-elevated rounded-xl">
               <div className="relative">
-                <div className="absolute top-0 inset-x-0 h-[3px] bg-gradient-to-r from-[var(--c-navy-700)] to-[var(--c-navy-500)]" />
+                <div className="absolute top-0 inset-x-0 h-[3px] bg-gradient-to-r from-[var(--brand)] to-[var(--accent)]" />
                 <div className="flex items-center gap-3 px-4 py-4 pt-5">
-                  <Avatar className="ring-2 ring-[var(--c-navy-100)]">
+                  <Avatar className="ring-2 ring-[var(--border)]">
                     {user?.avatar_url && <AvatarImage src={user.avatar_url} alt="Avatar" />}
-                    <AvatarFallback className="bg-[var(--c-navy-800)] text-white font-semibold">
+                    <AvatarFallback className="bg-[var(--sidebar)] text-white font-semibold">
                       {user?.username?.[0]?.toUpperCase() || "A"}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col min-w-0">
-                    <p className="text-sm font-semibold text-[var(--c-gray-800)] truncate">{user?.username || "Usuario Admin"}</p>
-                    <p className="text-[11px] text-[var(--c-gray-500)] truncate">{user?.email || "admin@rutten.cl"}</p>
+                    <p className="text-sm font-semibold text-[var(--foreground)] truncate">{user?.username || "Usuario Admin"}</p>
+                    <p className="text-[11px] text-[var(--muted-foreground)] truncate">{user?.email || "admin@rutten.cl"}</p>
                   </div>
                 </div>
               </div>
 
-              <DropdownMenuSeparator className="bg-[var(--c-gray-100)] m-0" />
+              <DropdownMenuSeparator className="bg-[var(--border)] m-0" />
 
               <DropdownMenuGroup className="p-1.5">
-                <DropdownMenuLabel className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--c-gray-500)]">
+                <DropdownMenuLabel className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
                   Mi cuenta
                 </DropdownMenuLabel>
                 <DropdownMenuItem
                   onClick={() => router.push("/panel/perfil")}
-                  className="rounded-lg hover:bg-[var(--c-gray-50)] focus:bg-[var(--c-gray-50)] cursor-pointer"
+                  className="rounded-lg hover:bg-[var(--surface-secondary)] focus:bg-[var(--surface-secondary)] cursor-pointer"
                 >
-                  <User className="mr-3 h-4 w-4 text-[var(--c-gray-500)]" />
-                  <span className="text-sm text-[var(--c-gray-700)]">Mi Perfil</span>
+                  <User className="mr-3 h-4 w-4 text-[var(--muted-foreground)]" />
+                  <span className="text-sm text-[var(--foreground)]">Mi Perfil</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => router.push("/panel/tienda")}
-                  className="rounded-lg hover:bg-[var(--c-gray-50)] focus:bg-[var(--c-gray-50)] cursor-pointer"
+                  className="rounded-lg hover:bg-[var(--surface-secondary)] focus:bg-[var(--surface-secondary)] cursor-pointer"
                 >
-                  <Settings className="mr-3 h-4 w-4 text-[var(--c-gray-500)]" />
-                  <span className="text-sm text-[var(--c-gray-700)]">Configuración Tienda</span>
+                  <Settings className="mr-3 h-4 w-4 text-[var(--muted-foreground)]" />
+                  <span className="text-sm text-[var(--foreground)]">Configuracion Tienda</span>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
 
-              <DropdownMenuSeparator className="bg-[var(--c-gray-100)] m-0" />
+              <DropdownMenuSeparator className="bg-[var(--border)] m-0" />
 
               <DropdownMenuGroup className="p-1.5">
                 <DropdownMenuItem
                   onClick={handleLogout}
-                  className="rounded-lg hover:bg-red-50 focus:bg-red-50 cursor-pointer text-red-500 hover:text-red-600 focus:text-red-600"
+                  className="rounded-lg hover:bg-red-500/10 focus:bg-red-500/10 cursor-pointer text-[var(--danger)] hover:text-red-600 focus:text-red-600"
                 >
                   <LogOut className="mr-3 h-4 w-4" />
-                  <span className="text-sm font-medium">Cerrar Sesión</span>
+                  <span className="text-sm font-medium">Cerrar Sesion</span>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>

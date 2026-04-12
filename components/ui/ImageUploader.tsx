@@ -74,9 +74,9 @@ export function ImageUploader({
       {preview ? (
         <img src={preview} alt="" className="w-full h-full object-cover" />
       ) : (
-        <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-[var(--c-gray-50)] border-2 border-dashed border-[var(--c-gray-200)]">
-          <Upload className="h-5 w-5 text-[var(--c-gray-400)]" />
-          <span className="text-[11px] text-[var(--c-gray-400)] font-medium">Subir imagen</span>
+        <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-[var(--surface)] border-2 border-dashed border-[var(--border)]">
+          <Upload className="h-5 w-5 text-[var(--muted-foreground)]" />
+          <span className="text-[11px] text-[var(--muted-foreground)] font-medium">Subir imagen</span>
         </div>
       )}
 

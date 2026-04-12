@@ -109,10 +109,10 @@ export default function InvitationsPage() {
             <Skeleton className="h-8 w-64 rounded-lg" />
             <Skeleton className="h-4 w-80 rounded-lg" />
           </div>
-          <Card className="bg-[#ffffff]/90 border border-[var(--c-gray-200)]">
+          <Card className="bg-[var(--card)]/90 border border-[var(--border)]">
             <CardContent className="p-6">
               <div className="flex items-start gap-4">
-                <Skeleton className="h-12 w-12 rounded-xl" />
+                <Skeleton className="h-12 w-12" />
                 <div className="flex-1 space-y-2">
                   <Skeleton className="h-6 w-48 rounded" />
                   <Skeleton className="h-4 w-32 rounded" />
@@ -136,18 +136,18 @@ export default function InvitationsPage() {
 
       <div className="w-full max-w-lg relative z-10 space-y-6">
         <div className="text-center space-y-2">
-          <h1 className="font-[var(--font-heading)] text-2xl font-bold text-[var(--c-gray-800)]">
+          <h1 className="font-[var(--font-heading)] text-2xl font-bold text-[var(--foreground)]">
             Invitaciones Pendientes
           </h1>
-          <p className="text-sm text-[var(--c-gray-500)]">
+          <p className="text-sm text-[var(--muted-foreground)]">
             Tienes invitaciones para unirte a las siguientes tiendas
           </p>
         </div>
 
         {invitations.length === 0 ? (
-          <Card className="bg-[#ffffff]/90 border border-[var(--c-gray-200)]">
+          <Card className="bg-[var(--card)]/90 border border-[var(--border)]">
             <CardContent className="p-8 text-center space-y-4 pt-6">
-              <p className="text-[var(--c-gray-500)]">No tienes invitaciones pendientes.</p>
+              <p className="text-[var(--muted-foreground)]">No tienes invitaciones pendientes.</p>
               <Button variant="secondary" onClick={handleLogout}>
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Volver al login
@@ -159,31 +159,31 @@ export default function InvitationsPage() {
             {invitations.map((inv) => (
               <Card
                 key={inv.id}
-                className="bg-[#ffffff]/90 border border-white/20 backdrop-blur-xl"
+                className="bg-[var(--card)]/90 border border-white/20 backdrop-blur-xl"
               >
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[var(--c-gray-200)] bg-[var(--c-gray-50)]">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--surface)]">
                       {inv.tenant_logo_url ? (
                         <img src={inv.tenant_logo_url} alt="" className="h-8 w-8 rounded-lg object-cover" />
                       ) : (
-                        <Store className="h-6 w-6 text-[var(--c-gray-500)]" />
+                        <Store className="h-6 w-6 text-[var(--muted-foreground)]" />
                       )}
                     </div>
                     <div className="flex-1 min-w-0 space-y-1">
-                      <h3 className="font-semibold text-[var(--c-gray-800)] text-lg">
+                      <h3 className="font-semibold text-[var(--foreground)] text-lg">
                         {inv.tenant_name}
                       </h3>
-                      <p className="text-sm text-[var(--c-gray-500)]">
-                        Rol: <span className="text-[var(--c-gray-800)] font-medium">{ROLE_LABELS[inv.role] || inv.role}</span>
+                      <p className="text-sm text-[var(--muted-foreground)]">
+                        Rol: <span className="text-[var(--foreground)] font-medium">{ROLE_LABELS[inv.role] || inv.role}</span>
                       </p>
                       {inv.invited_by_username && (
-                        <p className="text-xs text-[var(--c-gray-500)]">
+                        <p className="text-xs text-[var(--muted-foreground)]">
                           Invitado por @{inv.invited_by_username}
                         </p>
                       )}
                       {inv.message && (
-                        <p className="text-sm text-[var(--c-gray-500)] italic mt-2">&quot;{inv.message}&quot;</p>
+                        <p className="text-sm text-[var(--muted-foreground)] italic mt-2">&quot;{inv.message}&quot;</p>
                       )}
                     </div>
                   </div>
@@ -213,7 +213,7 @@ export default function InvitationsPage() {
             ))}
 
             <div className="text-center">
-              <Button variant="secondary" className="text-[var(--c-gray-500)]" onClick={handleLogout}>
+              <Button variant="secondary" className="text-[var(--muted-foreground)]" onClick={handleLogout}>
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Cerrar sesión
               </Button>

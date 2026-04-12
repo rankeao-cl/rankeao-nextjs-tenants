@@ -49,7 +49,7 @@ export function ProfileCompleteness() {
 
     if (loading) {
         return (
-            <Card className="bg-[#ffffff] border border-[var(--c-gray-200)] p-5">
+            <Card className="bg-[var(--card)] border border-[var(--border)] p-5">
                 <div className="flex items-center justify-between mb-3">
                     <Skeleton className="h-5 w-48 rounded-lg" />
                     <Skeleton className="h-5 w-12 rounded-lg" />
@@ -65,9 +65,9 @@ export function ProfileCompleteness() {
     const pending = items.filter((i) => !i.done);
 
     return (
-        <Card className="bg-[#ffffff] border border-[var(--c-gray-200)] p-5">
+        <Card className="bg-[var(--card)] border border-[var(--border)] p-5">
             <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold text-[var(--c-gray-800)]">
+                <h3 className="text-sm font-semibold text-[var(--foreground)]">
                     Completitud del Perfil
                 </h3>
                 <span
@@ -83,7 +83,7 @@ export function ProfileCompleteness() {
             </div>
 
             {/* Progress Bar */}
-            <div className="w-full h-2.5 rounded-full bg-[var(--c-gray-100)] overflow-hidden mb-4">
+            <div className="w-full h-2.5 rounded-full bg-[var(--surface)] overflow-hidden mb-4">
                 <div
                     className={`h-full rounded-full transition-all duration-700 ease-out ${percentage === 100
                             ? "bg-gradient-to-r from-emerald-500 to-emerald-400"
@@ -101,9 +101,9 @@ export function ProfileCompleteness() {
                     {pending.map((item) => (
                         <span
                             key={item.label}
-                            className="inline-flex items-center gap-1.5 text-xs text-[var(--c-gray-500)] bg-[var(--c-gray-100)] border border-[var(--c-gray-200)] px-2.5 py-1 rounded-full"
+                            className="inline-flex items-center gap-1.5 text-xs text-[var(--muted-foreground)] bg-[var(--surface)] border border-[var(--border)] px-2.5 py-1 rounded-full"
                         >
-                            <Circle className="w-3 h-3 text-[var(--c-gray-500)]" />
+                            <Circle className="w-3 h-3 text-[var(--muted-foreground)]" />
                             {item.label}
                         </span>
                     ))}

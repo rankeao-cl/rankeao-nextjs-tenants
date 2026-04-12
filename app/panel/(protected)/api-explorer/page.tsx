@@ -231,8 +231,8 @@ export default function PanelApiExplorerPage() {
                  <ResponsePanel response={response} />
               </>
            ) : (
-              <div className="h-full flex items-center justify-center bg-[var(--c-gray-50)]/30 rounded-[32px] border-2 border-dashed border-[var(--c-gray-100)]">
-                 <p className="text-sm font-bold text-[var(--c-gray-400)] uppercase tracking-widest text-center">
+              <div className="h-full flex items-center justify-center bg-[var(--surface)]/30 rounded-[32px] border-2 border-dashed border-[var(--surface)]">
+                 <p className="text-sm font-bold text-[var(--muted-foreground)] uppercase tracking-widest text-center">
                     Selecciona una operación del panel lateral<br />para comenzar el debuzzing
                  </p>
               </div>

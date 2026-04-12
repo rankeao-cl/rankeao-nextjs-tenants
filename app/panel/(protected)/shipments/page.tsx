@@ -14,16 +14,16 @@ import { ShipmentFormModal } from "./components/ShipmentFormModal";
 const getShipmentStatusColor = (status: string) => {
   switch (status?.toUpperCase()) {
     case "DELIVERED":
-      return "bg-emerald-50 text-emerald-600 border-emerald-100";
+      return "bg-emerald-500/10 text-emerald-600 border-emerald-500/20";
     case "IN_TRANSIT":
-      return "bg-sky-50 text-sky-600 border-sky-100";
+      return "bg-sky-500/10 text-sky-600 border-sky-500/20";
     case "PENDING":
-      return "bg-amber-50 text-amber-600 border-amber-100";
+      return "bg-amber-500/10 text-amber-600 border-amber-500/20";
     case "RETURNED":
     case "FAILED":
-      return "bg-red-50 text-red-600 border-red-100";
+      return "bg-red-500/10 text-red-600 border-red-500/20";
     default:
-      return "bg-[var(--c-gray-50)] text-[var(--c-gray-500)] border-[var(--c-gray-200)]";
+      return "bg-[var(--surface)] text-[var(--muted-foreground)] border-[var(--border)]";
   }
 };
 

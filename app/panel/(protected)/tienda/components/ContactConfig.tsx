@@ -58,22 +58,22 @@ export function ContactConfig() {
     );
   }
 
-  const labelClass = "text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest mb-2 flex items-center gap-2";
-  const inputClass = "h-11 rounded-xl border-[var(--c-gray-200)] bg-white px-4 text-sm text-[var(--c-gray-800)] font-bold focus:ring-[var(--c-navy-500)]/10 transition-all shadow-sm";
+  const labelClass = "text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest mb-2 flex items-center gap-2";
+  const inputClass = "h-11 border-[var(--border)] bg-[var(--card)] px-4 text-sm text-[var(--foreground)] font-bold focus:ring-[var(--brand)]/10 transition-all shadow-sm";
   const tenantId = (tenant?.id as string) ?? "";
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
       {/* Contacto directo */}
-      <Card className="bg-white border border-[var(--c-gray-100)] rounded-[32px] shadow-sm overflow-hidden">
-        <div className="p-8 border-b border-[var(--c-gray-50)] bg-[var(--c-gray-50)]/30 flex items-center gap-4">
-          <div className="p-3 rounded-2xl bg-[var(--c-navy-500)]/5 text-[var(--c-navy-500)]">
+      <Card className="bg-[var(--card)] border border-[var(--surface)] rounded-[32px] shadow-sm overflow-hidden">
+        <div className="p-8 border-b border-[var(--surface)] bg-[var(--surface)]/30 flex items-center gap-4">
+          <div className="p-3 rounded-2xl bg-[var(--brand)]/5 text-[var(--brand)]">
             <Phone className="h-6 w-6" />
           </div>
           <div>
-            <h3 className="text-lg font-black text-[var(--c-gray-800)] tracking-tight">Contacto Directo</h3>
-            <p className="text-xs text-[var(--c-gray-400)] font-medium">WhatsApp y email que se muestran en el storefront y footer</p>
+            <h3 className="text-lg font-black text-[var(--foreground)] tracking-tight">Contacto Directo</h3>
+            <p className="text-xs text-[var(--muted-foreground)] font-medium">WhatsApp y email que se muestran en el storefront y footer</p>
           </div>
         </div>
         <CardContent className="p-8">
@@ -86,7 +86,7 @@ export function ContactConfig() {
                 placeholder="+56912345678"
                 className={inputClass}
               />
-              <p className="text-[10px] text-[var(--c-gray-400)] font-medium">Formato: +56912345678 (con código de país)</p>
+              <p className="text-[10px] text-[var(--muted-foreground)] font-medium">Formato: +56912345678 (con código de país)</p>
             </div>
             <div className="space-y-2 flex flex-col">
               <Label className={labelClass}><Mail className="h-3 w-3" /> Email de Contacto</Label>
@@ -97,21 +97,21 @@ export function ContactConfig() {
                 placeholder="contacto@tutienda.cl"
                 className={inputClass}
               />
-              <p className="text-[10px] text-[var(--c-gray-400)] font-medium">Sobreescribe el email principal en el footer</p>
+              <p className="text-[10px] text-[var(--muted-foreground)] font-medium">Sobreescribe el email principal en el footer</p>
             </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Ubicación */}
-      <Card className="bg-white border border-[var(--c-gray-100)] rounded-[32px] shadow-sm overflow-hidden">
-        <div className="p-8 border-b border-[var(--c-gray-50)] bg-[var(--c-gray-50)]/30 flex items-center gap-4">
-          <div className="p-3 rounded-2xl bg-[var(--c-cyan-500)]/5 text-[var(--c-cyan-500)]">
+      <Card className="bg-[var(--card)] border border-[var(--surface)] rounded-[32px] shadow-sm overflow-hidden">
+        <div className="p-8 border-b border-[var(--surface)] bg-[var(--surface)]/30 flex items-center gap-4">
+          <div className="p-3 rounded-2xl bg-[var(--brand)]/5 text-[var(--brand)]">
             <MapPin className="h-6 w-6" />
           </div>
           <div>
-            <h3 className="text-lg font-black text-[var(--c-gray-800)] tracking-tight">Google Maps</h3>
-            <p className="text-xs text-[var(--c-gray-400)] font-medium">URL para mostrar en la página Nosotros</p>
+            <h3 className="text-lg font-black text-[var(--foreground)] tracking-tight">Google Maps</h3>
+            <p className="text-xs text-[var(--muted-foreground)] font-medium">URL para mostrar en la página Nosotros</p>
           </div>
         </div>
         <CardContent className="p-8 space-y-4">
@@ -128,21 +128,21 @@ export function ContactConfig() {
       </Card>
 
       {/* Imágenes del footer */}
-      <Card className="bg-white border border-[var(--c-gray-100)] rounded-[32px] shadow-sm overflow-hidden">
-        <div className="p-8 border-b border-[var(--c-gray-50)] bg-[var(--c-gray-50)]/30 flex items-center gap-4">
+      <Card className="bg-[var(--card)] border border-[var(--surface)] rounded-[32px] shadow-sm overflow-hidden">
+        <div className="p-8 border-b border-[var(--surface)] bg-[var(--surface)]/30 flex items-center gap-4">
           <div className="p-3 rounded-2xl bg-emerald-500/5 text-emerald-500">
             <ImageIcon className="h-6 w-6" />
           </div>
           <div>
-            <h3 className="text-lg font-black text-[var(--c-gray-800)] tracking-tight">Imágenes del Footer</h3>
-            <p className="text-xs text-[var(--c-gray-400)] font-medium">Logo alternativo y banner de métodos de pago</p>
+            <h3 className="text-lg font-black text-[var(--foreground)] tracking-tight">Imágenes del Footer</h3>
+            <p className="text-xs text-[var(--muted-foreground)] font-medium">Logo alternativo y banner de métodos de pago</p>
           </div>
         </div>
         <CardContent className="p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             <div className="space-y-3 flex flex-col">
               <Label className={labelClass}><ImageIcon className="h-3 w-3" /> Logo del Footer</Label>
-              <p className="text-[10px] text-[var(--c-gray-400)] font-medium -mt-2">Logo alternativo para fondo oscuro del footer</p>
+              <p className="text-[10px] text-[var(--muted-foreground)] font-medium -mt-2">Logo alternativo para fondo oscuro del footer</p>
               <ImageUploader
                 entityType="store_logo"
                 entityId={tenantId}
@@ -153,7 +153,7 @@ export function ContactConfig() {
             </div>
             <div className="space-y-3 flex flex-col">
               <Label className={labelClass}><CreditCard className="h-3 w-3" /> Imagen Métodos de Pago</Label>
-              <p className="text-[10px] text-[var(--c-gray-400)] font-medium -mt-2">Banner con los métodos de pago que aceptas</p>
+              <p className="text-[10px] text-[var(--muted-foreground)] font-medium -mt-2">Banner con los métodos de pago que aceptas</p>
               <ImageUploader
                 entityType="store_cover"
                 entityId={tenantId}
@@ -170,7 +170,7 @@ export function ContactConfig() {
         <Button
           onClick={handleSave}
           disabled={isSaving}
-          className="bg-[var(--c-navy-500)] hover:bg-[var(--c-navy-600)] text-white shadow-xl shadow-[var(--c-navy-500)]/20 rounded-2xl px-12 h-14 w-full sm:w-auto font-black text-sm uppercase tracking-widest transition-all"
+          className="bg-[var(--brand)] hover:bg-[var(--brand-hover)] text-white shadow-xl shadow-[var(--brand)]/20 rounded-2xl px-12 h-14 w-full sm:w-auto font-black text-sm uppercase tracking-widest transition-all"
         >
           {isSaving ? "Guardando..." : "Guardar Contacto"}
           <Save className="h-4 w-4 ml-3" />

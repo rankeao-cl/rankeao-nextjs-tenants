@@ -13,9 +13,9 @@ import { ImageUploader } from "@/components/ui/ImageUploader";
 import { toast } from "sonner";
 import { ArrowLeft, Trophy, Calendar, Users, DollarSign, MapPin, Settings } from "lucide-react";
 
-const labelClass = "text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest mb-2";
-const inputClass = "h-11 rounded-xl border-[var(--c-gray-200)] bg-white px-4 text-sm text-[var(--c-gray-800)] font-medium";
-const selectClass = "h-11 rounded-xl border border-[var(--c-gray-200)] bg-white px-4 text-sm text-[var(--c-gray-800)] font-medium w-full focus:outline-none focus:ring-2 focus:ring-[var(--c-navy-500)]/20";
+const labelClass = "text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest mb-2";
+const inputClass = "h-11 border-[var(--border)] bg-[var(--card)] px-4 text-sm text-[var(--foreground)] font-medium";
+const selectClass = "h-11 border border-[var(--border)] bg-[var(--card)] rounded-xl px-4 text-sm text-[var(--foreground)] font-medium w-full focus:outline-none focus:ring-2 focus:ring-[var(--brand)]/20";
 
 export default function NuevoTorneoPage() {
   const router = useRouter();
@@ -125,22 +125,22 @@ export default function NuevoTorneoPage() {
         <button
           type="button"
           onClick={() => router.push("/panel/torneos")}
-          className="p-2 rounded-xl border border-[var(--c-gray-200)] text-[var(--c-gray-400)] hover:text-[var(--c-gray-700)] hover:bg-[var(--c-gray-50)] transition-colors"
+          className="p-2 rounded-xl border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--surface)] transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
         </button>
         <div>
-          <h1 className="text-2xl font-black text-[var(--c-gray-800)] tracking-tight flex items-center gap-3">
-            <Trophy className="h-6 w-6 text-[var(--c-navy-500)]" />
+          <h1 className="text-2xl font-black text-[var(--foreground)] tracking-tight flex items-center gap-3">
+            <Trophy className="h-6 w-6 text-[var(--brand)]" />
             Nuevo Torneo
           </h1>
         </div>
       </div>
 
       {/* Banner */}
-      <Card className="bg-white border border-[var(--c-gray-100)] rounded-[28px] overflow-hidden">
-        <div className="px-8 py-5 border-b border-[var(--c-gray-50)] bg-[var(--c-gray-50)]/30">
-          <h3 className="text-base font-black text-[var(--c-gray-800)]">Imagen del Torneo</h3>
+      <Card className="bg-[var(--card)] border border-[var(--surface)] rounded-[28px] overflow-hidden">
+        <div className="px-8 py-5 border-b border-[var(--surface)] bg-[var(--surface)]/30">
+          <h3 className="text-base font-black text-[var(--foreground)]">Imagen del Torneo</h3>
         </div>
         <CardContent className="p-8">
           <Label className={labelClass}>Banner / Portada</Label>
@@ -154,9 +154,9 @@ export default function NuevoTorneoPage() {
       </Card>
 
       {/* Info básica */}
-      <Card className="bg-white border border-[var(--c-gray-100)] rounded-[28px] overflow-hidden">
-        <div className="px-8 py-5 border-b border-[var(--c-gray-50)] bg-[var(--c-gray-50)]/30">
-          <h3 className="text-base font-black text-[var(--c-gray-800)]">Información Básica</h3>
+      <Card className="bg-[var(--card)] border border-[var(--surface)] rounded-[28px] overflow-hidden">
+        <div className="px-8 py-5 border-b border-[var(--surface)] bg-[var(--surface)]/30">
+          <h3 className="text-base font-black text-[var(--foreground)]">Información Básica</h3>
         </div>
         <CardContent className="p-8 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -183,21 +183,21 @@ export default function NuevoTorneoPage() {
 
           <div className="space-y-2">
             <Label className={labelClass}>Descripción</Label>
-            <Textarea name="description" value={form.description} onChange={handleChange} className="rounded-xl border-[var(--c-gray-200)] bg-white text-sm" rows={3} placeholder="Describe el torneo..." />
+            <Textarea name="description" value={form.description} onChange={handleChange} className="rounded-xl border-[var(--border)] bg-[var(--card)] text-sm" rows={3} placeholder="Describe el torneo..." />
           </div>
 
           <div className="space-y-2">
             <Label className={labelClass}>Reglas</Label>
-            <Textarea name="rules" value={form.rules} onChange={handleChange} className="rounded-xl border-[var(--c-gray-200)] bg-white text-sm" rows={3} placeholder="Reglas y condiciones del torneo..." />
+            <Textarea name="rules" value={form.rules} onChange={handleChange} className="rounded-xl border-[var(--border)] bg-[var(--card)] text-sm" rows={3} placeholder="Reglas y condiciones del torneo..." />
           </div>
         </CardContent>
       </Card>
 
       {/* Formato y modalidad */}
-      <Card className="bg-white border border-[var(--c-gray-100)] rounded-[28px] overflow-hidden">
-        <div className="px-8 py-5 border-b border-[var(--c-gray-50)] bg-[var(--c-gray-50)]/30 flex items-center gap-3">
-          <Settings className="h-4 w-4 text-[var(--c-navy-500)]" />
-          <h3 className="text-base font-black text-[var(--c-gray-800)]">Formato y Reglas</h3>
+      <Card className="bg-[var(--card)] border border-[var(--surface)] rounded-[28px] overflow-hidden">
+        <div className="px-8 py-5 border-b border-[var(--surface)] bg-[var(--surface)]/30 flex items-center gap-3">
+          <Settings className="h-4 w-4 text-[var(--brand)]" />
+          <h3 className="text-base font-black text-[var(--foreground)]">Formato y Reglas</h3>
         </div>
         <CardContent className="p-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -257,11 +257,11 @@ export default function NuevoTorneoPage() {
           </div>
 
           <div className="flex items-center gap-6 mt-6">
-            <label className="flex items-center gap-2 text-sm font-medium text-[var(--c-gray-700)] cursor-pointer">
+            <label className="flex items-center gap-2 text-sm font-medium text-[var(--foreground)] cursor-pointer">
               <input type="checkbox" name="is_ranked" checked={form.is_ranked} onChange={handleChange} className="rounded" />
               Torneo Ranked
             </label>
-            <label className="flex items-center gap-2 text-sm font-medium text-[var(--c-gray-700)] cursor-pointer">
+            <label className="flex items-center gap-2 text-sm font-medium text-[var(--foreground)] cursor-pointer">
               <input type="checkbox" name="allow_self_report" checked={form.allow_self_report} onChange={handleChange} className="rounded" />
               Permitir auto-reporte
             </label>
@@ -270,10 +270,10 @@ export default function NuevoTorneoPage() {
       </Card>
 
       {/* Jugadores y fechas */}
-      <Card className="bg-white border border-[var(--c-gray-100)] rounded-[28px] overflow-hidden">
-        <div className="px-8 py-5 border-b border-[var(--c-gray-50)] bg-[var(--c-gray-50)]/30 flex items-center gap-3">
-          <Calendar className="h-4 w-4 text-[var(--c-navy-500)]" />
-          <h3 className="text-base font-black text-[var(--c-gray-800)]">Fechas y Jugadores</h3>
+      <Card className="bg-[var(--card)] border border-[var(--surface)] rounded-[28px] overflow-hidden">
+        <div className="px-8 py-5 border-b border-[var(--surface)] bg-[var(--surface)]/30 flex items-center gap-3">
+          <Calendar className="h-4 w-4 text-[var(--brand)]" />
+          <h3 className="text-base font-black text-[var(--foreground)]">Fechas y Jugadores</h3>
         </div>
         <CardContent className="p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -302,10 +302,10 @@ export default function NuevoTorneoPage() {
       </Card>
 
       {/* Ubicación */}
-      <Card className="bg-white border border-[var(--c-gray-100)] rounded-[28px] overflow-hidden">
-        <div className="px-8 py-5 border-b border-[var(--c-gray-50)] bg-[var(--c-gray-50)]/30 flex items-center gap-3">
-          <MapPin className="h-4 w-4 text-[var(--c-navy-500)]" />
-          <h3 className="text-base font-black text-[var(--c-gray-800)]">Ubicación</h3>
+      <Card className="bg-[var(--card)] border border-[var(--surface)] rounded-[28px] overflow-hidden">
+        <div className="px-8 py-5 border-b border-[var(--surface)] bg-[var(--surface)]/30 flex items-center gap-3">
+          <MapPin className="h-4 w-4 text-[var(--brand)]" />
+          <h3 className="text-base font-black text-[var(--foreground)]">Ubicación</h3>
         </div>
         <CardContent className="p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -330,10 +330,10 @@ export default function NuevoTorneoPage() {
       </Card>
 
       {/* Inscripción y premios */}
-      <Card className="bg-white border border-[var(--c-gray-100)] rounded-[28px] overflow-hidden">
-        <div className="px-8 py-5 border-b border-[var(--c-gray-50)] bg-[var(--c-gray-50)]/30 flex items-center gap-3">
-          <DollarSign className="h-4 w-4 text-[var(--c-navy-500)]" />
-          <h3 className="text-base font-black text-[var(--c-gray-800)]">Inscripción y Premios</h3>
+      <Card className="bg-[var(--card)] border border-[var(--surface)] rounded-[28px] overflow-hidden">
+        <div className="px-8 py-5 border-b border-[var(--surface)] bg-[var(--surface)]/30 flex items-center gap-3">
+          <DollarSign className="h-4 w-4 text-[var(--brand)]" />
+          <h3 className="text-base font-black text-[var(--foreground)]">Inscripción y Premios</h3>
         </div>
         <CardContent className="p-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -361,7 +361,7 @@ export default function NuevoTorneoPage() {
         <Button
           type="submit"
           disabled={createMut.isPending}
-          className="bg-[var(--c-navy-500)] hover:bg-[var(--c-navy-600)] text-white rounded-xl px-10 font-bold shadow-lg shadow-[var(--c-navy-500)]/20"
+          className="bg-[var(--brand)] hover:bg-[var(--brand-hover)] text-white px-10 font-bold shadow-lg shadow-[var(--brand)]/20"
         >
           {createMut.isPending ? "Creando..." : "Crear Torneo"}
         </Button>

@@ -27,9 +27,9 @@ export function CustomerList({
 }: CustomerListProps) {
   if (isLoading) {
     return (
-      <div className="bg-white rounded-2xl border border-[var(--c-gray-200)] overflow-hidden shadow-sm">
+      <div className="bg-[var(--card)] rounded-2xl border border-[var(--border)] overflow-hidden shadow-sm">
         <Table>
-          <TableHeader className="bg-[var(--c-gray-50)]">
+          <TableHeader className="bg-[var(--surface)]">
             <TableRow>
               <TableHead>Usuario</TableHead>
               <TableHead>Email</TableHead>
@@ -47,7 +47,7 @@ export function CustomerList({
                 <TableCell><Skeleton className="h-6 w-20 rounded-full" /></TableCell>
                 <TableCell><Skeleton className="h-5 w-24 rounded-lg" /></TableCell>
                 <TableCell><Skeleton className="h-6 w-16 rounded-lg" /></TableCell>
-                <TableCell><Skeleton className="h-10 w-32 rounded-xl ml-auto" /></TableCell>
+                <TableCell><Skeleton className="h-10 w-32 ml-auto" /></TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -57,44 +57,44 @@ export function CustomerList({
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-[var(--c-gray-200)] overflow-hidden shadow-sm">
+    <div className="bg-[var(--card)] rounded-2xl border border-[var(--border)] overflow-hidden shadow-sm">
       <div className="overflow-x-auto">
         <Table>
-          <TableHeader className="bg-[var(--c-gray-50)] border-b border-[var(--c-gray-200)]">
+          <TableHeader className="bg-[var(--surface)] border-b border-[var(--border)]">
             <TableRow className="hover:bg-transparent">
-              <TableHead className="text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest py-4 px-6 text-left">Ficha Cliente</TableHead>
-              <TableHead className="text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest py-4 px-6">Email / Contacto</TableHead>
-              <TableHead className="text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest py-4 px-6">Segmentación</TableHead>
-              <TableHead className="text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest py-4 px-6">LTV / Venta Total</TableHead>
-              <TableHead className="text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest py-4 px-6 text-center">Fidelidad</TableHead>
+              <TableHead className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest py-4 px-6 text-left">Ficha Cliente</TableHead>
+              <TableHead className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest py-4 px-6">Email / Contacto</TableHead>
+              <TableHead className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest py-4 px-6">Segmentación</TableHead>
+              <TableHead className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest py-4 px-6">LTV / Venta Total</TableHead>
+              <TableHead className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest py-4 px-6 text-center">Fidelidad</TableHead>
               <TableHead className="w-[120px] text-right py-4 px-6"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {customers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="py-20 text-center text-[var(--c-gray-500)] font-medium">
+                <TableCell colSpan={6} className="py-20 text-center text-[var(--muted-foreground)] font-medium">
                    Tu base de clientes está vacía. Comienza a registrar clientes para ver estadísticas.
                 </TableCell>
               </TableRow>
             ) : (
               customers.map((customer) => (
-                <TableRow key={customer.id} className="hover:bg-[var(--c-gray-50)] transition-colors border-b border-[var(--c-gray-100)] last:border-0 group/row">
+                <TableRow key={customer.id} className="hover:bg-[var(--surface)] transition-colors border-b border-[var(--surface)] last:border-0 group/row">
                   <TableCell className="py-4 px-6">
                     <div className="flex items-center gap-3">
                       <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-extrabold text-[14px] shadow-sm transform transition-transform group-hover/row:scale-110 ${
-                        customer.is_vip ? 'bg-[var(--c-cyan-100)] text-[var(--c-cyan-600)]' : 'bg-[var(--c-gray-100)] text-[var(--c-gray-400)]'
+                        customer.is_vip ? 'bg-[var(--accent-subtle)] text-[var(--brand-hover)]' : 'bg-[var(--surface)] text-[var(--muted-foreground)]'
                       }`}>
                         {customer.username[0].toUpperCase()}
                       </div>
                       <div className="min-w-0">
-                         <p className="text-[14px] font-extrabold text-[var(--c-gray-800)] leading-none truncate">@{customer.username}</p>
-                         <p className="text-[11px] text-[var(--c-gray-400)] font-medium mt-1">Reg: {new Date(customer.created_at).toLocaleDateString()}</p>
+                         <p className="text-[14px] font-extrabold text-[var(--foreground)] leading-none truncate">@{customer.username}</p>
+                         <p className="text-[11px] text-[var(--muted-foreground)] font-medium mt-1">Reg: {new Date(customer.created_at).toLocaleDateString()}</p>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell className="py-4 px-6">
-                    <span className="text-[12px] font-bold text-[var(--c-gray-600)]">{customer.email}</span>
+                    <span className="text-[12px] font-bold text-[var(--muted-foreground)]">{customer.email}</span>
                   </TableCell>
                   <TableCell className="py-4 px-6">
                     <Badge variant="outline" className={`rounded-xl px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest border-none ${getSegmentColor(customer.segment)}`}>
@@ -103,8 +103,8 @@ export function CustomerList({
                   </TableCell>
                   <TableCell className="py-4 px-6">
                     <div className="flex items-center gap-2">
-                       <CreditCard className="w-4 h-4 text-[var(--c-gray-300)]" />
-                       <span className="text-[14px] font-extrabold text-[var(--c-navy-500)] tracking-tight">
+                       <CreditCard className="w-4 h-4 text-[var(--border-hover)]" />
+                       <span className="text-[14px] font-extrabold text-[var(--brand)] tracking-tight">
                          {formatCurrency(customer.total_spent)}
                        </span>
                     </div>
@@ -114,7 +114,7 @@ export function CustomerList({
                       variant="ghost" 
                       size="sm" 
                       onClick={() => onToggleVip(customer)}
-                      className={`h-8 px-2.5 rounded-lg border-none hover:bg-transparent ${customer.is_vip ? 'text-amber-500' : 'text-[var(--c-gray-200)] hover:text-amber-300'}`}
+                      className={`h-8 px-2.5 rounded-lg border-none hover:bg-transparent ${customer.is_vip ? 'text-amber-500' : 'text-[var(--border)] hover:text-amber-300'}`}
                     >
                       <Star className={`w-5 h-5 ${customer.is_vip ? 'fill-amber-500' : ''}`} />
                     </Button>
@@ -124,7 +124,7 @@ export function CustomerList({
                       variant="ghost" 
                       size="sm" 
                       onClick={() => onViewDetail(customer)}
-                      className="h-10 px-4 text-[12px] font-bold text-[var(--c-cyan-600)] bg-[var(--c-cyan-50)] hover:bg-[var(--c-cyan-100)] rounded-xl opacity-0 group-hover/row:opacity-100 transition-opacity"
+                      className="h-10 px-4 text-[12px] font-bold text-[var(--brand-hover)] bg-[var(--accent-subtle)] hover:bg-[var(--accent-subtle)] opacity-0 group-hover/row:opacity-100 transition-opacity"
                     >
                       Perfil <ChevronRight className="w-3.5 h-3.5 ml-1.5" />
                     </Button>

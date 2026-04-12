@@ -70,23 +70,23 @@ export default function LoyaltyPage() {
   if (isLoading) {
     return (
       <div className="space-y-6 max-w-[1400px] mx-auto pb-10">
-        <Skeleton className="h-10 w-64 rounded-xl" />
+        <Skeleton className="h-10 w-64" />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
             <Card className="p-8 space-y-6">
                <Skeleton className="h-20 w-full rounded-2xl" />
-               <Skeleton className="h-10 w-48 rounded-xl" />
+               <Skeleton className="h-10 w-48" />
                <div className="space-y-4">
-                  <Skeleton className="h-12 w-full rounded-xl" />
-                  <Skeleton className="h-24 w-full rounded-xl" />
+                  <Skeleton className="h-12 w-full" />
+                  <Skeleton className="h-24 w-full" />
                </div>
             </Card>
           </div>
           <div className="space-y-6">
              <Card className="p-6 space-y-4">
-               <Skeleton className="h-8 w-40 rounded-xl" />
-               <Skeleton className="h-12 w-full rounded-xl" />
-               <Skeleton className="h-12 w-full rounded-xl" />
+               <Skeleton className="h-8 w-40" />
+               <Skeleton className="h-12 w-full" />
+               <Skeleton className="h-12 w-full" />
              </Card>
           </div>
         </div>

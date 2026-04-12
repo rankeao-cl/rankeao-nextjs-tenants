@@ -34,7 +34,7 @@ const getStatusStyles = (status: string) => {
     case "PAID":
       return "bg-emerald-500/10 text-emerald-500 border-emerald-500/20";
     default:
-      return "bg-[var(--c-gray-50)] text-[var(--c-gray-500)] border-[var(--c-gray-200)]";
+      return "bg-[var(--surface)] text-[var(--muted-foreground)] border-[var(--border)]";
   }
 };
 
@@ -72,7 +72,7 @@ export default function SubscriptionsPage() {
   if (isLoading) {
     return (
       <div className="space-y-8 max-w-[1400px] mx-auto pb-10">
-        <Skeleton className="h-10 w-64 rounded-xl" />
+        <Skeleton className="h-10 w-64" />
         <Skeleton className="h-[200px] w-full rounded-3xl" />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
            <Skeleton className="h-[400px] rounded-3xl" />
@@ -89,23 +89,23 @@ export default function SubscriptionsPage() {
 
       {/* Current Plan Hero */}
       <div className="relative group">
-        <div className="absolute -inset-0.5 bg-gradient-to-r from-[var(--c-navy-500)] to-[var(--c-cyan-500)] rounded-[32px] blur opacity-10 group-hover:opacity-20 transition duration-1000 group-hover:duration-200"></div>
-        <Card className="relative bg-white border border-[var(--c-gray-100)] rounded-[32px] overflow-hidden shadow-sm">
+        <div className="absolute -inset-0.5 bg-gradient-to-r from-[var(--brand)] to-[var(--brand)] rounded-[32px] blur opacity-10 group-hover:opacity-20 transition duration-1000 group-hover:duration-200"></div>
+        <Card className="relative bg-[var(--card)] border border-[var(--surface)] rounded-[32px] overflow-hidden shadow-sm">
           <CardContent className="p-0">
-            <div className="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-[var(--c-gray-100)]">
+            <div className="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-[var(--surface)]">
               {/* Left: Status */}
               <div className="p-8 md:w-1/3 flex flex-col justify-center">
                  <div className="flex items-center gap-4 mb-4">
-                    <div className="p-3 rounded-2xl bg-[var(--c-navy-500)]/5 text-[var(--c-navy-500)]">
+                    <div className="p-3 rounded-2xl bg-[var(--brand)]/5 text-[var(--brand)]">
                        <ShieldCheck className="h-6 w-6" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--c-gray-400)]">Plan Vigente</p>
-                      <h2 className="text-2xl font-black text-[var(--c-gray-800)]">{currentPlan?.name}</h2>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted-foreground)]">Plan Vigente</p>
+                      <h2 className="text-2xl font-black text-[var(--foreground)]">{currentPlan?.name}</h2>
                     </div>
                  </div>
                  <div className="flex items-center gap-3 mt-2">
-                    <span className={`inline-flex items-center px-3 py-1 rounded-xl text-[10px] font-bold uppercase tracking-wider border shadow-sm ${getStatusStyles(subscriptionStatus)}`}>
+                    <span className={`inline-flex items-center px-3 py-1 text-[10px] font-bold uppercase tracking-wider border shadow-sm ${getStatusStyles(subscriptionStatus)}`}>
                       {subscriptionStatus === "ACTIVE" ? (
                         <><CheckCircle2 className="h-3 w-3 mr-1.5" /> Activo</>
                       ) : (
@@ -113,7 +113,7 @@ export default function SubscriptionsPage() {
                       )}
                     </span>
                     {subscription?.current_period_end && (
-                      <p className="text-[11px] font-medium text-[var(--c-gray-500)] italic">
+                      <p className="text-[11px] font-medium text-[var(--muted-foreground)] italic">
                         Prox. Cobro: {new Date(subscription.current_period_end).toLocaleDateString("es-CL", { day: "numeric", month: "short", year: "numeric" })}
                       </p>
                     )}
@@ -121,15 +121,15 @@ export default function SubscriptionsPage() {
               </div>
 
               {/* Middle: Details */}
-              <div className="p-8 md:w-1/3 flex flex-col justify-center bg-[var(--c-gray-50)]/30">
+              <div className="p-8 md:w-1/3 flex flex-col justify-center bg-[var(--surface)]/30">
                  <div className="space-y-4">
                     <div className="flex justify-between items-center">
-                       <span className="text-[13px] font-medium text-[var(--c-gray-500)]">Inversión Mensual</span>
-                       <span className="text-[15px] font-bold text-[var(--c-gray-800)]">{currentPlan?.price === 0 ? "Sin costo" : formatCurrency(currentPlan?.price || 0)}</span>
+                       <span className="text-[13px] font-medium text-[var(--muted-foreground)]">Inversión Mensual</span>
+                       <span className="text-[15px] font-bold text-[var(--foreground)]">{currentPlan?.price === 0 ? "Sin costo" : formatCurrency(currentPlan?.price || 0)}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                       <span className="text-[13px] font-medium text-[var(--c-gray-500)]">Plan</span>
-                       <span className="text-[13px] font-bold text-[var(--c-gray-800)]">{subscription?.plan_name ?? currentPlan?.name ?? "—"}</span>
+                       <span className="text-[13px] font-medium text-[var(--muted-foreground)]">Plan</span>
+                       <span className="text-[13px] font-bold text-[var(--foreground)]">{subscription?.plan_name ?? currentPlan?.name ?? "—"}</span>
                     </div>
                  </div>
               </div>
@@ -141,22 +141,22 @@ export default function SubscriptionsPage() {
                     variant="outline" 
                     disabled={actionLoading} 
                     onClick={handleCancelSubscription}
-                    className="h-11 rounded-xl border-[var(--c-gray-200)] text-red-500 font-bold hover:bg-red-50 hover:border-red-100 group transition-all"
+                    className="h-11 border-[var(--border)] text-red-500 font-bold hover:bg-red-500/10 hover:border-red-500/20 group transition-all"
                    >
                      {actionLoading ? "Cancelando..." : "Detener Suscripción"}
                      <ArrowUpRight className="h-4 w-4 ml-2 opacity-0 group-hover:opacity-100 transition-all -translate-y-1 group-hover:translate-x-1" />
                    </Button>
                  ) : subscriptionStatus === "CANCELLED" ? (
-                   <Button 
-                    variant="default" 
-                    disabled={actionLoading} 
+                   <Button
+                    variant="default"
+                    disabled={actionLoading}
                     onClick={handleReactivate}
-                    className="h-11 rounded-xl bg-[var(--c-navy-500)] hover:bg-[var(--c-navy-600)] text-white font-bold transition-all shadow-lg shadow-[var(--c-navy-500)]/20"
+                    className="h-11 font-bold transition-all shadow-lg shadow-[var(--brand)]/20"
                    >
                      {actionLoading ? "Reactivando..." : "Reactivar Suscripción"}
                    </Button>
                  ) : (
-                   <p className="text-xs text-[var(--c-gray-400)] text-center font-medium italic">El plan gratuito es permanente y no tiene cobros asociados.</p>
+                   <p className="text-xs text-[var(--muted-foreground)] text-center font-medium italic">El plan gratuito es permanente y no tiene cobros asociados.</p>
                  )}
               </div>
             </div>
@@ -167,8 +167,8 @@ export default function SubscriptionsPage() {
       {/* Available Plans Section */}
       <section className="space-y-8">
         <div className="px-2">
-           <h2 className="text-xl font-black text-[var(--c-gray-800)] tracking-tight">Mejora tu Experiencia</h2>
-           <p className="text-sm text-[var(--c-gray-500)] mt-1 font-medium">Escala tu negocio con funciones avanzadas y mayor capacidad</p>
+           <h2 className="text-xl font-black text-[var(--foreground)] tracking-tight">Mejora tu Experiencia</h2>
+           <p className="text-sm text-[var(--muted-foreground)] mt-1 font-medium">Escala tu negocio con funciones avanzadas y mayor capacidad</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-4">
           {AVAILABLE_PLANS.map((plan) => (

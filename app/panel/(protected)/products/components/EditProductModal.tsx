@@ -211,38 +211,38 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
-      <DialogContent className="sm:max-w-3xl bg-white border border-[var(--c-gray-200)] shadow-2xl !rounded-3xl overflow-hidden p-0 gap-0">
+      <DialogContent className="sm:max-w-3xl bg-[var(--card)] border border-[var(--border)] shadow-2xl !rounded-3xl overflow-hidden p-0 gap-0">
         <DialogHeader className="p-6 pb-2">
-          <DialogTitle className="text-[20px] font-extrabold text-[var(--c-gray-800)] tracking-tight">
+          <DialogTitle className="text-[20px] font-extrabold text-[var(--foreground)] tracking-tight">
             Editar Producto
           </DialogTitle>
           <div className="flex items-center gap-2 mt-1">
-             <span className="text-[12px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest">{form.sku || "Sin SKU"}</span>
-             <span className="w-1 h-1 rounded-full bg-[var(--c-gray-300)]"></span>
-             <span className="text-[12px] font-medium text-[var(--c-gray-400)]">ID: {productId?.slice(-8)}</span>
+             <span className="text-[12px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest">{form.sku || "Sin SKU"}</span>
+             <span className="w-1 h-1 rounded-full bg-[var(--border-hover)]"></span>
+             <span className="text-[12px] font-medium text-[var(--muted-foreground)]">ID: {productId?.slice(-8)}</span>
           </div>
         </DialogHeader>
 
         <div className="px-6 py-2 min-h-[500px] flex flex-col">
           {loading ? (
              <div className="space-y-6 pt-4 flex-1">
-               <Skeleton className="h-10 w-full rounded-xl" />
+               <Skeleton className="h-10 w-full" />
                <div className="grid grid-cols-2 gap-6">
-                 <div className="space-y-2"><Skeleton className="h-4 w-20" /><Skeleton className="h-11 w-full rounded-xl" /></div>
-                 <div className="space-y-2"><Skeleton className="h-4 w-20" /><Skeleton className="h-11 w-full rounded-xl" /></div>
+                 <div className="space-y-2"><Skeleton className="h-4 w-20" /><Skeleton className="h-11 w-full" /></div>
+                 <div className="space-y-2"><Skeleton className="h-4 w-20" /><Skeleton className="h-11 w-full" /></div>
                </div>
-               <Skeleton className="h-32 w-full rounded-xl" />
+               <Skeleton className="h-32 w-full" />
              </div>
           ) : (
             <Tabs defaultValue="details" className="w-full flex-1 flex flex-col">
-              <TabsList className="bg-[var(--c-gray-50)] border border-[var(--c-gray-200)] p-1 rounded-xl w-full justify-start gap-1">
-                <TabsTrigger value="details" className="h-9 px-4 text-[13px] font-bold rounded-lg data-[state=active]:bg-white data-[state=active]:text-[var(--c-navy-500)] data-[state=active]:shadow-sm flex items-center gap-2">
+              <TabsList className="bg-[var(--surface)] border border-[var(--border)] p-1 w-full justify-start gap-1">
+                <TabsTrigger value="details" className="h-9 px-4 text-[13px] font-bold rounded-lg data-[state=active]:bg-[var(--card)] data-[state=active]:text-[var(--brand)] data-[state=active]:shadow-sm flex items-center gap-2">
                   <Info className="w-4 h-4" /> Detalles
                 </TabsTrigger>
-                <TabsTrigger value="images" className="h-9 px-4 text-[13px] font-bold rounded-lg data-[state=active]:bg-white data-[state=active]:text-[var(--c-navy-500)] data-[state=active]:shadow-sm flex items-center gap-2">
+                <TabsTrigger value="images" className="h-9 px-4 text-[13px] font-bold rounded-lg data-[state=active]:bg-[var(--card)] data-[state=active]:text-[var(--brand)] data-[state=active]:shadow-sm flex items-center gap-2">
                   <ImageIcon className="w-4 h-4" /> Imágenes ({images.length})
                 </TabsTrigger>
-                <TabsTrigger value="variants" className="h-9 px-4 text-[13px] font-bold rounded-lg data-[state=active]:bg-white data-[state=active]:text-[var(--c-navy-500)] data-[state=active]:shadow-sm flex items-center gap-2">
+                <TabsTrigger value="variants" className="h-9 px-4 text-[13px] font-bold rounded-lg data-[state=active]:bg-[var(--card)] data-[state=active]:text-[var(--brand)] data-[state=active]:shadow-sm flex items-center gap-2">
                   <Layers className="w-4 h-4" /> Variantes ({variants.length})
                 </TabsTrigger>
               </TabsList>
@@ -251,29 +251,29 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
                 <form onSubmit={handleSaveDetails} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <Label className="text-[11px] font-bold uppercase tracking-widest text-[var(--c-gray-400)]">Nombre de producto</Label>
-                      <Input name="name" defaultValue={form.name} className="h-11 bg-[var(--c-gray-50)] border-none rounded-xl focus-visible:ring-2 focus-visible:ring-[var(--c-cyan-500)] font-medium" />
+                      <Label className="text-[11px] font-bold uppercase tracking-widest text-[var(--muted-foreground)]">Nombre de producto</Label>
+                      <Input name="name" defaultValue={form.name} className="h-11 bg-[var(--surface)] border-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] font-medium" />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-[11px] font-bold uppercase tracking-widest text-[var(--c-gray-400)]">SKU / Código</Label>
-                      <Input name="sku" defaultValue={form.sku} className="h-11 bg-[var(--c-gray-50)] border-none rounded-xl focus-visible:ring-2 focus-visible:ring-[var(--c-cyan-500)] font-medium" />
+                      <Label className="text-[11px] font-bold uppercase tracking-widest text-[var(--muted-foreground)]">SKU / Código</Label>
+                      <Input name="sku" defaultValue={form.sku} className="h-11 bg-[var(--surface)] border-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] font-medium" />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-[11px] font-bold uppercase tracking-widest text-[var(--c-gray-400)]">Precio Base (CLP)</Label>
-                      <Input name="price" type="number" defaultValue={form.price} className="h-11 bg-[var(--c-gray-50)] border-none rounded-xl focus-visible:ring-2 focus-visible:ring-[var(--c-cyan-500)] font-bold" />
+                      <Label className="text-[11px] font-bold uppercase tracking-widest text-[var(--muted-foreground)]">Precio Base (CLP)</Label>
+                      <Input name="price" type="number" defaultValue={form.price} className="h-11 bg-[var(--surface)] border-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] font-bold" />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-[11px] font-bold uppercase tracking-widest text-[var(--c-gray-400)]">Stock Actual</Label>
-                      <Input name="stock" type="number" defaultValue={form.stock} className="h-11 bg-[var(--c-gray-100)] border-none rounded-xl focus-visible:ring-2 focus-visible:ring-[var(--c-cyan-500)] font-medium" readOnly />
+                      <Label className="text-[11px] font-bold uppercase tracking-widest text-[var(--muted-foreground)]">Stock Actual</Label>
+                      <Input name="stock" type="number" defaultValue={form.stock} className="h-11 bg-[var(--surface)] border-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] font-medium" readOnly />
                     </div>
                     <div className="md:col-span-2 space-y-2">
-                      <Label className="text-[11px] font-bold uppercase tracking-widest text-[var(--c-gray-400)]">Descripción</Label>
-                      <Textarea name="description" defaultValue={form.description} className="bg-[var(--c-gray-50)] border-none rounded-xl focus-visible:ring-2 focus-visible:ring-[var(--c-cyan-500)] font-medium min-h-[140px] resize-none" />
+                      <Label className="text-[11px] font-bold uppercase tracking-widest text-[var(--muted-foreground)]">Descripción</Label>
+                      <Textarea name="description" defaultValue={form.description} className="bg-[var(--surface)] border-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] font-medium min-h-[140px] resize-none" />
                     </div>
                   </div>
-                  <div className="flex justify-end gap-3 pt-4 border-t border-[var(--c-gray-100)]">
-                    <Button type="button" variant="ghost" className="h-11 px-6 text-[13px] font-bold text-[var(--c-gray-500)] hover:bg-[var(--c-gray-50)] rounded-xl" onClick={onClose}>Cancelar</Button>
-                    <Button type="submit" className="h-11 px-8 bg-[var(--c-navy-500)] hover:bg-[var(--c-navy-600)] text-white font-bold rounded-xl shadow-lg shadow-[var(--c-navy-500)]/10" disabled={saving}>
+                  <div className="flex justify-end gap-3 pt-4 border-t border-[var(--surface)]">
+                    <Button type="button" variant="ghost" className="h-11 px-6 text-[13px] font-bold text-[var(--muted-foreground)] hover:bg-[var(--surface)]" onClick={onClose}>Cancelar</Button>
+                    <Button type="submit" variant="default" className="h-11 px-8 font-bold shadow-lg shadow-[var(--brand)]/10" disabled={saving}>
                       {saving ? "Guardando..." : <><Save className="w-4 h-4 mr-2" /> Guardar Cambios</>}
                     </Button>
                   </div>
@@ -283,24 +283,24 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
               <TabsContent value="images" className="flex-1 mt-6 animate-in fade-in duration-300">
                 <div className="space-y-6">
                   <form onSubmit={handleAddImage} className="flex gap-2">
-                    <Input name="url" placeholder="https://ejemplo.com/imagen.jpg" className="h-11 bg-[var(--c-gray-50)] border-none rounded-xl focus-visible:ring-2 focus-visible:ring-[var(--c-cyan-500)] font-medium flex-1 px-4" />
-                    <Button type="submit" className="h-11 px-6 bg-[var(--c-navy-500)] text-white font-bold rounded-xl hover:bg-[var(--c-navy-600)] shadow-md">
+                    <Input name="url" placeholder="https://ejemplo.com/imagen.jpg" className="h-11 bg-[var(--surface)] border-none focus-visible:ring-2 focus-visible:ring-[var(--brand)] font-medium flex-1 px-4" />
+                    <Button type="submit" variant="default" className="h-11 px-6 font-bold shadow-md">
                       <Plus className="w-4 h-4 mr-2" /> Agregar
                     </Button>
                   </form>
                   
                   {images.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-12 bg-[var(--c-gray-50)] rounded-2xl border-2 border-dashed border-[var(--c-gray-200)]">
-                      <ImageIcon className="w-10 h-10 text-[var(--c-gray-300)] mb-2" />
-                      <p className="text-[13px] font-bold text-[var(--c-gray-400)]">No hay imágenes vinculadas</p>
+                    <div className="flex flex-col items-center justify-center py-12 bg-[var(--surface)] rounded-2xl border-2 border-dashed border-[var(--border)]">
+                      <ImageIcon className="w-10 h-10 text-[var(--border-hover)] mb-2" />
+                      <p className="text-[13px] font-bold text-[var(--muted-foreground)]">No hay imágenes vinculadas</p>
                     </div>
                   ) : (
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                       {images.map((img) => (
-                        <div key={img.id} className="group relative aspect-square rounded-2xl overflow-hidden border border-[var(--c-gray-200)] bg-[var(--c-gray-100)] shadow-sm">
+                        <div key={img.id} className="group relative aspect-square rounded-2xl overflow-hidden border border-[var(--border)] bg-[var(--surface)] shadow-sm">
                           <img src={getImageUrl(img.url)} alt="" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
                           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                             <Button variant="ghost" size="icon" className="h-10 w-10 bg-white/20 hover:bg-red-500 text-white rounded-xl backdrop-blur-md" onClick={() => handleDeleteImage(String(img.id))}>
+                             <Button variant="ghost" size="icon" className="h-10 w-10 bg-[var(--card)]/20 hover:bg-red-500 text-white backdrop-blur-md" onClick={() => handleDeleteImage(String(img.id))}>
                                <Trash2 className="w-4 h-4" />
                              </Button>
                           </div>
@@ -313,49 +313,49 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
 
               <TabsContent value="variants" className="flex-1 mt-6 animate-in fade-in duration-300">
                 <div className="space-y-6">
-                  <form onSubmit={handleAddVariant} className="bg-[var(--c-gray-50)] p-5 rounded-2xl border border-[var(--c-gray-200)] space-y-4">
+                  <form onSubmit={handleAddVariant} className="bg-[var(--surface)] p-5 rounded-2xl border border-[var(--border)] space-y-4">
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                       <div className="space-y-1.5">
-                        <Label className="text-[10px] font-bold uppercase tracking-widest text-[var(--c-gray-400)]">Nombre</Label>
-                        <Input name="name" placeholder="Ej. L / Azul" className="h-10 bg-white border-none rounded-lg" />
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted-foreground)]">Nombre</Label>
+                        <Input name="name" placeholder="Ej. L / Azul" className="h-10 bg-[var(--card)] border-none rounded-lg" />
                       </div>
                       <div className="space-y-1.5">
-                        <Label className="text-[10px] font-bold uppercase tracking-widest text-[var(--c-gray-400)]">SKU</Label>
-                        <Input name="sku" placeholder="SKU-VAR" className="h-10 bg-white border-none rounded-lg" />
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted-foreground)]">SKU</Label>
+                        <Input name="sku" placeholder="SKU-VAR" className="h-10 bg-[var(--card)] border-none rounded-lg" />
                       </div>
                       <div className="space-y-1.5">
-                        <Label className="text-[10px] font-bold uppercase tracking-widest text-[var(--c-gray-400)]">Inc. Precio</Label>
-                        <Input name="price_diff" type="number" placeholder="0" className="h-10 bg-white border-none rounded-lg" />
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted-foreground)]">Inc. Precio</Label>
+                        <Input name="price_diff" type="number" placeholder="0" className="h-10 bg-[var(--card)] border-none rounded-lg" />
                       </div>
                       <div className="space-y-1.5">
-                        <Label className="text-[10px] font-bold uppercase tracking-widest text-[var(--c-gray-400)]">Stock</Label>
-                        <Input name="stock" type="number" placeholder="0" className="h-10 bg-white border-none rounded-lg" />
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted-foreground)]">Stock</Label>
+                        <Input name="stock" type="number" placeholder="0" className="h-10 bg-[var(--card)] border-none rounded-lg" />
                       </div>
                     </div>
-                    <Button type="submit" className="w-full h-10 bg-[var(--c-cyan-500)] hover:bg-[var(--c-cyan-600)] text-white font-bold rounded-xl transition-all">
+                    <Button type="submit" variant="default" className="w-full h-10 font-bold transition-all">
                       Confirmar Nueva Variante
                     </Button>
                   </form>
 
                   <div className="space-y-3">
                     {variants.length === 0 ? (
-                      <div className="text-center py-10 bg-[var(--c-gray-50)] rounded-2xl border border-[var(--c-gray-100)]">
-                        <Box className="w-8 h-8 text-[var(--c-gray-300)] mx-auto mb-2" />
-                        <p className="text-[13px] font-bold text-[var(--c-gray-400)]">Este producto no tiene variantes</p>
+                      <div className="text-center py-10 bg-[var(--surface)] rounded-2xl border border-[var(--surface)]">
+                        <Box className="w-8 h-8 text-[var(--border-hover)] mx-auto mb-2" />
+                        <p className="text-[13px] font-bold text-[var(--muted-foreground)]">Este producto no tiene variantes</p>
                       </div>
                     ) : (
                       variants.map((v) => (
-                        <div key={v.id} className="flex items-center gap-4 p-4 rounded-2xl bg-white border border-[var(--c-gray-200)] hover:border-[var(--c-cyan-300)] transition-all group">
+                        <div key={v.id} className="flex items-center gap-4 p-4 rounded-2xl bg-[var(--card)] border border-[var(--border)] hover:border-[var(--brand)] transition-all group">
                           <div className="flex-1">
-                            <p className="text-[14px] font-bold text-[var(--c-gray-800)]">{v.name}</p>
-                            <p className="text-[11px] text-[var(--c-gray-400)] font-mono font-bold mt-0.5">SKU: {v.sku || "N/A"}</p>
+                            <p className="text-[14px] font-bold text-[var(--foreground)]">{v.name}</p>
+                            <p className="text-[11px] text-[var(--muted-foreground)] font-mono font-bold mt-0.5">SKU: {v.sku || "N/A"}</p>
                           </div>
                           <div className="text-right flex flex-col items-end">
-                            <p className="text-[13px] font-bold text-[var(--c-navy-500)]">+{formatCurrency(v.price_diff || 0)}</p>
-                            <p className="text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-tighter">Stock: {v.stock || 0}</p>
+                            <p className="text-[13px] font-bold text-[var(--brand)]">+{formatCurrency(v.price_diff || 0)}</p>
+                            <p className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-tighter">Stock: {v.stock || 0}</p>
                           </div>
-                          <div className="flex gap-1 pl-2 border-l border-[var(--c-gray-100)]">
-                             <Button size="icon" variant="ghost" className="h-9 w-9 text-red-400 hover:text-red-500 hover:bg-red-50 rounded-lg" onClick={() => handleDeleteVariant(String(v.id))}>
+                          <div className="flex gap-1 pl-2 border-l border-[var(--surface)]">
+                             <Button size="icon" variant="ghost" className="h-9 w-9 text-red-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg" onClick={() => handleDeleteVariant(String(v.id))}>
                                <X className="w-4 h-4" />
                              </Button>
                           </div>

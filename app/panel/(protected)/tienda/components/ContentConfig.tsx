@@ -59,8 +59,8 @@ export function ContentConfig() {
     );
   }
 
-  const labelClass = "text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest mb-2 flex items-center gap-2";
-  const inputSmClass = "h-9 rounded-lg border-[var(--c-gray-200)] bg-white px-3 text-xs text-[var(--c-gray-800)] font-medium shadow-sm";
+  const labelClass = "text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest mb-2 flex items-center gap-2";
+  const inputSmClass = "h-9 rounded-lg border-[var(--border)] bg-[var(--card)] px-3 text-xs text-[var(--foreground)] font-medium shadow-sm";
 
   const updateMenuItem = (i: number, patch: Partial<TenantMenuItem>) => {
     const next = [...menuItems];
@@ -92,15 +92,15 @@ export function ContentConfig() {
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
       {/* Nosotros */}
-      <Card className="bg-white border border-[var(--c-gray-100)] rounded-[32px] shadow-sm overflow-hidden">
-        <div className="p-8 border-b border-[var(--c-gray-50)] bg-[var(--c-gray-50)]/30 flex items-center justify-between">
+      <Card className="bg-[var(--card)] border border-[var(--surface)] rounded-[32px] shadow-sm overflow-hidden">
+        <div className="p-8 border-b border-[var(--surface)] bg-[var(--surface)]/30 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="p-3 rounded-2xl bg-[var(--c-navy-500)]/5 text-[var(--c-navy-500)]">
+            <div className="p-3 rounded-2xl bg-[var(--brand)]/5 text-[var(--brand)]">
               <FileText className="h-6 w-6" />
             </div>
             <div>
-              <h3 className="text-lg font-black text-[var(--c-gray-800)] tracking-tight">Página Nosotros</h3>
-              <p className="text-xs text-[var(--c-gray-400)] font-medium">Contenido HTML de la página /nosotros. Puedes pegar HTML o escribir texto plano.</p>
+              <h3 className="text-lg font-black text-[var(--foreground)] tracking-tight">Página Nosotros</h3>
+              <p className="text-xs text-[var(--muted-foreground)] font-medium">Contenido HTML de la página /nosotros. Puedes pegar HTML o escribir texto plano.</p>
             </div>
           </div>
           <Button
@@ -120,27 +120,27 @@ export function ContentConfig() {
               onChange={(e) => setAboutHtml(e.target.value)}
               rows={12}
               placeholder="<h2>Sobre nosotros</h2><p>Somos una tienda especializada en TCG...</p>"
-              className="w-full rounded-xl border border-[var(--c-gray-200)] bg-white p-4 text-sm text-[var(--c-gray-800)] font-mono resize-y shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--c-navy-500)]/10"
+              className="w-full border border-[var(--border)] bg-[var(--card)] rounded-xl p-4 text-sm text-[var(--foreground)] font-mono resize-y shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]/10"
             />
           ) : (
             <div
-              className="prose prose-sm max-w-none p-4 rounded-xl border border-[var(--c-gray-100)] bg-[var(--c-gray-50)]/30 min-h-[200px]"
-              dangerouslySetInnerHTML={{ __html: aboutHtml || "<p class='text-gray-400'>Sin contenido aún...</p>" }}
+              className="prose prose-sm max-w-none p-4 rounded-xl border border-[var(--surface)] bg-[var(--surface)]/30 min-h-[200px]"
+              dangerouslySetInnerHTML={{ __html: aboutHtml || "<p class='text-[var(--muted-foreground)]'>Sin contenido aún...</p>" }}
             />
           )}
         </CardContent>
       </Card>
 
       {/* Términos */}
-      <Card className="bg-white border border-[var(--c-gray-100)] rounded-[32px] shadow-sm overflow-hidden">
-        <div className="p-8 border-b border-[var(--c-gray-50)] bg-[var(--c-gray-50)]/30 flex items-center justify-between">
+      <Card className="bg-[var(--card)] border border-[var(--surface)] rounded-[32px] shadow-sm overflow-hidden">
+        <div className="p-8 border-b border-[var(--surface)] bg-[var(--surface)]/30 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="p-3 rounded-2xl bg-[var(--c-cyan-500)]/5 text-[var(--c-cyan-500)]">
+            <div className="p-3 rounded-2xl bg-[var(--brand)]/5 text-[var(--brand)]">
               <FileText className="h-6 w-6" />
             </div>
             <div>
-              <h3 className="text-lg font-black text-[var(--c-gray-800)] tracking-tight">Términos y Condiciones</h3>
-              <p className="text-xs text-[var(--c-gray-400)] font-medium">Contenido HTML de la página /terminos</p>
+              <h3 className="text-lg font-black text-[var(--foreground)] tracking-tight">Términos y Condiciones</h3>
+              <p className="text-xs text-[var(--muted-foreground)] font-medium">Contenido HTML de la página /terminos</p>
             </div>
           </div>
           <Button
@@ -160,27 +160,27 @@ export function ContentConfig() {
               onChange={(e) => setTermsHtml(e.target.value)}
               rows={12}
               placeholder="<h2>Términos y Condiciones</h2><p>Al realizar una compra...</p>"
-              className="w-full rounded-xl border border-[var(--c-gray-200)] bg-white p-4 text-sm text-[var(--c-gray-800)] font-mono resize-y shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--c-navy-500)]/10"
+              className="w-full border border-[var(--border)] bg-[var(--card)] rounded-xl p-4 text-sm text-[var(--foreground)] font-mono resize-y shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand)]/10"
             />
           ) : (
             <div
-              className="prose prose-sm max-w-none p-4 rounded-xl border border-[var(--c-gray-100)] bg-[var(--c-gray-50)]/30 min-h-[200px]"
-              dangerouslySetInnerHTML={{ __html: termsHtml || "<p class='text-gray-400'>Sin contenido aún...</p>" }}
+              className="prose prose-sm max-w-none p-4 rounded-xl border border-[var(--surface)] bg-[var(--surface)]/30 min-h-[200px]"
+              dangerouslySetInnerHTML={{ __html: termsHtml || "<p class='text-[var(--muted-foreground)]'>Sin contenido aún...</p>" }}
             />
           )}
         </CardContent>
       </Card>
 
       {/* Menú personalizado */}
-      <Card className="bg-white border border-[var(--c-gray-100)] rounded-[32px] shadow-sm overflow-hidden">
-        <div className="p-8 border-b border-[var(--c-gray-50)] bg-[var(--c-gray-50)]/30 flex items-center justify-between">
+      <Card className="bg-[var(--card)] border border-[var(--surface)] rounded-[32px] shadow-sm overflow-hidden">
+        <div className="p-8 border-b border-[var(--surface)] bg-[var(--surface)]/30 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-2xl bg-purple-500/5 text-purple-500">
               <Menu className="h-6 w-6" />
             </div>
             <div>
-              <h3 className="text-lg font-black text-[var(--c-gray-800)] tracking-tight">Menú de Navegación</h3>
-              <p className="text-xs text-[var(--c-gray-400)] font-medium">
+              <h3 className="text-lg font-black text-[var(--foreground)] tracking-tight">Menú de Navegación</h3>
+              <p className="text-xs text-[var(--muted-foreground)] font-medium">
                 Si configuras items aquí, el navbar los usará en vez de las categorías de la API.{" "}
                 {menuItems.length > 0 && (
                   <button
@@ -197,42 +197,42 @@ export function ContentConfig() {
             variant="outline"
             size="sm"
             onClick={() => setMenuItems([...menuItems, emptyMenuItem()])}
-            className="rounded-xl border-[var(--c-gray-200)] font-bold text-xs"
+            className="rounded-xl border-[var(--border)] font-bold text-xs"
           >
             <Plus className="h-3.5 w-3.5 mr-1" /> Agregar Item
           </Button>
         </div>
         <CardContent className="p-8 space-y-4">
           {menuItems.length === 0 && (
-            <p className="text-sm text-[var(--c-gray-400)] text-center py-8 font-medium">
+            <p className="text-sm text-[var(--muted-foreground)] text-center py-8 font-medium">
               Sin menú personalizado. El navbar usará las categorías de productos automáticamente.
             </p>
           )}
           {menuItems.map((item, i) => (
-            <div key={i} className="border border-[var(--c-gray-100)] rounded-2xl overflow-hidden">
-              <div className="p-4 flex items-center gap-3 bg-[var(--c-gray-50)]/30">
+            <div key={i} className="border border-[var(--surface)] rounded-2xl overflow-hidden">
+              <div className="p-4 flex items-center gap-3 bg-[var(--surface)]/30">
                 <button
                   onClick={() => setExpandedMenu(expandedMenu === i ? null : i)}
-                  className="p-1 rounded-lg hover:bg-[var(--c-gray-100)] transition-colors"
+                  className="p-1 rounded-lg hover:bg-[var(--surface)] transition-colors"
                 >
-                  <ChevronRight className={`h-4 w-4 text-[var(--c-gray-400)] transition-transform ${expandedMenu === i ? "rotate-90" : ""}`} />
+                  <ChevronRight className={`h-4 w-4 text-[var(--muted-foreground)] transition-transform ${expandedMenu === i ? "rotate-90" : ""}`} />
                 </button>
                 <Input
                   value={item.label}
                   onChange={(e) => updateMenuItem(i, { label: e.target.value })}
                   placeholder="Etiqueta del menú"
-                  className="h-8 rounded-lg border-[var(--c-gray-200)] text-xs font-bold flex-1"
+                  className="h-8 rounded-lg border-[var(--border)] text-xs font-bold flex-1"
                 />
                 <Input
                   value={item.href}
                   onChange={(e) => updateMenuItem(i, { href: e.target.value })}
                   placeholder="/catalogo"
-                  className="h-8 rounded-lg border-[var(--c-gray-200)] text-xs font-mono flex-1"
+                  className="h-8 rounded-lg border-[var(--border)] text-xs font-mono flex-1"
                 />
                 <select
                   value={item.type}
                   onChange={(e) => updateMenuItem(i, { type: e.target.value as "link" | "dropdown" | "mega" })}
-                  className="h-8 rounded-lg border border-[var(--c-gray-200)] text-xs font-bold px-2 bg-white text-[var(--c-gray-700)]"
+                  className="h-8 rounded-lg border border-[var(--border)] text-xs font-bold px-2 bg-[var(--card)] text-[var(--foreground)]"
                 >
                   <option value="link">Link</option>
                   <option value="dropdown">Dropdown</option>
@@ -240,7 +240,7 @@ export function ContentConfig() {
                 </select>
                 <button
                   onClick={() => setMenuItems(menuItems.filter((_, k) => k !== i))}
-                  className="p-1.5 rounded-lg hover:bg-red-50 text-red-400 transition-colors"
+                  className="p-1.5 rounded-lg hover:bg-red-500/10 text-red-400 transition-colors"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
@@ -248,7 +248,7 @@ export function ContentConfig() {
 
               {/* Sub-items (dropdown/mega) */}
               {expandedMenu === i && item.type !== "link" && (
-                <div className="p-4 border-t border-[var(--c-gray-100)] space-y-2">
+                <div className="p-4 border-t border-[var(--surface)] space-y-2">
                   <div className="flex items-center justify-between mb-3">
                     <Label className={labelClass}>Sub-items</Label>
                     <Button variant="ghost" size="sm" onClick={() => addSubItem(i)} className="text-xs h-7 rounded-lg font-bold">
@@ -269,13 +269,13 @@ export function ContentConfig() {
                         placeholder="/catalogo?q=..."
                         className={inputSmClass + " flex-1 font-mono"}
                       />
-                      <button onClick={() => removeSubItem(i, j)} className="p-1 rounded-lg hover:bg-red-50 text-red-400 transition-colors shrink-0">
+                      <button onClick={() => removeSubItem(i, j)} className="p-1 rounded-lg hover:bg-red-500/10 text-red-400 transition-colors shrink-0">
                         <Trash2 className="h-3 w-3" />
                       </button>
                     </div>
                   ))}
                   {(item.items ?? []).length === 0 && (
-                    <p className="text-[11px] text-[var(--c-gray-400)] font-medium">Sin sub-items aún.</p>
+                    <p className="text-[11px] text-[var(--muted-foreground)] font-medium">Sin sub-items aún.</p>
                   )}
                 </div>
               )}
@@ -288,7 +288,7 @@ export function ContentConfig() {
         <Button
           onClick={handleSave}
           disabled={isSaving}
-          className="bg-[var(--c-navy-500)] hover:bg-[var(--c-navy-600)] text-white shadow-xl shadow-[var(--c-navy-500)]/20 rounded-2xl px-12 h-14 w-full sm:w-auto font-black text-sm uppercase tracking-widest transition-all"
+          className="bg-[var(--brand)] hover:bg-[var(--brand-hover)] text-white shadow-xl shadow-[var(--brand)]/20 rounded-2xl px-12 h-14 w-full sm:w-auto font-black text-sm uppercase tracking-widest transition-all"
         >
           {isSaving ? "Guardando..." : "Guardar Contenido"}
           <Save className="h-4 w-4 ml-3" />

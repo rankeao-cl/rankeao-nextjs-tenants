@@ -26,9 +26,9 @@ export function StaffList({
 }: StaffListProps) {
   if (isLoading) {
     return (
-      <div className="bg-white rounded-[32px] border border-[var(--c-gray-200)] overflow-hidden shadow-sm">
+      <div className="bg-[var(--card)] rounded-[32px] border border-[var(--border)] overflow-hidden shadow-sm">
         <Table>
-          <TableHeader className="bg-[var(--c-gray-50)]">
+          <TableHeader className="bg-[var(--surface)]">
             <TableRow>
               <TableHead>Miembro</TableHead>
               <TableHead>Rol / Permisos</TableHead>
@@ -39,10 +39,10 @@ export function StaffList({
           <TableBody>
             {Array(3).fill(0).map((_, i) => (
               <TableRow key={i}>
-                <TableCell><Skeleton className="h-12 w-48 rounded-xl" /></TableCell>
+                <TableCell><Skeleton className="h-12 w-48" /></TableCell>
                 <TableCell><Skeleton className="h-6 w-24 rounded-full" /></TableCell>
                 <TableCell><Skeleton className="h-6 w-20 rounded-full" /></TableCell>
-                <TableCell><Skeleton className="h-10 w-32 rounded-xl ml-auto" /></TableCell>
+                <TableCell><Skeleton className="h-10 w-32 ml-auto" /></TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -52,14 +52,14 @@ export function StaffList({
   }
 
   return (
-    <div className="bg-white rounded-[32px] border border-[var(--c-gray-100)] overflow-hidden shadow-sm">
+    <div className="bg-[var(--card)] rounded-[32px] border border-[var(--surface)] overflow-hidden shadow-sm">
       <div className="overflow-x-auto">
         <Table>
-          <TableHeader className="bg-[var(--c-gray-50)]/50 border-b border-[var(--c-gray-100)]">
+          <TableHeader className="bg-[var(--surface)]/50 border-b border-[var(--surface)]">
             <TableRow className="hover:bg-transparent">
-              <TableHead className="text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest py-4 px-6">Identidad Miembro</TableHead>
-              <TableHead className="text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest py-4 px-6">Rol de Acceso</TableHead>
-              <TableHead className="text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest py-4 px-6">Estado Salud</TableHead>
+              <TableHead className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest py-4 px-6">Identidad Miembro</TableHead>
+              <TableHead className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest py-4 px-6">Rol de Acceso</TableHead>
+              <TableHead className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest py-4 px-6">Estado Salud</TableHead>
               <TableHead className="w-[200px] text-right py-4 px-6"></TableHead>
             </TableRow>
           </TableHeader>
@@ -68,10 +68,10 @@ export function StaffList({
               <TableRow>
                 <TableCell colSpan={4} className="py-24 text-center">
                    <div className="flex flex-col items-center gap-4">
-                      <div className="p-4 rounded-full bg-[var(--c-gray-50)]">
-                        <UserPlus className="h-8 w-8 text-[var(--c-gray-300)]" />
+                      <div className="p-4 rounded-full bg-[var(--surface)]">
+                        <UserPlus className="h-8 w-8 text-[var(--border-hover)]" />
                       </div>
-                      <p className="text-[var(--c-gray-500)] font-medium">Aún no has invitado a nadie a tu equipo</p>
+                      <p className="text-[var(--muted-foreground)] font-medium">Aún no has invitado a nadie a tu equipo</p>
                    </div>
                 </TableCell>
               </TableRow>
@@ -79,23 +79,23 @@ export function StaffList({
               staff.map((member) => {
                 const isOwner = member.role === "OWNER";
                 return (
-                  <TableRow key={member.id} className="hover:bg-[var(--c-gray-50)] transition-colors border-b border-[var(--c-gray-100)] last:border-0 group/row">
+                  <TableRow key={member.id} className="hover:bg-[var(--surface)] transition-colors border-b border-[var(--surface)] last:border-0 group/row">
                     <TableCell className="py-5 px-6">
                       <div className="flex items-center gap-4">
                         {member.avatar_url ? (
                           <img src={member.avatar_url} alt="" className="w-10 h-10 rounded-2xl object-cover ring-2 ring-white shadow-sm" />
                         ) : (
-                          <div className="w-10 h-10 rounded-2xl bg-[var(--c-navy-500)]/5 flex items-center justify-center text-[15px] font-black text-[var(--c-navy-500)] border border-[var(--c-navy-500)]/10">
+                          <div className="w-10 h-10 rounded-2xl bg-[var(--brand)]/5 flex items-center justify-center text-[15px] font-black text-[var(--brand)] border border-[var(--brand)]/10">
                             {(member.display_name || member.username || "?")[0].toUpperCase()}
                           </div>
                         )}
                         <div className="flex flex-col">
-                          <span className="text-[14px] font-bold text-[var(--c-gray-800)]">
+                          <span className="text-[14px] font-bold text-[var(--foreground)]">
                             {member.display_name || member.username || "Sin nombre"}
                           </span>
                           <div className="flex items-center gap-1.5 mt-0.5">
-                             <Mail className="h-3 w-3 text-[var(--c-gray-300)]" />
-                             <span className="text-[11px] text-[var(--c-gray-400)] font-medium">{member.email}</span>
+                             <Mail className="h-3 w-3 text-[var(--border-hover)]" />
+                             <span className="text-[11px] text-[var(--muted-foreground)] font-medium">{member.email}</span>
                           </div>
                         </div>
                       </div>
@@ -108,8 +108,8 @@ export function StaffList({
                     </TableCell>
                     <TableCell className="py-5 px-6">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${member.is_active
-                        ? "text-emerald-500 bg-emerald-50"
-                        : "text-red-500 bg-red-50"
+                        ? "text-emerald-500 bg-emerald-500/10"
+                        : "text-red-500 bg-red-500/10"
                         }`}>
                         <div className={`w-1.5 h-1.5 rounded-full mr-2 ${member.is_active ? 'bg-emerald-500' : 'bg-red-500'}`} />
                         {member.is_active ? "Activo" : "Inactivo"}
@@ -117,14 +117,14 @@ export function StaffList({
                     </TableCell>
                     <TableCell className="py-5 px-6 text-right">
                       {isOwner ? (
-                        <span className="text-[11px] text-[var(--c-gray-400)] font-black uppercase tracking-widest mr-4">Owner</span>
+                        <span className="text-[11px] text-[var(--muted-foreground)] font-black uppercase tracking-widest mr-4">Owner</span>
                       ) : (
                         <div className="flex gap-2 justify-end opacity-0 group-hover/row:opacity-100 transition-all">
                           <Button 
                             variant="ghost" 
                             size="sm" 
                             onClick={() => onEditRole(member)}
-                            className="h-9 px-3 text-[var(--c-navy-500)] hover:bg-[var(--c-navy-500)] hover:text-white rounded-xl font-bold transition-all"
+                            className="h-9 px-3 text-[var(--brand)] hover:bg-[var(--brand)] hover:text-white font-bold transition-all"
                           >
                             <Edit3 className="h-4 w-4" />
                           </Button>
@@ -132,7 +132,7 @@ export function StaffList({
                             variant="ghost" 
                             size="sm" 
                             onClick={() => onRemove(member.id)}
-                            className="h-9 px-3 text-red-500 hover:bg-red-50 hover:text-red-600 rounded-xl font-bold transition-all"
+                            className="h-9 px-3 text-red-500 hover:bg-red-500/10 hover:text-red-600 font-bold transition-all"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>

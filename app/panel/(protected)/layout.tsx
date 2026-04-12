@@ -17,18 +17,16 @@ export default function ProtectedLayout({
     <AuthGuard>
       <div className="admin-shell flex flex-col h-screen overflow-hidden bg-[var(--background)]">
         <Header onMenuToggle={() => setMobileOpen(true)} />
-        <div className="flex flex-1 overflow-hidden">
-          <Sidebar
-            onToggle={() => setCollapsed(!collapsed)}
-            mobileOpen={mobileOpen}
-            onMobileClose={() => setMobileOpen(false)}
-          />
-          <main className="flex-1 overflow-auto p-4 md:p-6 lg:p-8 relative">
-            <div className="mx-auto w-full max-w-[1480px]">
-              {children}
-            </div>
-          </main>
-        </div>
+        <Sidebar
+          onToggle={() => setCollapsed(!collapsed)}
+          mobileOpen={mobileOpen}
+          onMobileClose={() => setMobileOpen(false)}
+        />
+        <main className="flex-1 overflow-auto p-4 md:p-6 md:pl-[88px] lg:p-8 lg:pl-[96px] relative">
+          <div className="mx-auto w-full max-w-[1480px]">
+            {children}
+          </div>
+        </main>
       </div>
     </AuthGuard>
   );

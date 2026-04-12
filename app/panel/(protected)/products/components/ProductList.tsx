@@ -21,9 +21,9 @@ const formatCurrency = (value: number) =>
 export function ProductList({ products, isLoading, onEdit, onDelete, getImageUrl }: ProductListProps) {
   if (isLoading) {
     return (
-      <div className="bg-white rounded-2xl border border-[var(--c-gray-200)] overflow-hidden shadow-sm">
+      <div className="bg-[var(--card)] rounded-2xl border border-[var(--border)] overflow-hidden shadow-sm">
         <Table>
-          <TableHeader className="bg-[var(--c-gray-50)]">
+          <TableHeader className="bg-[var(--surface)]">
             <TableRow>
               <TableHead className="w-[80px]"></TableHead>
               <TableHead>Producto</TableHead>
@@ -53,17 +53,17 @@ export function ProductList({ products, isLoading, onEdit, onDelete, getImageUrl
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-[var(--c-gray-200)] overflow-hidden shadow-sm group">
+    <div className="bg-[var(--card)] rounded-2xl border border-[var(--border)] overflow-hidden shadow-sm group">
       <div className="overflow-x-auto">
         <Table>
-          <TableHeader className="bg-[var(--c-gray-50)] border-b border-[var(--c-gray-200)]">
+          <TableHeader className="bg-[var(--surface)] border-b border-[var(--border)]">
             <TableRow className="hover:bg-transparent">
               <TableHead className="w-[80px] py-4 px-5"></TableHead>
-              <TableHead className="text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest py-4 px-5">Producto</TableHead>
-              <TableHead className="text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest py-4 px-5">SKU</TableHead>
-              <TableHead className="text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest py-4 px-5">Precio</TableHead>
-              <TableHead className="text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest py-4 px-5 text-center">Stock</TableHead>
-              <TableHead className="text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest py-4 px-5">Estado</TableHead>
+              <TableHead className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest py-4 px-5">Producto</TableHead>
+              <TableHead className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest py-4 px-5">SKU</TableHead>
+              <TableHead className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest py-4 px-5">Precio</TableHead>
+              <TableHead className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest py-4 px-5 text-center">Stock</TableHead>
+              <TableHead className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest py-4 px-5">Estado</TableHead>
               <TableHead className="w-[60px] text-right py-4 px-5"></TableHead>
             </TableRow>
           </TableHeader>
@@ -72,19 +72,19 @@ export function ProductList({ products, isLoading, onEdit, onDelete, getImageUrl
               <TableRow>
                 <TableCell colSpan={7} className="py-20 text-center">
                    <div className="flex flex-col items-center justify-center gap-3">
-                      <div className="w-16 h-16 rounded-full bg-[var(--c-gray-50)] flex items-center justify-center text-[var(--c-gray-300)]">
+                      <div className="w-16 h-16 rounded-full bg-[var(--surface)] flex items-center justify-center text-[var(--border-hover)]">
                         <Box className="w-8 h-8" />
                       </div>
-                      <p className="text-[15px] font-bold text-[var(--c-gray-500)]">No se encontraron productos</p>
-                      <p className="text-[13px] text-[var(--c-gray-400)] max-w-[280px]">Intenta ajustar tus filtros o crea un nuevo producto para comenzar.</p>
+                      <p className="text-[15px] font-bold text-[var(--muted-foreground)]">No se encontraron productos</p>
+                      <p className="text-[13px] text-[var(--muted-foreground)] max-w-[280px]">Intenta ajustar tus filtros o crea un nuevo producto para comenzar.</p>
                    </div>
                 </TableCell>
               </TableRow>
             ) : (
               products.map((product) => (
-                <TableRow key={product.id} className="hover:bg-[var(--c-gray-50)] transition-colors border-b border-[var(--c-gray-100)] last:border-0 group/row">
+                <TableRow key={product.id} className="hover:bg-[var(--surface)] transition-colors border-b border-[var(--surface)] last:border-0 group/row">
                   <TableCell className="py-3.5 px-5">
-                    <div className="w-14 h-14 rounded-xl bg-[var(--c-gray-50)] border border-[var(--c-gray-200)] flex items-center justify-center overflow-hidden shadow-sm transition-transform group-hover/row:scale-105">
+                    <div className="w-14 h-14 rounded-xl bg-[var(--surface)] border border-[var(--border)] flex items-center justify-center overflow-hidden shadow-sm transition-transform group-hover/row:scale-105">
                       {product.image_url ? (
                         <img 
                           src={getImageUrl(product.image_url)} 
@@ -92,30 +92,30 @@ export function ProductList({ products, isLoading, onEdit, onDelete, getImageUrl
                           className="w-full h-full object-cover" 
                         />
                       ) : (
-                        <Box className="w-6 h-6 text-[var(--c-gray-300)]" />
+                        <Box className="w-6 h-6 text-[var(--border-hover)]" />
                       )}
                     </div>
                   </TableCell>
                   <TableCell className="py-3.5 px-5">
-                    <p className="text-[14px] font-extrabold text-[var(--c-gray-800)] leading-tight">{product.name}</p>
-                    <p className="text-[11px] text-[var(--c-gray-400)] mt-1 font-medium italic">General · {product.id.slice(-6)}</p>
+                    <p className="text-[14px] font-extrabold text-[var(--foreground)] leading-tight">{product.name}</p>
+                    <p className="text-[11px] text-[var(--muted-foreground)] mt-1 font-medium italic">General · {product.id.slice(-6)}</p>
                   </TableCell>
                   <TableCell className="py-3.5 px-5">
-                    <span className="text-[12px] font-mono font-bold text-[var(--c-gray-600)] bg-[var(--c-gray-100)] px-2 py-1 rounded-md">
+                    <span className="text-[12px] font-mono font-bold text-[var(--muted-foreground)] bg-[var(--surface)] px-2 py-1 rounded-md">
                       {product.sku || "N/A"}
                     </span>
                   </TableCell>
                   <TableCell className="py-3.5 px-5">
-                    <span className="text-[14px] font-extrabold text-[var(--c-navy-500)] tracking-tight">
+                    <span className="text-[14px] font-extrabold text-[var(--brand)] tracking-tight">
                       {formatCurrency(product.price)}
                     </span>
                   </TableCell>
                   <TableCell className="py-3.5 px-5 text-center">
                     <div className="flex flex-col items-center">
-                      <span className={`text-[14px] font-extrabold ${product.stock <= 5 ? 'text-red-500' : 'text-[var(--c-gray-800)]'}`}>
+                      <span className={`text-[14px] font-extrabold ${product.stock <= 5 ? 'text-red-500' : 'text-[var(--foreground)]'}`}>
                         {product.stock}
                       </span>
-                      <span className="text-[9px] font-bold text-[var(--c-gray-400)] uppercase tracking-tighter">UNID</span>
+                      <span className="text-[9px] font-bold text-[var(--muted-foreground)] uppercase tracking-tighter">UNID</span>
                     </div>
                   </TableCell>
                   <TableCell className="py-3.5 px-5">
@@ -132,7 +132,7 @@ export function ProductList({ products, isLoading, onEdit, onDelete, getImageUrl
                       <Button 
                         variant="ghost" 
                         size="icon" 
-                        className="h-9 w-9 text-[var(--c-gray-400)] hover:text-[var(--c-cyan-600)] hover:bg-[var(--c-cyan-50)] rounded-xl"
+                        className="h-9 w-9 text-[var(--muted-foreground)] hover:text-[var(--brand-hover)] hover:bg-[var(--accent-subtle)]"
                         onClick={() => onEdit(product.id)}
                       >
                         <Edit2 className="w-4 h-4" />
@@ -140,7 +140,7 @@ export function ProductList({ products, isLoading, onEdit, onDelete, getImageUrl
                       <Button 
                         variant="ghost" 
                         size="icon" 
-                        className="h-9 w-9 text-[var(--c-gray-400)] hover:text-red-600 hover:bg-red-50 rounded-xl"
+                        className="h-9 w-9 text-[var(--muted-foreground)] hover:text-red-600 hover:bg-red-500/10"
                         onClick={() => onDelete(product.id)}
                       >
                         <Trash2 className="w-4 h-4" />

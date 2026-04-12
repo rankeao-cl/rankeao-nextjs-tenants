@@ -72,23 +72,23 @@ export function StorefrontConfig() {
     );
   }
 
-  const labelClass = "text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest mb-1 flex items-center gap-2";
-  const inputClass = "h-11 rounded-xl border-[var(--c-gray-200)] bg-white px-4 text-sm text-[var(--c-gray-800)] font-bold focus:ring-[var(--c-navy-500)]/10 transition-all shadow-sm";
-  const inputSmClass = "h-9 rounded-lg border-[var(--c-gray-200)] bg-white px-3 text-xs text-[var(--c-gray-800)] font-medium shadow-sm";
+  const labelClass = "text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest mb-1 flex items-center gap-2";
+  const inputClass = "h-11 border-[var(--border)] bg-[var(--card)] px-4 text-sm text-[var(--foreground)] font-bold focus:ring-[var(--brand)]/10 transition-all shadow-sm";
+  const inputSmClass = "h-9 rounded-lg border-[var(--border)] bg-[var(--card)] px-3 text-xs text-[var(--foreground)] font-medium shadow-sm";
   const tenantId = (tenant?.id as string) ?? "";
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
       {/* Promo Bar */}
-      <Card className="bg-white border border-[var(--c-gray-100)] rounded-[32px] shadow-sm overflow-hidden">
-        <div className="p-8 border-b border-[var(--c-gray-50)] bg-[var(--c-gray-50)]/30 flex items-center gap-4">
-          <div className="p-3 rounded-2xl bg-[var(--c-navy-500)]/5 text-[var(--c-navy-500)]">
+      <Card className="bg-[var(--card)] border border-[var(--surface)] rounded-[32px] shadow-sm overflow-hidden">
+        <div className="p-8 border-b border-[var(--surface)] bg-[var(--surface)]/30 flex items-center gap-4">
+          <div className="p-3 rounded-2xl bg-[var(--brand)]/5 text-[var(--brand)]">
             <MessageSquare className="h-6 w-6" />
           </div>
           <div>
-            <h3 className="text-lg font-black text-[var(--c-gray-800)] tracking-tight">Barra de Promoción</h3>
-            <p className="text-xs text-[var(--c-gray-400)] font-medium">Mensaje que aparece en la parte superior del sitio</p>
+            <h3 className="text-lg font-black text-[var(--foreground)] tracking-tight">Barra de Promoción</h3>
+            <p className="text-xs text-[var(--muted-foreground)] font-medium">Mensaje que aparece en la parte superior del sitio</p>
           </div>
         </div>
         <CardContent className="p-8 space-y-4">
@@ -110,54 +110,54 @@ export function StorefrontConfig() {
       </Card>
 
       {/* Carousel Hero */}
-      <Card className="bg-white border border-[var(--c-gray-100)] rounded-[32px] shadow-sm overflow-hidden">
-        <div className="p-8 border-b border-[var(--c-gray-50)] bg-[var(--c-gray-50)]/30 flex items-center justify-between">
+      <Card className="bg-[var(--card)] border border-[var(--surface)] rounded-[32px] shadow-sm overflow-hidden">
+        <div className="p-8 border-b border-[var(--surface)] bg-[var(--surface)]/30 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="p-3 rounded-2xl bg-[var(--c-cyan-500)]/5 text-[var(--c-cyan-500)]">
+            <div className="p-3 rounded-2xl bg-[var(--brand)]/5 text-[var(--brand)]">
               <ImageIcon className="h-6 w-6" />
             </div>
             <div>
-              <h3 className="text-lg font-black text-[var(--c-gray-800)] tracking-tight">Carrusel Hero</h3>
-              <p className="text-xs text-[var(--c-gray-400)] font-medium">Imágenes del banner principal en el home</p>
+              <h3 className="text-lg font-black text-[var(--foreground)] tracking-tight">Carrusel Hero</h3>
+              <p className="text-xs text-[var(--muted-foreground)] font-medium">Imágenes del banner principal en el home</p>
             </div>
           </div>
           <Button
             variant="outline"
             size="sm"
             onClick={() => setSlides([...slides, emptySlide()])}
-            className="rounded-xl border-[var(--c-gray-200)] font-bold text-xs"
+            className="rounded-xl border-[var(--border)] font-bold text-xs"
           >
             <Plus className="h-3.5 w-3.5 mr-1" /> Agregar Slide
           </Button>
         </div>
         <CardContent className="p-8 space-y-6">
           {slides.length === 0 && (
-            <p className="text-sm text-[var(--c-gray-400)] text-center py-8 font-medium">
+            <p className="text-sm text-[var(--muted-foreground)] text-center py-8 font-medium">
               Sin slides. Agrega uno para mostrar el carrusel en el home.
             </p>
           )}
           {slides.map((slide, i) => (
-            <div key={i} className="border border-[var(--c-gray-100)] rounded-2xl p-6 space-y-4 bg-[var(--c-gray-50)]/30">
+            <div key={i} className="border border-[var(--surface)] rounded-2xl p-6 space-y-4 bg-[var(--surface)]/30">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[11px] font-black uppercase tracking-widest text-[var(--c-gray-400)]">Slide {i + 1}</span>
+                <span className="text-[11px] font-black uppercase tracking-widest text-[var(--muted-foreground)]">Slide {i + 1}</span>
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => i > 0 && setSlides(moveItem(slides, i, i - 1))}
                     disabled={i === 0}
-                    className="p-1.5 rounded-lg hover:bg-[var(--c-gray-100)] disabled:opacity-30 transition-colors"
+                    className="p-1.5 rounded-lg hover:bg-[var(--surface)] disabled:opacity-30 transition-colors"
                   >
-                    <ChevronUp className="h-3.5 w-3.5 text-[var(--c-gray-500)]" />
+                    <ChevronUp className="h-3.5 w-3.5 text-[var(--muted-foreground)]" />
                   </button>
                   <button
                     onClick={() => i < slides.length - 1 && setSlides(moveItem(slides, i, i + 1))}
                     disabled={i === slides.length - 1}
-                    className="p-1.5 rounded-lg hover:bg-[var(--c-gray-100)] disabled:opacity-30 transition-colors"
+                    className="p-1.5 rounded-lg hover:bg-[var(--surface)] disabled:opacity-30 transition-colors"
                   >
-                    <ChevronDown className="h-3.5 w-3.5 text-[var(--c-gray-500)]" />
+                    <ChevronDown className="h-3.5 w-3.5 text-[var(--muted-foreground)]" />
                   </button>
                   <button
                     onClick={() => setSlides(slides.filter((_, idx) => idx !== i))}
-                    className="p-1.5 rounded-lg hover:bg-red-50 text-red-400 hover:text-red-500 transition-colors"
+                    className="p-1.5 rounded-lg hover:bg-red-500/10 text-red-400 hover:text-red-500 transition-colors"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -207,36 +207,36 @@ export function StorefrontConfig() {
       </Card>
 
       {/* Category Tiles */}
-      <Card className="bg-white border border-[var(--c-gray-100)] rounded-[32px] shadow-sm overflow-hidden">
-        <div className="p-8 border-b border-[var(--c-gray-50)] bg-[var(--c-gray-50)]/30 flex items-center justify-between">
+      <Card className="bg-[var(--card)] border border-[var(--surface)] rounded-[32px] shadow-sm overflow-hidden">
+        <div className="p-8 border-b border-[var(--surface)] bg-[var(--surface)]/30 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-2xl bg-purple-500/5 text-purple-500">
               <Grid3X3 className="h-6 w-6" />
             </div>
             <div>
-              <h3 className="text-lg font-black text-[var(--c-gray-800)] tracking-tight">Tiles de Categorías</h3>
-              <p className="text-xs text-[var(--c-gray-400)] font-medium">Imágenes cuadradas que enlazan a categorías del catálogo</p>
+              <h3 className="text-lg font-black text-[var(--foreground)] tracking-tight">Tiles de Categorías</h3>
+              <p className="text-xs text-[var(--muted-foreground)] font-medium">Imágenes cuadradas que enlazan a categorías del catálogo</p>
             </div>
           </div>
           <Button
             variant="outline"
             size="sm"
             onClick={() => setTiles([...tiles, emptyTile()])}
-            className="rounded-xl border-[var(--c-gray-200)] font-bold text-xs"
+            className="rounded-xl border-[var(--border)] font-bold text-xs"
           >
             <Plus className="h-3.5 w-3.5 mr-1" /> Agregar Tile
           </Button>
         </div>
         <CardContent className="p-8">
           {tiles.length === 0 && (
-            <p className="text-sm text-[var(--c-gray-400)] text-center py-8 font-medium">Sin tiles. Si no configuras esto, el home no mostrará la sección de categorías.</p>
+            <p className="text-sm text-[var(--muted-foreground)] text-center py-8 font-medium">Sin tiles. Si no configuras esto, el home no mostrará la sección de categorías.</p>
           )}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {tiles.map((tile, i) => (
-              <div key={i} className="border border-[var(--c-gray-100)] rounded-2xl p-4 space-y-3 bg-[var(--c-gray-50)]/30">
+              <div key={i} className="border border-[var(--surface)] rounded-2xl p-4 space-y-3 bg-[var(--surface)]/30">
                 <div className="flex justify-between items-center">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-[var(--c-gray-400)]">Tile {i + 1}</span>
-                  <button onClick={() => setTiles(tiles.filter((_, idx) => idx !== i))} className="p-1 rounded-lg hover:bg-red-50 text-red-400 transition-colors">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-[var(--muted-foreground)]">Tile {i + 1}</span>
+                  <button onClick={() => setTiles(tiles.filter((_, idx) => idx !== i))} className="p-1 rounded-lg hover:bg-red-500/10 text-red-400 transition-colors">
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>
@@ -256,35 +256,35 @@ export function StorefrontConfig() {
       </Card>
 
       {/* Community Images */}
-      <Card className="bg-white border border-[var(--c-gray-100)] rounded-[32px] shadow-sm overflow-hidden">
-        <div className="p-8 border-b border-[var(--c-gray-50)] bg-[var(--c-gray-50)]/30 flex items-center justify-between">
+      <Card className="bg-[var(--card)] border border-[var(--surface)] rounded-[32px] shadow-sm overflow-hidden">
+        <div className="p-8 border-b border-[var(--surface)] bg-[var(--surface)]/30 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-2xl bg-rose-500/5 text-rose-500">
               <Layers className="h-6 w-6" />
             </div>
             <div>
-              <h3 className="text-lg font-black text-[var(--c-gray-800)] tracking-tight">Imágenes de Comunidad</h3>
-              <p className="text-xs text-[var(--c-gray-400)] font-medium">Galería de fotos de tu comunidad y eventos</p>
+              <h3 className="text-lg font-black text-[var(--foreground)] tracking-tight">Imágenes de Comunidad</h3>
+              <p className="text-xs text-[var(--muted-foreground)] font-medium">Galería de fotos de tu comunidad y eventos</p>
             </div>
           </div>
           <Button
             variant="outline"
             size="sm"
             onClick={() => setCommunityImages([...communityImages, emptyTile()])}
-            className="rounded-xl border-[var(--c-gray-200)] font-bold text-xs"
+            className="rounded-xl border-[var(--border)] font-bold text-xs"
           >
             <Plus className="h-3.5 w-3.5 mr-1" /> Agregar Imagen
           </Button>
         </div>
         <CardContent className="p-8">
           {communityImages.length === 0 && (
-            <p className="text-sm text-[var(--c-gray-400)] text-center py-8 font-medium">Sin imágenes de comunidad configuradas.</p>
+            <p className="text-sm text-[var(--muted-foreground)] text-center py-8 font-medium">Sin imágenes de comunidad configuradas.</p>
           )}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {communityImages.map((img, i) => (
-              <div key={i} className="border border-[var(--c-gray-100)] rounded-2xl p-3 space-y-2 bg-[var(--c-gray-50)]/30">
+              <div key={i} className="border border-[var(--surface)] rounded-2xl p-3 space-y-2 bg-[var(--surface)]/30">
                 <div className="flex justify-end">
-                  <button onClick={() => setCommunityImages(communityImages.filter((_, idx) => idx !== i))} className="p-1 rounded-lg hover:bg-red-50 text-red-400 transition-colors">
+                  <button onClick={() => setCommunityImages(communityImages.filter((_, idx) => idx !== i))} className="p-1 rounded-lg hover:bg-red-500/10 text-red-400 transition-colors">
                     <Trash2 className="h-3 w-3" />
                   </button>
                 </div>
@@ -303,14 +303,14 @@ export function StorefrontConfig() {
       </Card>
 
       {/* Home Sections */}
-      <Card className="bg-white border border-[var(--c-gray-100)] rounded-[32px] shadow-sm overflow-hidden">
-        <div className="p-8 border-b border-[var(--c-gray-50)] bg-[var(--c-gray-50)]/30 flex items-center gap-4">
+      <Card className="bg-[var(--card)] border border-[var(--surface)] rounded-[32px] shadow-sm overflow-hidden">
+        <div className="p-8 border-b border-[var(--surface)] bg-[var(--surface)]/30 flex items-center gap-4">
           <div className="p-3 rounded-2xl bg-amber-500/5 text-amber-500">
             <LayoutTemplate className="h-6 w-6" />
           </div>
           <div>
-            <h3 className="text-lg font-black text-[var(--c-gray-800)] tracking-tight">Textos del Home</h3>
-            <p className="text-xs text-[var(--c-gray-400)] font-medium">Personaliza los títulos de cada sección del home. Deja en blanco para usar el texto por defecto.</p>
+            <h3 className="text-lg font-black text-[var(--foreground)] tracking-tight">Textos del Home</h3>
+            <p className="text-xs text-[var(--muted-foreground)] font-medium">Personaliza los títulos de cada sección del home. Deja en blanco para usar el texto por defecto.</p>
           </div>
         </div>
         <CardContent className="p-8 space-y-8">
@@ -345,8 +345,8 @@ export function StorefrontConfig() {
           ))}
 
           {/* CTA Section */}
-          <div className="pt-4 border-t border-[var(--c-gray-50)] space-y-4">
-            <p className="text-[11px] font-black uppercase tracking-widest text-[var(--c-gray-400)]">Sección CTA (llamada a la acción)</p>
+          <div className="pt-4 border-t border-[var(--surface)] space-y-4">
+            <p className="text-[11px] font-black uppercase tracking-widest text-[var(--muted-foreground)]">Sección CTA (llamada a la acción)</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="space-y-1">
                 <Label className={labelClass}>Título</Label>
@@ -373,7 +373,7 @@ export function StorefrontConfig() {
         <Button
           onClick={handleSave}
           disabled={isSaving}
-          className="bg-[var(--c-navy-500)] hover:bg-[var(--c-navy-600)] text-white shadow-xl shadow-[var(--c-navy-500)]/20 rounded-2xl px-12 h-14 w-full sm:w-auto font-black text-sm uppercase tracking-widest transition-all"
+          className="bg-[var(--brand)] hover:bg-[var(--brand-hover)] text-white shadow-xl shadow-[var(--brand)]/20 rounded-2xl px-12 h-14 w-full sm:w-auto font-black text-sm uppercase tracking-widest transition-all"
         >
           {isSaving ? "Guardando..." : "Guardar Vitrina"}
           <Save className="h-4 w-4 ml-3" />

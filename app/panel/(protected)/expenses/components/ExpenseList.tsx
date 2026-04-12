@@ -16,9 +16,9 @@ interface ExpenseListProps {
 export function ExpenseList({ expenses, isLoading, formatCurrency }: ExpenseListProps) {
   if (isLoading) {
     return (
-      <div className="bg-white rounded-3xl border border-[var(--c-gray-200)] overflow-hidden shadow-sm">
+      <div className="bg-[var(--card)] rounded-3xl border border-[var(--border)] overflow-hidden shadow-sm">
         <Table>
-          <TableHeader className="bg-[var(--c-gray-50)]">
+          <TableHeader className="bg-[var(--surface)]">
             <TableRow>
               <TableHead>Concepto</TableHead>
               <TableHead>Categoría</TableHead>
@@ -42,15 +42,15 @@ export function ExpenseList({ expenses, isLoading, formatCurrency }: ExpenseList
   }
 
   return (
-    <div className="bg-white rounded-[32px] border border-[var(--c-gray-100)] overflow-hidden shadow-sm">
+    <div className="bg-[var(--card)] rounded-[32px] border border-[var(--surface)] overflow-hidden shadow-sm">
       <div className="overflow-x-auto">
         <Table>
-          <TableHeader className="bg-[var(--c-gray-50)]/50 border-b border-[var(--c-gray-100)]">
+          <TableHeader className="bg-[var(--surface)]/50 border-b border-[var(--surface)]">
             <TableRow className="hover:bg-transparent">
-              <TableHead className="text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest py-4 px-6">Concepto / Detalle</TableHead>
-              <TableHead className="text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest py-4 px-6">Clasificación</TableHead>
-              <TableHead className="text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest py-4 px-6">Fecha Registro</TableHead>
-              <TableHead className="text-[11px] font-bold text-[var(--c-gray-400)] uppercase tracking-widest py-4 px-6 text-right">Impacto en Caja</TableHead>
+              <TableHead className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest py-4 px-6">Concepto / Detalle</TableHead>
+              <TableHead className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest py-4 px-6">Clasificación</TableHead>
+              <TableHead className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest py-4 px-6">Fecha Registro</TableHead>
+              <TableHead className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest py-4 px-6 text-right">Impacto en Caja</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -58,37 +58,37 @@ export function ExpenseList({ expenses, isLoading, formatCurrency }: ExpenseList
               <TableRow>
                 <TableCell colSpan={4} className="py-24 text-center">
                    <div className="flex flex-col items-center gap-4">
-                      <div className="p-4 rounded-full bg-[var(--c-gray-50)]">
-                        <Receipt className="h-8 w-8 text-[var(--c-gray-300)]" />
+                      <div className="p-4 rounded-full bg-[var(--surface)]">
+                        <Receipt className="h-8 w-8 text-[var(--border-hover)]" />
                       </div>
-                      <p className="text-[var(--c-gray-500)] font-medium">No hay gastos registrados este periodo</p>
+                      <p className="text-[var(--muted-foreground)] font-medium">No hay gastos registrados este periodo</p>
                    </div>
                 </TableCell>
               </TableRow>
             ) : (
               expenses.map((expense, idx) => (
-                <TableRow key={expense.id || idx} className="hover:bg-[var(--c-gray-50)] transition-colors border-b border-[var(--c-gray-100)] last:border-0 group/row">
+                <TableRow key={expense.id || idx} className="hover:bg-[var(--surface)] transition-colors border-b border-[var(--surface)] last:border-0 group/row">
                   <TableCell className="py-5 px-6">
                     <div className="flex items-center gap-3">
-                       <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-red-500">
+                       <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500">
                           <CreditCard className="h-5 w-5" />
                        </div>
-                       <span className="text-[14px] font-extrabold text-[var(--c-gray-800)]">
+                       <span className="text-[14px] font-extrabold text-[var(--foreground)]">
                          {expense.title || expense.description || "Sin descripción"}
                        </span>
                     </div>
                   </TableCell>
                   <TableCell className="py-5 px-6">
                     <div className="flex items-center gap-2">
-                       <Tag className="h-3.5 w-3.5 text-[var(--c-cyan-500)]" />
-                       <Badge variant="outline" className="rounded-xl px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest border border-[var(--c-gray-100)] bg-[var(--c-gray-50)] text-[var(--c-gray-500)]">
+                       <Tag className="h-3.5 w-3.5 text-[var(--brand)]" />
+                       <Badge variant="outline" className="rounded-xl px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest border border-[var(--surface)] bg-[var(--surface)] text-[var(--muted-foreground)]">
                          {expense.category || "Operativo"}
                        </Badge>
                     </div>
                   </TableCell>
                   <TableCell className="py-5 px-6">
-                    <div className="flex items-center gap-2 text-[var(--c-gray-500)]">
-                       <Calendar className="h-3.5 w-3.5 text-[var(--c-navy-500)]" />
+                    <div className="flex items-center gap-2 text-[var(--muted-foreground)]">
+                       <Calendar className="h-3.5 w-3.5 text-[var(--brand)]" />
                        <span className="text-[13px] font-medium">{expense.date || expense.created_at || "-"}</span>
                     </div>
                   </TableCell>

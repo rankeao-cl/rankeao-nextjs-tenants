@@ -60,9 +60,9 @@ export default function ProductsPage() {
 
         {/* Pagination Section */}
         {meta && meta.total_pages > 1 && (
-          <div className="flex items-center justify-between px-6 py-4 bg-white border border-[var(--c-gray-200)] rounded-2xl shadow-sm">
-            <p className="text-[13px] text-[var(--c-gray-500)] font-semibold">
-              Página <span className="text-[var(--c-gray-800)]">{meta.page}</span> de <span className="text-[var(--c-gray-800)]">{meta.total_pages}</span> · {meta.total} productos
+          <div className="flex items-center justify-between px-6 py-4 bg-[var(--card)] border border-[var(--border)] rounded-2xl shadow-sm">
+            <p className="text-[13px] text-[var(--muted-foreground)] font-semibold">
+              Página <span className="text-[var(--foreground)]">{meta.page}</span> de <span className="text-[var(--foreground)]">{meta.total_pages}</span> · {meta.total} productos
             </p>
             <div className="flex gap-2">
               <Button
@@ -70,7 +70,7 @@ export default function ProductsPage() {
                 variant="outline"
                 disabled={page <= 1}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
-                className="h-10 px-4 text-[13px] font-bold border-[var(--c-gray-200)] text-[var(--c-gray-600)] rounded-xl hover:bg-[var(--c-gray-50)]"
+                className="h-10 px-4 text-[13px] font-bold border-[var(--border)] text-[var(--muted-foreground)] hover:bg-[var(--surface)]"
               >
                 <ChevronLeft className="h-4 w-4 mr-1.5" /> Anterior
               </Button>
@@ -79,7 +79,7 @@ export default function ProductsPage() {
                 variant="outline"
                 disabled={page >= meta.total_pages}
                 onClick={() => setPage((p) => p + 1)}
-                className="h-10 px-4 text-[13px] font-bold border-[var(--c-gray-200)] text-[var(--c-gray-600)] rounded-xl hover:bg-[var(--c-gray-50)]"
+                className="h-10 px-4 text-[13px] font-bold border-[var(--border)] text-[var(--muted-foreground)] hover:bg-[var(--surface)]"
               >
                 Siguiente <ChevronRight className="h-4 w-4 ml-1.5" />
               </Button>
