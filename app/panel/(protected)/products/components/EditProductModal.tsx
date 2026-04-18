@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Info, Image as ImageIcon, Layers, Plus, Trash2, Save, X, Box } from "lucide-react";
+import { ArrowDown, ArrowUp, Info, Image as ImageIcon, Layers, Plus, Star, Trash2, Save, X, Box } from "lucide-react";
 import {
   getProduct,
   updateProduct,
@@ -18,10 +18,14 @@ import {
   addProductVariant,
   updateProductVariant,
   deleteProductVariant,
+  listVariants,
+  reorderProductImages,
+  updateProductImage,
 } from "@/lib/api/products";
 import { getErrorMessage } from "@/lib/utils/error-message";
 import { useQueryClient } from "@tanstack/react-query";
 import type { ProductImage, ProductVariant } from "@/lib/types/products";
+import { useTenantQueryScope } from "@/lib/hooks/use-tenant-query-scope";
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP" }).format(value);
@@ -43,6 +47,7 @@ interface EditProductModalProps {
 
 export function EditProductModal({ isOpen, onClose, productId, onProductUpdated }: EditProductModalProps) {
   const queryClient = useQueryClient();
+  const { tenantQueryKey } = useTenantQueryScope();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -54,7 +59,7 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
     if (!productId) return;
     try {
       setLoading(true);
-      const data = await getProduct(productId);
+      const [data, currentVariants] = await Promise.all([getProduct(productId), listVariants(productId)]);
       setForm({
         name: data.name || "",
         sku: data.sku || "",
@@ -63,7 +68,7 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
         description: data.description || "",
       });
       setImages(data.images || []);
-      setVariants(data.variants || []);
+      setVariants(currentVariants.length > 0 ? currentVariants : data.variants || []);
     } catch (error: unknown) {
       toast.error(getErrorMessage(error, "Error al cargar producto"));
     } finally {
@@ -79,8 +84,8 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
   }, [isOpen, productId]);
 
   const invalidate = () => {
-    queryClient.invalidateQueries({ queryKey: ["products"] });
-    queryClient.invalidateQueries({ queryKey: ["product", productId] });
+    queryClient.invalidateQueries({ queryKey: tenantQueryKey("products") });
+    queryClient.invalidateQueries({ queryKey: tenantQueryKey("product", productId) });
     onProductUpdated();
   };
 
@@ -151,6 +156,37 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
       invalidate();
     } catch (error: unknown) {
       toast.error(getErrorMessage(error, "Error al eliminar imagen"));
+    }
+  };
+
+  const handleSetPrimaryImage = async (imageId: string) => {
+    if (!productId) return;
+    try {
+      await updateProductImage(productId, imageId, { is_primary: true });
+      toast.success("Imagen principal actualizada");
+      fetchProduct();
+      invalidate();
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, "No se pudo definir imagen principal"));
+    }
+  };
+
+  const handleReorderImage = async (imageId: string, direction: "up" | "down") => {
+    if (!productId || images.length < 2) return;
+    const currentOrder = images.map((img) => String(img.id));
+    const index = currentOrder.indexOf(imageId);
+    if (index < 0) return;
+    const target = direction === "up" ? index - 1 : index + 1;
+    if (target < 0 || target >= currentOrder.length) return;
+    const reordered = [...currentOrder];
+    [reordered[index], reordered[target]] = [reordered[target], reordered[index]];
+    try {
+      await reorderProductImages(productId, reordered);
+      toast.success("Orden de imágenes actualizado");
+      fetchProduct();
+      invalidate();
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, "No se pudo reordenar imágenes"));
     }
   };
 
@@ -299,7 +335,36 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
                       {images.map((img) => (
                         <div key={img.id} className="group relative aspect-square rounded-2xl overflow-hidden border border-[var(--border)] bg-[var(--surface)] shadow-sm">
                           <img src={getImageUrl(img.url)} alt="" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                          {img.is_primary ? (
+                            <span className="absolute top-2 left-2 rounded-full bg-[var(--brand)] px-2 py-1 text-[10px] font-bold text-white">
+                              Principal
+                            </span>
+                          ) : null}
                           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                             <Button
+                               variant="ghost"
+                               size="icon"
+                               className="h-10 w-10 bg-[var(--card)]/20 hover:bg-[var(--brand)] text-white backdrop-blur-md"
+                               onClick={() => handleSetPrimaryImage(String(img.id))}
+                             >
+                               <Star className="w-4 h-4" />
+                             </Button>
+                             <Button
+                               variant="ghost"
+                               size="icon"
+                               className="h-10 w-10 bg-[var(--card)]/20 hover:bg-white/30 text-white backdrop-blur-md"
+                               onClick={() => handleReorderImage(String(img.id), "up")}
+                             >
+                               <ArrowUp className="w-4 h-4" />
+                             </Button>
+                             <Button
+                               variant="ghost"
+                               size="icon"
+                               className="h-10 w-10 bg-[var(--card)]/20 hover:bg-white/30 text-white backdrop-blur-md"
+                               onClick={() => handleReorderImage(String(img.id), "down")}
+                             >
+                               <ArrowDown className="w-4 h-4" />
+                             </Button>
                              <Button variant="ghost" size="icon" className="h-10 w-10 bg-[var(--card)]/20 hover:bg-red-500 text-white backdrop-blur-md" onClick={() => handleDeleteImage(String(img.id))}>
                                <Trash2 className="w-4 h-4" />
                              </Button>
@@ -353,6 +418,19 @@ export function EditProductModal({ isOpen, onClose, productId, onProductUpdated 
                           <div className="text-right flex flex-col items-end">
                             <p className="text-[13px] font-bold text-[var(--brand)]">+{formatCurrency(v.price_diff || 0)}</p>
                             <p className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-tighter">Stock: {v.stock || 0}</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Input
+                              type="number"
+                              defaultValue={v.stock ?? 0}
+                              className="h-9 w-20 bg-[var(--surface)] border-none rounded-lg text-right"
+                              onBlur={(e) => {
+                                const stock = Number(e.target.value);
+                                if (!Number.isFinite(stock)) return;
+                                if (stock === (v.stock ?? 0)) return;
+                                handleUpdateVariant(String(v.id), { stock });
+                              }}
+                            />
                           </div>
                           <div className="flex gap-1 pl-2 border-l border-[var(--surface)]">
                              <Button size="icon" variant="ghost" className="h-9 w-9 text-red-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg" onClick={() => handleDeleteVariant(String(v.id))}>

@@ -15,6 +15,7 @@ import {
   declineInvitation,
   type PendingInvitation,
 } from "@/lib/api/tenant";
+import { activateTenantMembership, closePanelSession, resolvePanelRedirect } from "@/lib/api/auth";
 
 const ROLE_LABELS: Record<string, string> = {
   OWNER: "Propietario",
@@ -55,20 +56,17 @@ export default function InvitationsPage() {
       await acceptInvitation(id);
       toast.success("Invitacion aceptada");
 
-      // Re-fetch memberships and redirect to dashboard
+      // Re-fetch memberships and route to dashboard or tenant selector
       const memberships = await fetchMyMemberships();
       if (memberships && memberships.length > 0) {
+        if (memberships.length > 1) {
+          const redirect = resolvePanelRedirect("/panel/dashboard");
+          router.push(`/panel/select-tenant?redirect=${encodeURIComponent(redirect)}`);
+          return;
+        }
+
         const membership = memberships[0];
-        const currentAuth = useAuthStore.getState();
-        useAuthStore.getState().setAuth({
-          access_token: currentAuth.accessToken!,
-          refresh_token: currentAuth.refreshToken!,
-          expires_in: Math.floor(((currentAuth.expiresAt || 0) - Date.now()) / 1000),
-          user: {
-            ...currentAuth.user!,
-            tenant_id: String(membership.tenant_id),
-          },
-        });
+        activateTenantMembership(membership);
         router.push("/panel/dashboard");
       } else {
         // Remove accepted invitation from list
@@ -96,8 +94,11 @@ export default function InvitationsPage() {
     }
   }
 
-  function handleLogout() {
-    useAuthStore.getState().logout();
+  async function handleLogout() {
+    const session = await closePanelSession();
+    if (session.warning) {
+      toast.warning(session.warning);
+    }
     router.push("/panel/login");
   }
 

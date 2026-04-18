@@ -1,5 +1,6 @@
 import { apiFetch } from "./client";
-import type { AuthResponse } from "@/lib/types/auth";
+import type { AuthResponse, Membership } from "@/lib/types/auth";
+import { useAuthStore } from "@/lib/stores/auth-store";
 
 interface AuthPayload {
   data?: {
@@ -59,4 +60,69 @@ export async function loginPanel(email: string, password: string): Promise<AuthR
   });
 
   return normalizeAuthResponse(raw);
+}
+
+export async function logoutPanel(refreshToken: string): Promise<void> {
+  await apiFetch("/auth/logout", {
+    method: "POST",
+    body: { refresh_token: refreshToken },
+    skipAuth: true,
+  });
+}
+
+export async function closePanelSession(): Promise<{ remoteRevoked: boolean; warning?: string }> {
+  const { refreshToken, logout } = useAuthStore.getState();
+  if (!refreshToken) {
+    logout();
+    return { remoteRevoked: false };
+  }
+
+  try {
+    await logoutPanel(refreshToken);
+    logout();
+    return { remoteRevoked: true };
+  } catch (error: unknown) {
+    logout();
+    const message = error instanceof Error ? error.message : "No se pudo cerrar sesión en el servidor.";
+    return {
+      remoteRevoked: false,
+      warning: `Sesión local cerrada. ${message}`,
+    };
+  }
+}
+
+const DEFAULT_PANEL_REDIRECT = "/panel/dashboard";
+
+export function resolvePanelRedirect(redirect: string | null | undefined): string {
+  const value = (redirect ?? "").trim();
+  if (!value.startsWith("/panel/")) return DEFAULT_PANEL_REDIRECT;
+  if (
+    value.startsWith("/panel/login") ||
+    value.startsWith("/panel/select-tenant") ||
+    value.startsWith("/panel/invitations")
+  ) {
+    return DEFAULT_PANEL_REDIRECT;
+  }
+  return value;
+}
+
+export function activateTenantMembership(membership: Membership): void {
+  const { accessToken, refreshToken, expiresAt, user, setAuth } = useAuthStore.getState();
+
+  if (!accessToken || !refreshToken || !user) {
+    throw new Error("No hay una sesión activa para seleccionar tienda.");
+  }
+
+  const remaining = expiresAt ? Math.floor((expiresAt - Date.now()) / 1000) : 3600;
+  const expiresIn = Math.max(1, remaining);
+
+  setAuth({
+    access_token: accessToken,
+    refresh_token: refreshToken,
+    expires_in: expiresIn,
+    user: {
+      ...user,
+      tenant_id: String(membership.tenant_id),
+    },
+  });
 }

@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getMyTenant, updateMyTenant } from "@/lib/api/tenant";
 import type { TenantStorefrontConfig } from "@/lib/types/tenant";
 import { toast } from "sonner";
+import { useTenantQueryScope } from "./use-tenant-query-scope";
 
 function extractConfig(tenant: Record<string, unknown>): TenantStorefrontConfig {
   return (tenant.config as TenantStorefrontConfig) ?? {};
@@ -9,9 +10,10 @@ function extractConfig(tenant: Record<string, unknown>): TenantStorefrontConfig 
 
 export function useTenantConfig() {
   const queryClient = useQueryClient();
+  const { tenantQueryKey } = useTenantQueryScope();
 
   const { data: tenant, isLoading } = useQuery({
-    queryKey: ["my-tenant"],
+    queryKey: tenantQueryKey("my-tenant"),
     queryFn: getMyTenant,
     staleTime: 5 * 60 * 1000,
   });
@@ -27,7 +29,7 @@ export function useTenantConfig() {
       await updateMyTenant({ config: merged });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["my-tenant"] });
+      queryClient.invalidateQueries({ queryKey: tenantQueryKey("my-tenant") });
     },
     onError: (err: unknown) => {
       const msg = err instanceof Error ? err.message : "Error al guardar configuración";

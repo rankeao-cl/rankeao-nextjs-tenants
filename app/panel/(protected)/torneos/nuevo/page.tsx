@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { getGames, getFormats, createTournament, type CreateTournamentPayload } from "@/lib/api/tournaments";
@@ -11,7 +11,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { ImageUploader } from "@/components/ui/ImageUploader";
 import { toast } from "sonner";
-import { ArrowLeft, Trophy, Calendar, Users, DollarSign, MapPin, Settings } from "lucide-react";
+import { ArrowLeft, Trophy, Calendar, DollarSign, MapPin, Settings } from "lucide-react";
+import { useTenantQueryScope } from "@/lib/hooks/use-tenant-query-scope";
 
 const labelClass = "text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest mb-2";
 const inputClass = "h-11 border-[var(--border)] bg-[var(--card)] px-4 text-sm text-[var(--foreground)] font-medium";
@@ -19,6 +20,7 @@ const selectClass = "h-11 border border-[var(--border)] bg-[var(--card)] rounded
 
 export default function NuevoTorneoPage() {
   const router = useRouter();
+  const { tenantQueryKey } = useTenantQueryScope();
 
   const [bannerUrl, setBannerUrl] = useState("");
   const [form, setForm] = useState({
@@ -53,11 +55,15 @@ export default function NuevoTorneoPage() {
     inscription_url: "",
   });
 
-  const { data: games = [] } = useQuery({ queryKey: ["games"], queryFn: getGames });
+  const { data: games = [] } = useQuery({ queryKey: tenantQueryKey("games"), queryFn: getGames });
+  const selectedGameSlug = useMemo(
+    () => games.find((game) => game.id === form.game_id)?.slug,
+    [games, form.game_id]
+  );
   const { data: formats = [] } = useQuery({
-    queryKey: ["formats", form.game_id],
-    queryFn: () => getFormats(form.game_id || undefined),
-    enabled: true,
+    queryKey: tenantQueryKey("formats", selectedGameSlug),
+    queryFn: () => getFormats(selectedGameSlug),
+    enabled: Boolean(selectedGameSlug),
   });
 
   const createMut = useMutation({
@@ -72,7 +78,11 @@ export default function NuevoTorneoPage() {
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
-    setForm((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+      ...(name === "game_id" ? { format_id: "" } : {}),
+    }));
   }
 
   function handleSubmit(e: React.FormEvent) {

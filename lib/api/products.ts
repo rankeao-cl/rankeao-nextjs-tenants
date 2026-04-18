@@ -1,5 +1,5 @@
 import { apiFetch, extractList, extractListMeta, extractRecord } from "./client";
-import type { Product, ProductDetail } from "@/lib/types/products";
+import type { Product, ProductDetail, ProductVariant } from "@/lib/types/products";
 import type { ListMeta } from "@/lib/types/api";
 
 export async function listProducts(
@@ -49,7 +49,8 @@ export async function deleteProductVariant(productId: string, variantId: string)
 }
 
 export async function bulkProductAction(data: { product_ids: string[]; action: string }) {
-  return apiFetch<{ success_count: number; failed_count: number }>("/store/panel/products/bulk-action", { method: "POST", body: data });
+  const payload = await apiFetch<unknown>("/store/panel/products/bulk-action", { method: "POST", body: data });
+  return extractRecord(payload) as unknown as { success_count: number; failed_count: number; failures?: unknown[] };
 }
 
 export async function reorderProductImages(productId: string, imageIds: string[]) {
@@ -60,7 +61,7 @@ export async function updateProductImage(productId: string, imageId: string, dat
   return apiFetch(`/store/panel/products/${productId}/images/${imageId}`, { method: "PATCH", body: data });
 }
 
-export async function listVariants(productId: string) {
+export async function listVariants(productId: string): Promise<ProductVariant[]> {
   const payload = await apiFetch<unknown>(`/store/panel/products/${productId}/variants`);
-  return extractList(payload, ["variants", "items"]);
+  return extractList<ProductVariant>(payload, ["variants", "items", "data"]);
 }

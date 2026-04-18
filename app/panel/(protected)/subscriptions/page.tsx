@@ -11,8 +11,9 @@ import {
   useInvoices,
   useCancelSubscription,
   useReactivateSubscription,
+  useUpgradeSubscription,
+  useDowngradeSubscription,
 } from "@/lib/hooks/use-subscriptions";
-import { AVAILABLE_PLANS } from "@/lib/constants/plans";
 
 // Modular Components
 import { SubscriptionHeader } from "./components/SubscriptionHeader";
@@ -43,13 +44,21 @@ export default function SubscriptionsPage() {
   const { data: invoices = [], isLoading: loadingInvoices } = useInvoices();
   const cancelMutation = useCancelSubscription();
   const reactivateMutation = useReactivateSubscription();
+  const upgradeMutation = useUpgradeSubscription();
+  const downgradeMutation = useDowngradeSubscription();
 
-  const currentPlanId = subscription?.plan_slug ?? "free";
+  const availablePlans = subscription?.available_plans ?? [];
+  const currentPlanId = (subscription?.plan_slug ?? "starter").toLowerCase();
   const subscriptionStatus = subscription?.status ?? "ACTIVE";
+  const billingCycle = (subscription?.billing_cycle ?? "MONTHLY").toUpperCase();
   const isLoading = loadingSubscription || loadingInvoices;
 
-  const currentPlan = AVAILABLE_PLANS.find((p) => p.id === currentPlanId);
-  const actionLoading = cancelMutation.isPending || reactivateMutation.isPending;
+  const currentPlan = availablePlans.find((p) => p.slug.toLowerCase() === currentPlanId);
+  const actionLoading =
+    cancelMutation.isPending ||
+    reactivateMutation.isPending ||
+    upgradeMutation.isPending ||
+    downgradeMutation.isPending;
 
   const handleCancelSubscription = async () => {
     try {
@@ -66,6 +75,27 @@ export default function SubscriptionsPage() {
       toast.success("Suscripción reactivada");
     } catch (error: unknown) {
       toast.error(getErrorMessage(error, "Error al reactivar suscripción"));
+    }
+  };
+
+  const handleSelectPlan = async (targetPlanSlug: string) => {
+    const targetPlan = availablePlans.find((p) => p.slug.toLowerCase() === targetPlanSlug.toLowerCase());
+    if (!targetPlan || !currentPlan || targetPlan.slug.toLowerCase() === currentPlanId) return;
+
+    try {
+      if (targetPlan.price_monthly >= currentPlan.price_monthly) {
+        await upgradeMutation.mutateAsync({
+          plan_slug: targetPlan.slug,
+          billing_cycle: billingCycle === "YEARLY" ? "YEARLY" : "MONTHLY",
+          payment_provider: "manual",
+        });
+        toast.success(`Plan actualizado a ${targetPlan.name}`);
+      } else {
+        await downgradeMutation.mutateAsync({ plan_slug: targetPlan.slug });
+        toast.success(`Cambio a ${targetPlan.name} programado para el próximo ciclo`);
+      }
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, "No se pudo cambiar el plan"));
     }
   };
 
@@ -101,7 +131,7 @@ export default function SubscriptionsPage() {
                     </div>
                     <div>
                       <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted-foreground)]">Plan Vigente</p>
-                      <h2 className="text-2xl font-black text-[var(--foreground)]">{currentPlan?.name}</h2>
+                       <h2 className="text-2xl font-black text-[var(--foreground)]">{currentPlan?.name ?? subscription?.plan_name ?? "Plan"}</h2>
                     </div>
                  </div>
                  <div className="flex items-center gap-3 mt-2">
@@ -125,7 +155,11 @@ export default function SubscriptionsPage() {
                  <div className="space-y-4">
                     <div className="flex justify-between items-center">
                        <span className="text-[13px] font-medium text-[var(--muted-foreground)]">Inversión Mensual</span>
-                       <span className="text-[15px] font-bold text-[var(--foreground)]">{currentPlan?.price === 0 ? "Sin costo" : formatCurrency(currentPlan?.price || 0)}</span>
+                       <span className="text-[15px] font-bold text-[var(--foreground)]">
+                         {(subscription?.amount ?? currentPlan?.price_monthly ?? 0) === 0
+                           ? "Sin costo"
+                           : formatCurrency(subscription?.amount ?? currentPlan?.price_monthly ?? 0)}
+                       </span>
                     </div>
                     <div className="flex justify-between items-center">
                        <span className="text-[13px] font-medium text-[var(--muted-foreground)]">Plan</span>
@@ -136,7 +170,7 @@ export default function SubscriptionsPage() {
 
               {/* Right: Actions */}
               <div className="p-8 md:w-1/3 flex flex-col justify-center gap-3">
-                 {subscriptionStatus === "ACTIVE" && currentPlanId !== "free" ? (
+                 {subscriptionStatus === "ACTIVE" && (subscription?.amount ?? currentPlan?.price_monthly ?? 0) > 0 ? (
                    <Button 
                     variant="outline" 
                     disabled={actionLoading} 
@@ -171,14 +205,18 @@ export default function SubscriptionsPage() {
            <p className="text-sm text-[var(--muted-foreground)] mt-1 font-medium">Escala tu negocio con funciones avanzadas y mayor capacidad</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-4">
-          {AVAILABLE_PLANS.map((plan) => (
+          {availablePlans.map((plan) => (
             <SubscriptionPlanCard
-              key={plan.id}
-              plan={plan}
-              isCurrent={plan.id === currentPlanId}
-              onSelect={() => {
-                toast.info("Cambio de plan disponible próximamente");
+              key={plan.slug}
+              plan={{
+                id: plan.slug,
+                name: plan.name,
+                price: plan.price_monthly,
+                features: plan.features,
+                is_popular: plan.is_popular,
               }}
+              isCurrent={plan.slug.toLowerCase() === currentPlanId}
+              onSelect={handleSelectPlan}
               formatCurrency={formatCurrency}
             />
           ))}

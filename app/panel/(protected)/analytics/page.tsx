@@ -1,9 +1,10 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { useSalesAnalytics } from "@/lib/hooks/use-analytics";
-import { BarChart3, PieChart, Info } from "lucide-react";
-
+import { Button } from "@/components/ui/button";
+import { useAuditLog, useExportAnalytics, useSalesAnalytics } from "@/lib/hooks/use-analytics";
+import { BarChart3, Download, Info, ShieldCheck } from "lucide-react";
+import { toast } from "sonner";
 
 // Modular Components
 import { AnalyticsHeader } from "./components/AnalyticsHeader";
@@ -14,88 +15,135 @@ const formatCurrency = (value: number | undefined) =>
 
 export default function AnalyticsPage() {
   const { data: stats, isLoading } = useSalesAnalytics();
+  const { data: auditData, isLoading: isAuditLoading } = useAuditLog({ page: 1, per_page: 8 });
+  const exportMutation = useExportAnalytics();
+
+  const series = stats?.series ?? [];
+  const maxNetRevenue = Math.max(...series.map((item) => item.net_revenue), 1);
+
+  async function handleExport() {
+    try {
+      const file = await exportMutation.mutateAsync();
+      const url = URL.createObjectURL(file.blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = file.filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      toast.success("Reporte exportado");
+    } catch {
+      toast.error("No se pudo exportar el reporte");
+    }
+  }
 
   return (
     <div className="space-y-10 max-w-[1400px] mx-auto pb-10 px-4 sm:px-0">
       <AnalyticsHeader />
 
-      <AnalyticsSummary 
-        stats={stats} 
-        isLoading={isLoading} 
-        formatCurrency={formatCurrency} 
-      />
+      <AnalyticsSummary stats={stats} isLoading={isLoading} formatCurrency={formatCurrency} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main Chart Placeholder / Preview */}
         <div className="lg:col-span-2">
-           <Card className="bg-[var(--card)] border border-[var(--surface)] rounded-[32px] overflow-hidden shadow-sm h-full">
-              <div className="p-8 border-b border-[var(--surface)] flex items-center justify-between">
-                 <div className="flex items-center gap-3">
-                    <div className="p-2.5 rounded-xl bg-[var(--brand)]/5 text-[var(--brand)]">
-                       <BarChart3 className="h-5 w-5" />
-                    </div>
-                    <h3 className="font-extrabold text-[var(--foreground)]">Gráfico de Ventas</h3>
-                 </div>
-                 <div className="flex items-center gap-2 bg-[var(--surface)] p-1 rounded-lg">
-                    <button className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--muted-foreground)] hover:text-[var(--brand)]">Día</button>
-                    <button className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider bg-[var(--card)] shadow-sm text-[var(--brand)] rounded-md">Semana</button>
-                    <button className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--muted-foreground)] hover:text-[var(--brand)]">Mes</button>
-                 </div>
+          <Card className="bg-[var(--card)] border border-[var(--surface)] rounded-[32px] overflow-hidden shadow-sm h-full">
+            <div className="p-8 border-b border-[var(--surface)] flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-[var(--brand)]/5 text-[var(--brand)]">
+                  <BarChart3 className="h-5 w-5" />
+                </div>
+                <h3 className="font-extrabold text-[var(--foreground)]">Evolución de ventas netas</h3>
               </div>
-              <CardContent className="p-8 min-h-[400px] flex flex-col items-center justify-center bg-[var(--surface)]/30 border-dashed border-2 border-[var(--surface)] m-4 rounded-[24px]">
-                 <div className="p-5 rounded-full bg-[var(--card)] shadow-sm mb-4">
-                    <PieChart className="h-10 w-10 text-[var(--border)]" />
-                 </div>
-                 <h4 className="font-bold text-[var(--muted-foreground)] mb-1 text-center">Visualizaciones Proximamente</h4>
-                 <p className="text-sm text-[var(--muted-foreground)] text-center max-w-sm">Estamos procesando el historial de transacciones para generar gráficos interactivos de alta fidelidad.</p>
-              </CardContent>
-           </Card>
+              <Button size="sm" variant="outline" onClick={handleExport} disabled={exportMutation.isPending}>
+                <Download className="h-4 w-4 mr-2" />
+                {exportMutation.isPending ? "Exportando..." : "Exportar CSV"}
+              </Button>
+            </div>
+            <CardContent className="p-6">
+              {series.length === 0 ? (
+                <p className="text-sm text-[var(--muted-foreground)]">
+                  Aún no hay datos de ventas para el período seleccionado.
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {series.slice(-14).map((point) => (
+                    <div key={point.date} className="space-y-1">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-semibold text-[var(--muted-foreground)]">{point.date}</span>
+                        <span className="font-bold text-[var(--foreground)]">{formatCurrency(point.net_revenue)}</span>
+                      </div>
+                      <div className="h-2 rounded-full bg-[var(--surface)] overflow-hidden">
+                        <div
+                          className="h-full bg-[var(--brand)]"
+                          style={{ width: `${Math.max(4, (point.net_revenue / maxNetRevenue) * 100)}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Sidebar Analytics */}
         <div className="space-y-8">
-           <Card className="bg-[var(--card)] border border-[var(--surface)] rounded-[32px] shadow-sm">
-              <div className="p-6 border-b border-[var(--surface)]">
-                 <h3 className="font-extrabold text-[14px] text-[var(--brand)] uppercase tracking-wider flex items-center gap-2">
-                    <Info className="h-4 w-4" /> Resumen del Período
-                 </h3>
+          <Card className="bg-[var(--card)] border border-[var(--surface)] rounded-[32px] shadow-sm">
+            <div className="p-6 border-b border-[var(--surface)]">
+              <h3 className="font-extrabold text-[14px] text-[var(--brand)] uppercase tracking-wider flex items-center gap-2">
+                <Info className="h-4 w-4" /> Resumen del Período
+              </h3>
+            </div>
+            <CardContent className="p-8">
+              <div className="space-y-4">
+                <div className="flex justify-between items-center py-2 border-b border-[var(--surface)]">
+                  <span className="text-[12px] font-medium text-[var(--muted-foreground)]">Ventas netas</span>
+                  <span className="text-[13px] font-bold text-[var(--foreground)]">
+                    {formatCurrency(stats?.totals?.net_revenue)}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-[var(--surface)]">
+                  <span className="text-[12px] font-medium text-[var(--muted-foreground)]">Órdenes</span>
+                  <span className="text-[13px] font-bold text-[var(--foreground)]">
+                    {stats?.totals?.orders_count ?? 0}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center py-2">
+                  <span className="text-[12px] font-medium text-[var(--muted-foreground)]">Items vendidos</span>
+                  <span className="text-[13px] font-bold text-[var(--foreground)]">
+                    {stats?.totals?.items_sold ?? 0}
+                  </span>
+                </div>
               </div>
-              <CardContent className="p-8">
-                 {stats ? (
-                   <div className="space-y-4">
-                     <div className="flex justify-between items-center py-2 border-b border-[var(--surface)]">
-                       <span className="text-[12px] font-medium text-[var(--muted-foreground)]">Total Ventas</span>
-                       <span className="text-[13px] font-bold text-[var(--foreground)]">{formatCurrency((stats as Record<string, unknown>).total_revenue as number)}</span>
-                     </div>
-                     <div className="flex justify-between items-center py-2 border-b border-[var(--surface)]">
-                       <span className="text-[12px] font-medium text-[var(--muted-foreground)]">Órdenes</span>
-                       <span className="text-[13px] font-bold text-[var(--foreground)]">{String((stats as Record<string, unknown>).total_orders ?? 0)}</span>
-                     </div>
-                     <div className="flex justify-between items-center py-2">
-                       <span className="text-[12px] font-medium text-[var(--muted-foreground)]">Ticket Promedio</span>
-                       <span className="text-[13px] font-bold text-[var(--foreground)]">{formatCurrency((stats as Record<string, unknown>).avg_order_value as number)}</span>
-                     </div>
-                   </div>
-                 ) : (
-                   <p className="text-[13px] text-[var(--muted-foreground)] font-medium text-center py-4">
-                     Los insights estarán disponibles cuando tengas historial de ventas.
-                   </p>
-                 )}
-              </CardContent>
-           </Card>
+            </CardContent>
+          </Card>
 
-           {/* Debug info if needed */}
-           {!isLoading && stats && (
-              <details className="cursor-pointer group">
-                 <summary className="text-[11px] font-bold text-[var(--muted-foreground)] uppercase tracking-widest hover:text-[var(--brand)] transition-colors list-none flex items-center gap-2 px-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[var(--border-hover)] group-open:bg-[var(--brand)]" />
-                    Datos Crudos del API
-                 </summary>
-                 <div className="mt-4 p-4 bg-[var(--brand)] text-white/80 rounded-2xl text-[10px] font-mono overflow-auto max-h-[300px]">
-                    <pre>{JSON.stringify(stats, null, 2)}</pre>
-                 </div>
-              </details>
-           )}
+          <Card className="bg-[var(--card)] border border-[var(--surface)] rounded-[32px] shadow-sm">
+            <div className="p-6 border-b border-[var(--surface)]">
+              <h3 className="font-extrabold text-[14px] text-[var(--brand)] uppercase tracking-wider flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4" /> Audit log reciente
+              </h3>
+            </div>
+            <CardContent className="p-6">
+              {isAuditLoading ? (
+                <p className="text-sm text-[var(--muted-foreground)]">Cargando actividad...</p>
+              ) : (auditData?.items?.length ?? 0) === 0 ? (
+                <p className="text-sm text-[var(--muted-foreground)]">Sin eventos recientes.</p>
+              ) : (
+                <div className="space-y-3">
+                  {auditData?.items.map((entry) => (
+                    <div key={entry.id} className="rounded-xl border border-[var(--surface)] px-3 py-2">
+                      <p className="text-xs font-bold text-[var(--foreground)]">
+                        {entry.action} · {entry.entity_type}
+                      </p>
+                      <p className="text-[11px] text-[var(--muted-foreground)]">
+                        actor #{entry.actor_id} · {new Date(entry.created_at).toLocaleString("es-CL")}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

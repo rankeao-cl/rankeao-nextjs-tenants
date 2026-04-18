@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/utils/error-message";
+import { getCustomerDetail } from "@/lib/api/customers";
 import { useCustomers, useUpdateCustomer, useAddCustomerNote } from "@/lib/hooks/use-customers";
 import { CustomerHeader } from "./components/CustomerHeader";
 import { CustomerFilters } from "./components/CustomerFilters";
@@ -40,6 +41,7 @@ export default function CustomersPage() {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [newNote, setNewNote] = useState("");
+  const [loadingDetail, setLoadingDetail] = useState(false);
 
   const filtered = customers.filter(
     (c) =>
@@ -47,10 +49,19 @@ export default function CustomersPage() {
       (c.email ?? "").toLowerCase().includes(query.toLowerCase())
   );
 
-  const handleViewDetail = (customer: Customer) => {
+  const handleViewDetail = async (customer: Customer) => {
     setSelectedCustomer(customer);
     setNewNote("");
     setShowDetailModal(true);
+    setLoadingDetail(true);
+    try {
+      const detail = await getCustomerDetail(customer.id);
+      setSelectedCustomer(detail);
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, "No se pudo cargar el detalle completo"));
+    } finally {
+      setLoadingDetail(false);
+    }
   };
 
   const handleToggleVip = async (customer: Customer) => {
@@ -96,14 +107,14 @@ export default function CustomersPage() {
         />
       </div>
 
-      <CustomerDetailModal 
+      <CustomerDetailModal
         customer={selectedCustomer}
         isOpen={showDetailModal}
         onOpenChange={setShowDetailModal}
         newNote={newNote}
         onNewNoteChange={setNewNote}
         onAddNote={handleAddNote}
-        savingNote={addNoteMutation.isPending}
+        savingNote={addNoteMutation.isPending || loadingDetail}
         formatCurrency={formatCurrency}
         getSegmentColor={getSegmentColor}
       />

@@ -23,8 +23,8 @@ export async function transferOwnership(data: { new_owner_staff_id: string; pass
 }
 
 export async function listStaffInvitations() {
-  const payload = await apiFetch<{ invitations: unknown[] }>("/tenants/me/staff/invitations");
-  return payload.invitations ?? [];
+  const payload = await apiFetch<unknown>("/tenants/me/staff/invitations");
+  return extractList<unknown>(payload, ["invitations", "items", "data"]);
 }
 
 export async function removeStaffMember(id: string) {

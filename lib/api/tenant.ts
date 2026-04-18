@@ -104,8 +104,8 @@ export async function deleteScheduleOverride(id: string) {
 }
 
 export async function getTenantNotifications() {
-  const payload = await apiFetch<{ notifications: unknown[] }>("/tenants/me/notifications");
-  return payload.notifications ?? [];
+  const payload = await apiFetch<unknown>("/tenants/me/notifications");
+  return extractList<unknown>(payload, ["notifications", "items", "data"]);
 }
 
 export async function markNotificationRead(id: string) {

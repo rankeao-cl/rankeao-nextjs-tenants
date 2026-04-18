@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { Loader2, Upload, Camera } from "lucide-react";
 import { toast } from "sonner";
-import { uploadImage, type EntityType } from "@/lib/api/images";
+import { deleteImage, uploadImage, type EntityType } from "@/lib/api/images";
 
 interface ImageUploaderProps {
   entityType: EntityType;
@@ -25,6 +25,7 @@ export function ImageUploader({
 }: ImageUploaderProps) {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string | undefined>(currentUrl);
+  const [uploadedImageId, setUploadedImageId] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const sizeClass =
@@ -46,6 +47,14 @@ export function ImageUploader({
 
     try {
       const record = await uploadImage(file, entityType, entityId);
+      if (uploadedImageId && uploadedImageId !== record.id) {
+        try {
+          await deleteImage(uploadedImageId);
+        } catch {
+          toast.warning("No se pudo limpiar la imagen anterior");
+        }
+      }
+      setUploadedImageId(record.id);
       setPreview(record.public_url);
       onUploaded(record);
       toast.success("Imagen actualizada");

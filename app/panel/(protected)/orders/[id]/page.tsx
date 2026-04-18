@@ -23,6 +23,7 @@ import {
 import { getErrorMessage } from "@/lib/utils/error-message";
 import { useQueryClient } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
+import { useTenantQueryScope } from "@/lib/hooks/use-tenant-query-scope";
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP" }).format(value);
@@ -48,6 +49,7 @@ const DELIVERY_LABELS: Record<string, string> = {
 export default function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const queryClient = useQueryClient();
+  const { tenantQueryKey } = useTenantQueryScope();
   const { data: order, isLoading } = useOrderDetail(id);
 
   const [actionLoading, setActionLoading] = useState(false);
@@ -104,7 +106,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
   const shipment = order.shipment;
   const review = order.review;
 
-  const invalidate = () => queryClient.invalidateQueries({ queryKey: ["order", id] });
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: tenantQueryKey("order", id) });
 
   const handleAction = async (action: () => Promise<unknown>, successMsg: string) => {
     try {
@@ -378,7 +380,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
               </div>
               <div>
                 <p className="text-[15px] font-extrabold text-[var(--foreground)] leading-none mt-1">@{order.buyer_username || "—"}</p>
-                {order.buyer_notes && <p className="text-[12px] text-[var(--muted-foreground)] mt-1.5 font-medium italic">"{order.buyer_notes}"</p>}
+                {order.buyer_notes && <p className="text-[12px] text-[var(--muted-foreground)] mt-1.5 font-medium italic">&quot;{order.buyer_notes}&quot;</p>}
               </div>
             </div>
 
@@ -473,7 +475,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                 <span className="text-[13px] font-bold text-[var(--foreground)]">{review.overall_rating}/5</span>
               </div>
               {review.comment && (
-                <p className="text-[13px] text-[var(--muted-foreground)] italic leading-relaxed">"{review.comment}"</p>
+                <p className="text-[13px] text-[var(--muted-foreground)] italic leading-relaxed">&quot;{review.comment}&quot;</p>
               )}
               <div className="grid grid-cols-2 gap-2 text-[11px]">
                 {review.condition_accuracy !== undefined && (

@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { listEvents, createEvent } from "@/lib/api/events";
+import { useTenantQueryScope } from "./use-tenant-query-scope";
 
 export interface TenantEvent {
   id: string;
@@ -39,8 +40,9 @@ function normalizeEvent(e: unknown): TenantEvent {
 }
 
 export function useEvents() {
+  const { tenantQueryKey } = useTenantQueryScope();
   return useQuery({
-    queryKey: ["events"],
+    queryKey: tenantQueryKey("events"),
     queryFn: async () => {
       const raw = await listEvents();
       return (raw as unknown[]).map(normalizeEvent);
@@ -50,9 +52,10 @@ export function useEvents() {
 
 export function useCreateEvent() {
   const qc = useQueryClient();
+  const { tenantQueryKey } = useTenantQueryScope();
   return useMutation({
     mutationFn: (data: { title: string; description?: string; starts_at: string; ends_at: string }) =>
       createEvent(data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["events"] }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: tenantQueryKey("events") }),
   });
 }

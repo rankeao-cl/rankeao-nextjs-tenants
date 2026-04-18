@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { getMyTournaments, type TournamentListItem } from "@/lib/api/tournaments";
+import { useTenantQueryScope } from "@/lib/hooks/use-tenant-query-scope";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -77,9 +78,10 @@ function TournamentCard({ t, onClick }: { t: TournamentListItem; onClick: () => 
 
 export default function TorneosPage() {
   const router = useRouter();
+  const { tenantQueryKey } = useTenantQueryScope();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["my-tournaments"],
+    queryKey: tenantQueryKey("my-tournaments"),
     queryFn: () => getMyTournaments({ per_page: 50 }),
     retry: 1,
   });

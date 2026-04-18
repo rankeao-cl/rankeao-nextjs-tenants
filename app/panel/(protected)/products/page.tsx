@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { useProducts, useDeleteProduct } from "@/lib/hooks/use-products";
+import { useProducts, useDeleteProduct, useBulkProductAction } from "@/lib/hooks/use-products";
 import { getErrorMessage } from "@/lib/utils/error-message";
 import { EditProductModal } from "./components/EditProductModal";
 import { CreateProductModal } from "./components/CreateProductModal";
@@ -20,6 +20,8 @@ export default function ProductsPage() {
   const meta = data?.meta;
 
   const deleteMutation = useDeleteProduct();
+  const bulkMutation = useBulkProductAction();
+  const [bulkAction, setBulkAction] = useState("deactivate");
 
   const [isCreateModalOpen, setCreateModalOpen] = useState(false);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
@@ -43,12 +45,47 @@ export default function ProductsPage() {
     return `${host}${url.startsWith("/") ? "" : "/"}${url}`;
   };
 
+  const handleBulkAction = async () => {
+    const productIds = products.map((p) => String(p.id)).filter(Boolean);
+    if (productIds.length === 0) {
+      toast.info("No hay productos para aplicar la acción");
+      return;
+    }
+    if (!confirm(`¿Aplicar "${bulkAction}" a ${productIds.length} productos de la página actual?`)) return;
+    try {
+      const result = await bulkMutation.mutateAsync({ product_ids: productIds, action: bulkAction });
+      toast.success(`Acción aplicada: ${result.success_count} exitosos, ${result.failed_count} fallidos`);
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, "No se pudo ejecutar la acción masiva"));
+    }
+  };
+
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       <ProductHeader onAddProduct={() => setCreateModalOpen(true)} />
 
       <div className="space-y-6">
         <ProductFilters query={query} onQueryChange={(val) => { setQuery(val); setPage(1); }} />
+        <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-3">
+          <span className="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">
+            Acción masiva (página actual)
+          </span>
+          <select
+            value={bulkAction}
+            onChange={(e) => setBulkAction(e.target.value)}
+            className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+          >
+            <option value="deactivate">Desactivar</option>
+            <option value="activate">Activar</option>
+            <option value="archive">Archivar</option>
+            <option value="make_hidden">Ocultar</option>
+            <option value="make_visible">Mostrar</option>
+            <option value="delete">Eliminar</option>
+          </select>
+          <Button onClick={handleBulkAction} disabled={bulkMutation.isPending || products.length === 0}>
+            {bulkMutation.isPending ? "Aplicando..." : `Aplicar a ${products.length}`}
+          </Button>
+        </div>
 
         <ProductList 
           products={products} 

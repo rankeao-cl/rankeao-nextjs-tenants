@@ -12,10 +12,13 @@ import {
   finishTournament,
   closeTournament,
   deleteTournament,
+  updateTournament,
   type TournamentDetail,
 } from "@/lib/api/tournaments";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -37,6 +40,7 @@ import {
   List,
 } from "lucide-react";
 import Link from "next/link";
+import { useTenantQueryScope } from "@/lib/hooks/use-tenant-query-scope";
 
 const STATUS_LABELS: Record<string, { label: string; bg: string; text: string }> = {
   DRAFT: { label: "Borrador", bg: "bg-gray-500/15", text: "text-[var(--muted-foreground)]" },
@@ -63,15 +67,16 @@ export default function TorneoDetailPage({ params }: { params: Promise<{ id: str
   const { id } = use(params);
   const router = useRouter();
   const qc = useQueryClient();
+  const { tenantQueryKey } = useTenantQueryScope();
 
   const { data: tournament, isLoading } = useQuery({
-    queryKey: ["panel-tournament", id],
+    queryKey: tenantQueryKey("panel-tournament", id),
     queryFn: () => getTournamentById(id),
   });
 
   function invalidate() {
-    qc.invalidateQueries({ queryKey: ["panel-tournament", id] });
-    qc.invalidateQueries({ queryKey: ["my-tournaments"] });
+    qc.invalidateQueries({ queryKey: tenantQueryKey("panel-tournament", id) });
+    qc.invalidateQueries({ queryKey: tenantQueryKey("my-tournaments") });
   }
 
   const publishMut = useMutation({
@@ -112,10 +117,18 @@ export default function TorneoDetailPage({ params }: { params: Promise<{ id: str
     },
     onError: (e: Error) => toast.error(e.message || "Error"),
   });
+  const updateMut = useMutation({
+    mutationFn: (payload: Record<string, unknown>) => updateTournament(id, payload),
+    onSuccess: () => {
+      toast.success("Torneo actualizado");
+      invalidate();
+    },
+    onError: (e: Error) => toast.error(e.message || "Error"),
+  });
 
   const isMutating =
     publishMut.isPending || checkInMut.isPending || startMut.isPending ||
-    nextRoundMut.isPending || finishMut.isPending || closeMut.isPending;
+    nextRoundMut.isPending || finishMut.isPending || closeMut.isPending || updateMut.isPending;
 
   const lifecycleActions: LifecycleAction[] = [
     {
@@ -173,6 +186,8 @@ export default function TorneoDetailPage({ params }: { params: Promise<{ id: str
 
   const st = STATUS_LABELS[tournament.status] ?? { label: tournament.status, bg: "bg-gray-500/15", text: "text-[var(--muted-foreground)]" };
   const activeActions = lifecycleActions.filter((a) => a.condition(tournament));
+
+  const canQuickEdit = ["DRAFT", "OPEN"].includes(tournament.status);
 
   return (
     <div className="p-6 md:p-8 max-w-4xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -247,6 +262,68 @@ export default function TorneoDetailPage({ params }: { params: Promise<{ id: str
         ))}
       </div>
 
+      {/* Quick edit */}
+      {canQuickEdit && (
+        <div className="bg-[var(--card)] border border-[var(--surface)] rounded-[24px] p-6 space-y-4">
+          <h3 className="text-sm font-black text-[var(--foreground)] uppercase tracking-wider">
+            Edición rápida
+          </h3>
+          <form
+            className="space-y-4"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const form = new FormData(e.currentTarget);
+              const name = String(form.get("name") ?? "").trim();
+              const venueName = String(form.get("venue_name") ?? "").trim();
+              const city = String(form.get("city") ?? "").trim();
+              const startsAt = String(form.get("starts_at") ?? "");
+              const maxPlayers = String(form.get("max_players") ?? "");
+              const entryFee = String(form.get("entry_fee") ?? "0");
+              updateMut.mutate({
+                name,
+                venue_name: venueName || undefined,
+                city: city || undefined,
+                starts_at: startsAt ? new Date(startsAt).toISOString() : undefined,
+                max_players: maxPlayers ? Number(maxPlayers) : undefined,
+                entry_fee: Number(entryFee || 0),
+              });
+            }}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label>Nombre</Label>
+                <Input name="name" defaultValue={tournament.name ?? ""} />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Fecha inicio</Label>
+                <Input name="starts_at" type="datetime-local" defaultValue={toInputDateTime(tournament.starts_at)} />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Sede</Label>
+                <Input name="venue_name" defaultValue={tournament.venue_name ?? ""} />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Ciudad</Label>
+                <Input name="city" defaultValue={tournament.city ?? ""} />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Máx. jugadores</Label>
+                <Input name="max_players" type="number" defaultValue={tournament.max_players ?? ""} />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Inscripción (CLP)</Label>
+                <Input name="entry_fee" type="number" defaultValue={tournament.entry_fee ?? 0} />
+              </div>
+            </div>
+            <div className="flex justify-end">
+              <Button type="submit" disabled={isMutating}>
+                Guardar cambios
+              </Button>
+            </div>
+          </form>
+        </div>
+      )}
+
       {/* Quick links */}
       <div className="bg-[var(--card)] border border-[var(--surface)] rounded-[24px] p-6">
         <h3 className="text-sm font-black text-[var(--foreground)] mb-4 uppercase tracking-wider">
@@ -315,4 +392,11 @@ export default function TorneoDetailPage({ params }: { params: Promise<{ id: str
       )}
     </div>
   );
+}
+
+function toInputDateTime(value?: string): string {
+  if (!value) return "";
+  const date = new Date(value);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }

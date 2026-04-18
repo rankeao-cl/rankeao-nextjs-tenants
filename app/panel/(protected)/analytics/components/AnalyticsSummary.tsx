@@ -3,9 +3,10 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TrendingUp, ShoppingBag, DollarSign, Users, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import type { AnalyticsData } from "@/lib/types/analytics";
 
 interface AnalyticsSummaryProps {
-  stats: any;
+  stats: AnalyticsData | undefined;
   isLoading: boolean;
   formatCurrency: (val: number) => string;
 }
@@ -29,7 +30,7 @@ export function AnalyticsSummary({ stats, isLoading, formatCurrency }: Analytics
   const metricCards = [
     { 
       label: "Ingresos Totales", 
-      value: formatCurrency(stats?.total_revenue || 0), 
+      value: formatCurrency(stats?.totals?.net_revenue || 0), 
       icon: DollarSign, 
       color: "var(--brand)",
       bg: "bg-[var(--brand)]/5",
@@ -37,8 +38,8 @@ export function AnalyticsSummary({ stats, isLoading, formatCurrency }: Analytics
       trendUp: true
     },
     { 
-      label: "Ventas Totales", 
-      value: stats?.total_sales || 0, 
+      label: "Órdenes", 
+      value: stats?.totals?.orders_count || 0, 
       icon: ShoppingBag, 
       color: "var(--brand)",
       bg: "bg-[var(--brand)]/5",
@@ -47,7 +48,7 @@ export function AnalyticsSummary({ stats, isLoading, formatCurrency }: Analytics
     },
     { 
       label: "Ticket Promedio", 
-      value: formatCurrency(stats?.average_order_value || 0), 
+      value: formatCurrency(stats?.totals?.avg_order_value || 0), 
       icon: TrendingUp, 
       color: "var(--brand)",
       bg: "bg-[var(--brand)]/5",
@@ -55,8 +56,8 @@ export function AnalyticsSummary({ stats, isLoading, formatCurrency }: Analytics
       trendUp: false
     },
     { 
-      label: "Clientes Nuevos", 
-      value: "124", 
+      label: "Clientes únicos", 
+      value: stats?.totals?.unique_customers || 0, 
       icon: Users, 
       color: "var(--brand)",
       bg: "bg-[var(--brand)]/5",

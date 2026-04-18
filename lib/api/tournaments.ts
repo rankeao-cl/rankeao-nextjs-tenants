@@ -1,4 +1,5 @@
-import { apiFetch, extractList } from "./client";
+import { useAuthStore } from "@/lib/stores/auth-store";
+import { apiFetch, extractList, extractListMeta } from "./client";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -125,36 +126,47 @@ export async function getMyTournaments(params?: {
   per_page?: number;
   status?: string;
 }): Promise<{ items: TournamentListItem[]; total: number }> {
+  const tenantId = useAuthStore.getState().user?.tenant_id;
   const payload = await apiFetch<unknown>("/tournaments", {
-    params: { ...(params ?? {}), mine: "true" },
+    params: {
+      ...(params ?? {}),
+      mine: "true",
+      ...(tenantId ? { tenant_id: tenantId } : {}),
+    },
   });
   const items = extractList<TournamentListItem>(payload, ["tournaments", "items", "data"]);
-  const total = (payload as Record<string, unknown>)?.total as number ?? items.length;
+  const total = extractListMeta(payload, items.length).total;
   return { items, total };
 }
 
 export async function getTournamentById(id: string): Promise<TournamentDetail> {
-  const raw = await apiFetch<{ data?: TournamentDetail } | TournamentDetail>(`/tournaments/${id}`);
-  return (raw as { data: TournamentDetail }).data ?? (raw as TournamentDetail);
+  const raw = await apiFetch<unknown>(`/tournaments/${id}`);
+  const envelope = unwrapDataEnvelope(raw);
+  const nested = envelope.tournament;
+  return (isRecord(nested) ? nested : envelope) as unknown as TournamentDetail;
 }
 
 export async function createTournament(payload: CreateTournamentPayload): Promise<TournamentDetail> {
-  const raw = await apiFetch<{ data?: TournamentDetail } | TournamentDetail>("/tournaments", {
+  const raw = await apiFetch<unknown>("/tournaments", {
     method: "POST",
     body: payload,
   });
-  return (raw as { data: TournamentDetail }).data ?? (raw as TournamentDetail);
+  const envelope = unwrapDataEnvelope(raw);
+  const nested = envelope.tournament;
+  return (isRecord(nested) ? nested : envelope) as unknown as TournamentDetail;
 }
 
 export async function updateTournament(
   id: string,
   payload: Partial<CreateTournamentPayload>
 ): Promise<TournamentDetail> {
-  const raw = await apiFetch<{ data?: TournamentDetail } | TournamentDetail>(`/tournaments/${id}`, {
+  const raw = await apiFetch<unknown>(`/tournaments/${id}`, {
     method: "PATCH",
     body: payload,
   });
-  return (raw as { data: TournamentDetail }).data ?? (raw as TournamentDetail);
+  const envelope = unwrapDataEnvelope(raw);
+  const nested = envelope.tournament;
+  return (isRecord(nested) ? nested : envelope) as unknown as TournamentDetail;
 }
 
 export async function deleteTournament(id: string): Promise<void> {
@@ -187,9 +199,18 @@ export async function getGames(): Promise<GameOption[]> {
   return extractList<GameOption>(payload, ["games", "items", "data"]);
 }
 
-export async function getFormats(gameId?: string): Promise<FormatOption[]> {
-  const payload = await apiFetch<unknown>("/catalog/formats", {
-    params: gameId ? { game_id: gameId } : undefined,
-  });
+export async function getFormats(gameSlug?: string): Promise<FormatOption[]> {
+  if (!gameSlug) return [];
+  const payload = await apiFetch<unknown>(`/catalog/games/${encodeURIComponent(gameSlug)}/formats`);
   return extractList<FormatOption>(payload, ["formats", "items", "data"]);
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function unwrapDataEnvelope(value: unknown): Record<string, unknown> {
+  if (!isRecord(value)) return {};
+  const data = value.data;
+  return isRecord(data) ? data : value;
 }

@@ -1,5 +1,6 @@
-import { apiFetch, extractList, extractListMeta } from "./client";
+import { apiFetch, extractList, extractListMeta, extractRecord } from "./client";
 import type { ListMeta } from "@/lib/types/api";
+import type { Customer } from "@/lib/types/customers";
 
 export async function listCustomers(params?: Record<string, string | number | boolean | undefined>): Promise<{ customers: unknown[]; meta: ListMeta }> {
   const payload = await apiFetch<unknown>("/tenants/me/customers", { params });
@@ -8,8 +9,9 @@ export async function listCustomers(params?: Record<string, string | number | bo
   return { customers, meta };
 }
 
-export async function getCustomerDetail(id: string) {
-  return apiFetch(`/tenants/me/customers/${id}`);
+export async function getCustomerDetail(id: string): Promise<Customer> {
+  const payload = await apiFetch<unknown>(`/tenants/me/customers/${id}`);
+  return extractRecord(payload) as unknown as Customer;
 }
 
 export async function updateCustomer(id: string, data: Record<string, unknown>) {

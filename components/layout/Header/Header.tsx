@@ -13,21 +13,32 @@ import {
   DropdownMenuSeparator,
   DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
-import { Menu, LogOut, User, Settings, HelpCircle, Bell, Sun, Moon } from "lucide-react";
+import { Menu, LogOut, User, Settings, HelpCircle, Bell, Sun, Moon, Check, Store } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { NAV_GROUPS, type NavItem } from "@/lib/constants/nav-items";
 import { RankeaoLogo } from "@/components/icons/RankeaoLogo";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getTenantNotifications, markAllNotificationsRead } from "@/lib/api/tenant";
+import { fetchMyMemberships, getTenantNotifications, markAllNotificationsRead } from "@/lib/api/tenant";
+import { activateTenantMembership, closePanelSession } from "@/lib/api/auth";
+import { useTenantQueryScope } from "@/lib/hooks/use-tenant-query-scope";
 import { useState } from "react";
+import { toast } from "sonner";
+import type { Membership } from "@/lib/types/auth";
 
 interface HeaderProps {
   onMenuToggle: () => void;
 }
 
+const ROLE_LABELS: Record<string, string> = {
+  OWNER: "Propietario",
+  ADMIN: "Administrador",
+  JUDGE: "Juez",
+  CASHIER: "Cajero",
+};
+
 export function Header({ onMenuToggle }: HeaderProps) {
   const user = useAuthStore((st) => st.user);
-  const logout = useAuthStore((st) => st.logout);
+  const { tenantId, tenantQueryKey } = useTenantQueryScope();
   const router = useRouter();
   const pathname = usePathname();
   const qc = useQueryClient();
@@ -35,8 +46,18 @@ export function Header({ onMenuToggle }: HeaderProps) {
   const theme = useThemeStore((s) => s.theme);
   const toggleTheme = useThemeStore((s) => s.toggleTheme);
 
+  const { data: memberships = [] } = useQuery({
+    queryKey: ["auth", "memberships"],
+    queryFn: fetchMyMemberships,
+    retry: false,
+    staleTime: 60_000,
+  });
+
+  const currentMembership =
+    memberships.find((membership) => String(membership.tenant_id) === String(tenantId)) ?? null;
+
   const { data: notifications = [] } = useQuery({
-    queryKey: ["tenant-notifications"],
+    queryKey: tenantQueryKey("notifications"),
     queryFn: getTenantNotifications,
     refetchInterval: 60_000,
     retry: false,
@@ -48,11 +69,34 @@ export function Header({ onMenuToggle }: HeaderProps) {
 
   const markAllMut = useMutation({
     mutationFn: markAllNotificationsRead,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["tenant-notifications"] }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: tenantQueryKey("notifications") }),
   });
 
-  const handleLogout = () => {
-    logout();
+  const switchTenantMut = useMutation({
+    mutationFn: async (membership: Membership) => {
+      if (String(membership.tenant_id) === String(tenantId)) {
+        return;
+      }
+      activateTenantMembership(membership);
+      await qc.cancelQueries();
+      qc.clear();
+    },
+    onSuccess: (_value, membership) => {
+      toast.success(`Cambiado a ${membership.tenant_name}`);
+      router.push("/panel/dashboard");
+      router.refresh();
+    },
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : "No se pudo cambiar de tienda.";
+      toast.error(message);
+    },
+  });
+
+  const handleLogout = async () => {
+    const session = await closePanelSession();
+    if (session.warning) {
+      toast.warning(session.warning);
+    }
     router.push("/panel/login");
   };
 
@@ -232,7 +276,35 @@ export function Header({ onMenuToggle }: HeaderProps) {
 
               <DropdownMenuSeparator className="bg-[var(--border)] m-0" />
 
-              <DropdownMenuGroup className="p-1.5">
+                <DropdownMenuGroup className="p-1.5">
+                {memberships.length > 1 && (
+                  <>
+                    <DropdownMenuLabel className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
+                      Tienda activa
+                    </DropdownMenuLabel>
+                    {memberships.map((membership) => {
+                      const isCurrent = String(membership.tenant_id) === String(tenantId);
+                      return (
+                        <DropdownMenuItem
+                          key={membership.tenant_id}
+                          disabled={switchTenantMut.isPending}
+                          onClick={() => switchTenantMut.mutate(membership)}
+                          className="rounded-lg hover:bg-[var(--surface-secondary)] focus:bg-[var(--surface-secondary)] cursor-pointer items-start"
+                        >
+                          <Store className="mr-3 h-4 w-4 text-[var(--muted-foreground)] mt-[2px]" />
+                          <span className="flex flex-col gap-0.5 min-w-0">
+                            <span className="text-sm text-[var(--foreground)] truncate">{membership.tenant_name}</span>
+                            <span className="text-[11px] text-[var(--muted-foreground)]">
+                              {ROLE_LABELS[membership.role] ?? membership.role}
+                            </span>
+                          </span>
+                          {isCurrent && <Check className="ml-auto h-4 w-4 text-emerald-500" />}
+                        </DropdownMenuItem>
+                      );
+                    })}
+                    <DropdownMenuSeparator className="bg-[var(--border)] m-0 my-1" />
+                  </>
+                )}
                 <DropdownMenuLabel className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
                   Mi cuenta
                 </DropdownMenuLabel>
@@ -248,7 +320,9 @@ export function Header({ onMenuToggle }: HeaderProps) {
                   className="rounded-lg hover:bg-[var(--surface-secondary)] focus:bg-[var(--surface-secondary)] cursor-pointer"
                 >
                   <Settings className="mr-3 h-4 w-4 text-[var(--muted-foreground)]" />
-                  <span className="text-sm text-[var(--foreground)]">Configuracion Tienda</span>
+                  <span className="text-sm text-[var(--foreground)]">
+                    {currentMembership ? `Configuración ${currentMembership.tenant_name}` : "Configuracion Tienda"}
+                  </span>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
 

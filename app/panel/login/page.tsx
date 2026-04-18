@@ -7,7 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Eye, EyeOff, Mail, Lock, Loader2 } from "lucide-react";
-import { loginPanel } from "@/lib/api/auth";
+import {
+  activateTenantMembership,
+  closePanelSession,
+  loginPanel,
+  resolvePanelRedirect,
+} from "@/lib/api/auth";
 import { fetchMyMemberships, fetchMyPendingInvitations } from "@/lib/api/tenant";
 import { useAuthStore } from "@/lib/stores/auth-store";
 import { RankeaoLogo } from "@/components/icons/RankeaoLogo";
@@ -31,6 +36,7 @@ export default function LoginPage() {
     try {
       const resp = await loginPanel(email, password);
       setAuth(resp);
+      const redirect = resolvePanelRedirect(new URLSearchParams(window.location.search).get("redirect"));
 
       const memberships = await fetchMyMemberships();
       if (!memberships || memberships.length === 0) {
@@ -39,25 +45,24 @@ export default function LoginPage() {
           router.push("/panel/invitations");
           return;
         }
-        useAuthStore.getState().logout();
+        const session = await closePanelSession();
+        if (session.warning) {
+          toast.warning(session.warning);
+        }
         toast.error("No tienes tiendas asociadas. Solicita una tienda primero.");
         return;
       }
 
+      if (memberships.length > 1) {
+        router.push(`/panel/select-tenant?redirect=${encodeURIComponent(redirect)}`);
+        return;
+      }
+
       const membership = memberships[0];
-      useAuthStore.getState().setAuth({
-        ...resp,
-        user: {
-          ...resp.user,
-          tenant_id: String(membership.tenant_id),
-        },
-      });
+      activateTenantMembership(membership);
 
       toast.success(`Bienvenido al panel de ${membership.tenant_name}!`);
-      const redirect =
-        new URLSearchParams(window.location.search).get("redirect") ||
-        "/panel/dashboard";
-      router.push(redirect as string);
+      router.push(redirect);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Error al iniciar sesión";
       toast.error(message);
